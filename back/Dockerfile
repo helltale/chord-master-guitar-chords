@@ -1,9 +1,13 @@
-# Placeholder: replace with actual Go app build when backend is implemented
-FROM golang:1.22-alpine
+FROM golang:1.22-alpine AS builder
 WORKDIR /app
-
-# Copy go mod (create go.mod in back/ when adding code)
+COPY go.mod go.sum ./
+RUN go mod download
 COPY . .
+RUN go build -o server ./back/cmd/server
 
-# Minimal placeholder - keeps container running until real server is added
-CMD ["sh", "-c", "echo 'Backend not implemented yet' && sleep infinity"]
+FROM alpine:3.19
+RUN apk add --no-cache ca-certificates
+WORKDIR /app
+COPY --from=builder /app/server .
+EXPOSE 8081
+CMD ["./server"]

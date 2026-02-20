@@ -18,8 +18,8 @@ services:
 
   back:
     build:
-      context: ./back
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: back/Dockerfile
     container_name: amdm-back
     ports:
       - "8081:8081"

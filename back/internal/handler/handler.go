@@ -1,0 +1,335 @@
+package handler
+
+import (
+	"context"
+	"time"
+
+	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
+	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
+	"github.com/Helltale/amdm-guitar-chords/back/internal/handler/gen"
+)
+
+var _ gen.StrictServerInterface = (*server)(nil)
+
+type server struct {
+	artistCases *cases.ArtistCases
+	songCases   *cases.SongCases
+}
+
+func NewServer(artistCases *cases.ArtistCases, songCases *cases.SongCases) *server {
+	return &server{
+		artistCases: artistCases,
+		songCases:   songCases,
+	}
+}
+
+func (srv *server) ListArtists(ctx context.Context, request gen.ListArtistsRequestObject) (gen.ListArtistsResponseObject, error) {
+	limit, offset := 20, 0
+	if request.Params.Limit != nil {
+		limit = *request.Params.Limit
+	}
+	if request.Params.Offset != nil {
+		offset = *request.Params.Offset
+	}
+	list, total, err := srv.artistCases.List(ctx, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	items := make([]gen.Artist, 0, len(list))
+	for _, a := range list {
+		items = append(items, srv.artistToAPI(a))
+	}
+	return gen.ListArtists200JSONResponse{
+		Items: &items,
+		Total: ptr(int(total)),
+	}, nil
+}
+
+func (srv *server) CreateArtist(ctx context.Context, request gen.CreateArtistRequestObject) (gen.CreateArtistResponseObject, error) {
+	if request.Body == nil {
+		return gen.CreateArtist400Response{}, nil
+	}
+	a, err := srv.artistCases.Create(ctx, request.Body.Name, request.Body.Slug)
+	if err != nil {
+		return gen.CreateArtist400Response{}, nil
+	}
+	artist := srv.artistToAPI(a)
+	return gen.CreateArtist201JSONResponse{
+		Id:        artist.Id,
+		Name:      artist.Name,
+		Slug:      artist.Slug,
+		CreatedAt: artist.CreatedAt,
+	}, nil
+}
+
+func (srv *server) GetArtistBySlug(ctx context.Context, request gen.GetArtistBySlugRequestObject) (gen.GetArtistBySlugResponseObject, error) {
+	a, err := srv.artistCases.GetBySlug(ctx, request.ArtistSlug)
+	if err != nil {
+		return nil, err
+	}
+	if a == nil {
+		return gen.GetArtistBySlug404Response{}, nil
+	}
+	songs, err := srv.songCases.ListByArtistID(ctx, a.ID)
+	if err != nil {
+		return nil, err
+	}
+	songItems := make([]gen.SongListItem, 0, len(songs))
+	for _, s := range songs {
+		songItems = append(songItems, srv.songToListItem(s))
+	}
+	return gen.GetArtistBySlug200JSONResponse{
+		Id:        int64(a.ID),
+		Name:      a.Name,
+		Slug:      a.Slug,
+		CreatedAt: timePtr(a.CreatedAt),
+		Songs:     &songItems,
+	}, nil
+}
+
+func (srv *server) ListSongs(ctx context.Context, request gen.ListSongsRequestObject) (gen.ListSongsResponseObject, error) {
+	limit, offset := 20, 0
+	if request.Params.Limit != nil {
+		limit = *request.Params.Limit
+	}
+	if request.Params.Offset != nil {
+		offset = *request.Params.Offset
+	}
+	var artistID *uint
+	if request.Params.ArtistId != nil {
+		id := uint(*request.Params.ArtistId)
+		artistID = &id
+	}
+	list, total, err := srv.songCases.List(ctx, artistID, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	items := make([]gen.SongListItem, 0, len(list))
+	for _, s := range list {
+		items = append(items, srv.songToListItem(s))
+	}
+	return gen.ListSongs200JSONResponse{
+		Items: &items,
+		Total: ptr(int(total)),
+	}, nil
+}
+
+func (srv *server) CreateSong(ctx context.Context, request gen.CreateSongRequestObject) (gen.CreateSongResponseObject, error) {
+	if request.Body == nil {
+		return gen.CreateSong400Response{}, nil
+	}
+	tonality := 0
+	if request.Body.Tonality != nil {
+		tonality = *request.Body.Tonality
+	}
+	content := tabContentFromAPI(request.Body.Content)
+	s, err := srv.songCases.Create(ctx, uint(request.Body.ArtistId), request.Body.Title, request.Body.Slug, tonality, content)
+	if err != nil {
+		return gen.CreateSong400Response{}, nil
+	}
+	return gen.CreateSong201JSONResponse{
+		Id:        int64(s.ID),
+		ArtistId:  ptr(int64(s.ArtistID)),
+		Title:     s.Title,
+		Slug:      s.Slug,
+		Tonality:  ptr(s.Tonality),
+		Content:   сontent(&s.Content),
+		CreatedAt: timePtr(s.CreatedAt),
+		UpdatedAt: timePtr(s.UpdatedAt),
+	}, nil
+}
+
+func (srv *server) GetSong(ctx context.Context, request gen.GetSongRequestObject) (gen.GetSongResponseObject, error) {
+	if request.SongId <= 0 {
+		return gen.GetSong404Response{}, nil
+	}
+	s, err := srv.songCases.GetByID(ctx, uint(request.SongId))
+	if err != nil {
+		return nil, err
+	}
+	if s == nil {
+		return gen.GetSong404Response{}, nil
+	}
+	return gen.GetSong200JSONResponse{
+		Id:        int64(s.ID),
+		ArtistId:  ptr(int64(s.ArtistID)),
+		Title:     s.Title,
+		Slug:      s.Slug,
+		Tonality:  ptr(s.Tonality),
+		Content:   сontent(&s.Content),
+		CreatedAt: timePtr(s.CreatedAt),
+		UpdatedAt: timePtr(s.UpdatedAt),
+	}, nil
+}
+
+func (srv *server) UpdateSong(ctx context.Context, request gen.UpdateSongRequestObject) (gen.UpdateSongResponseObject, error) {
+	if request.SongId <= 0 {
+		return gen.UpdateSong404Response{}, nil
+	}
+	var content *entity.TabContent
+	if request.Body != nil && request.Body.Content != nil {
+		c := tabContentFromAPI(request.Body.Content)
+		content = &c
+	}
+	var title, slug *string
+	var tonality *int
+	if request.Body != nil {
+		title = request.Body.Title
+		slug = request.Body.Slug
+		tonality = request.Body.Tonality
+	}
+	s, err := srv.songCases.Update(ctx, uint(request.SongId), title, slug, tonality, content)
+	if err != nil {
+		return gen.UpdateSong400Response{}, nil
+	}
+	if s == nil {
+		return gen.UpdateSong404Response{}, nil
+	}
+	return gen.UpdateSong200JSONResponse{
+		Id:        int64(s.ID),
+		ArtistId:  ptr(int64(s.ArtistID)),
+		Title:     s.Title,
+		Slug:      s.Slug,
+		Tonality:  ptr(s.Tonality),
+		Content:   сontent(&s.Content),
+		CreatedAt: timePtr(s.CreatedAt),
+		UpdatedAt: timePtr(s.UpdatedAt),
+	}, nil
+}
+
+func (srv *server) TransposeSong(ctx context.Context, request gen.TransposeSongRequestObject) (gen.TransposeSongResponseObject, error) {
+	if request.SongId <= 0 {
+		return gen.TransposeSong404Response{}, nil
+	}
+	s, err := srv.songCases.Transpose(ctx, uint(request.SongId), request.Params.Semitones)
+	if err != nil {
+		return nil, err
+	}
+	if s == nil {
+		return gen.TransposeSong404Response{}, nil
+	}
+	return gen.TransposeSong200JSONResponse{
+		Id:        int64(s.ID),
+		ArtistId:  ptr(int64(s.ArtistID)),
+		Title:     s.Title,
+		Slug:      s.Slug,
+		Tonality:  ptr(s.Tonality),
+		Content:   сontent(&s.Content),
+		CreatedAt: timePtr(s.CreatedAt),
+		UpdatedAt: timePtr(s.UpdatedAt),
+	}, nil
+}
+
+func ptr[T any](v T) *T { return &v }
+
+func timePtr(t time.Time) *time.Time { return &t }
+
+func (srv *server) artistToAPI(a *entity.Artist) gen.Artist {
+	return gen.Artist{
+		Id:        int64(a.ID),
+		Name:      a.Name,
+		Slug:      a.Slug,
+		CreatedAt: timePtr(a.CreatedAt),
+	}
+}
+
+func (srv *server) songToListItem(s *entity.Song) gen.SongListItem {
+	return gen.SongListItem{
+		Id:       int64(s.ID),
+		Title:    s.Title,
+		Slug:     s.Slug,
+		ArtistId: ptr(int64(s.ArtistID)),
+		Tonality: ptr(s.Tonality),
+	}
+}
+
+func сontent(c *entity.TabContent) *gen.TabContent {
+	if c == nil {
+		return nil
+	}
+	var sections *[]gen.Section
+	if len(c.Sections) > 0 {
+		list := make([]gen.Section, 0, len(c.Sections))
+		for _, sec := range c.Sections {
+			list = append(list, section(sec))
+		}
+		sections = &list
+	}
+	var asciiTab *string
+	if c.AsciiTab != "" {
+		asciiTab = &c.AsciiTab
+	}
+	return &gen.TabContent{Sections: sections, AsciiTab: asciiTab}
+}
+
+func section(s entity.Section) gen.Section {
+	var chordSeq *[]string
+	if len(s.ChordSequence) > 0 {
+		chordSeq = &s.ChordSequence
+	}
+	var blocks *[]gen.Block
+	if len(s.Blocks) > 0 {
+		list := make([]gen.Block, 0, len(s.Blocks))
+		for _, b := range s.Blocks {
+			list = append(list, gen.Block{Chord: ptr(b.Chord), Lyrics: ptr(b.Lyrics)})
+		}
+		blocks = &list
+	}
+	return gen.Section{
+		Type:          ptr(s.Type),
+		Label:         ptr(s.Label),
+		ChordSequence: chordSeq,
+		Blocks:        blocks,
+	}
+}
+
+func tabContentFromAPI(c *gen.TabContent) entity.TabContent {
+	if c == nil {
+		return entity.TabContent{}
+	}
+	var sections []entity.Section
+	if c.Sections != nil {
+		sections = make([]entity.Section, 0, len(*c.Sections))
+		for _, sec := range *c.Sections {
+			sections = append(sections, sectionFromAPI(sec))
+		}
+	}
+	out := entity.TabContent{Sections: sections}
+	if c.AsciiTab != nil {
+		out.AsciiTab = *c.AsciiTab
+	}
+	return out
+}
+
+func sectionFromAPI(s gen.Section) entity.Section {
+	var chordSeq []string
+	if s.ChordSequence != nil {
+		chordSeq = *s.ChordSequence
+	}
+	var blocks []entity.Block
+	if s.Blocks != nil {
+		blocks = make([]entity.Block, 0, len(*s.Blocks))
+		for _, b := range *s.Blocks {
+			blocks = append(blocks, blockFromAPI(b))
+		}
+	}
+	out := entity.Section{ChordSequence: chordSeq, Blocks: blocks}
+	if s.Type != nil {
+		out.Type = *s.Type
+	}
+	if s.Label != nil {
+		out.Label = *s.Label
+	}
+	return out
+}
+
+func blockFromAPI(b gen.Block) entity.Block {
+	out := entity.Block{}
+	if b.Chord != nil {
+		out.Chord = *b.Chord
+	}
+	if b.Lyrics != nil {
+		out.Lyrics = *b.Lyrics
+	}
+	return out
+}
