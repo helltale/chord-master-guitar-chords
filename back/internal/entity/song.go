@@ -6,6 +6,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -43,8 +44,8 @@ func (c *TabContent) Scan(value any) error {
 }
 
 type Song struct {
-	ID        uint           `gorm:"primaryKey"                                          json:"id"`
-	ArtistID  uint           `gorm:"not null;index"                                      json:"artist_id"`
+	SongID    uuid.UUID      `gorm:"type:uuid;primaryKey;column:song_id"                 json:"song_id"`
+	ArtistID  uuid.UUID      `gorm:"type:uuid;not null;index;column:artist_id"           json:"artist_id"`
 	Artist    *Artist        `gorm:"foreignKey:ArtistID"                                 json:"artist,omitempty"`
 	Title     string         `gorm:"size:255;not null"                                   json:"title"`
 	Slug      string         `gorm:"size:255;not null;index:idx_song_artist_slug,unique" json:"slug"`

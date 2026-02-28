@@ -5,14 +5,15 @@ import (
 	"errors"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 type SongRepository interface {
-	GetByID(ctx context.Context, id uint) (*entity.Song, error)
-	GetByArtistIDAndSlug(ctx context.Context, artistID uint, slug string) (*entity.Song, error)
-	List(ctx context.Context, artistID *uint, limit, offset int) ([]*entity.Song, int64, error)
-	ListByArtistID(ctx context.Context, artistID uint) ([]*entity.Song, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*entity.Song, error)
+	GetByArtistIDAndSlug(ctx context.Context, artistID uuid.UUID, slug string) (*entity.Song, error)
+	List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error)
+	ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error)
 	Create(ctx context.Context, s *entity.Song) error
 	Update(ctx context.Context, s *entity.Song) error
 }
@@ -25,7 +26,7 @@ func NewSongRepository(db *gorm.DB) SongRepository {
 	return &songRepo{db: db}
 }
 
-func (r *songRepo) GetByID(ctx context.Context, id uint) (*entity.Song, error) {
+func (r *songRepo) GetByID(ctx context.Context, id uuid.UUID) (*entity.Song, error) {
 	var s entity.Song
 	err := r.db.WithContext(ctx).Preload("Artist").First(&s, id).Error
 	if err != nil {
@@ -37,7 +38,7 @@ func (r *songRepo) GetByID(ctx context.Context, id uint) (*entity.Song, error) {
 	return &s, nil
 }
 
-func (r *songRepo) GetByArtistIDAndSlug(ctx context.Context, artistID uint, slug string) (*entity.Song, error) {
+func (r *songRepo) GetByArtistIDAndSlug(ctx context.Context, artistID uuid.UUID, slug string) (*entity.Song, error) {
 	var s entity.Song
 	err := r.db.WithContext(ctx).Where("artist_id = ? AND slug = ?", artistID, slug).First(&s).Error
 	if err != nil {
@@ -49,7 +50,7 @@ func (r *songRepo) GetByArtistIDAndSlug(ctx context.Context, artistID uint, slug
 	return &s, nil
 }
 
-func (r *songRepo) List(ctx context.Context, artistID *uint, limit, offset int) ([]*entity.Song, int64, error) {
+func (r *songRepo) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
 	q := r.db.WithContext(ctx).Model(&entity.Song{})
 	if artistID != nil {
 		q = q.Where("artist_id = ?", *artistID)
@@ -67,7 +68,7 @@ func (r *songRepo) List(ctx context.Context, artistID *uint, limit, offset int) 
 	return list, total, err
 }
 
-func (r *songRepo) ListByArtistID(ctx context.Context, artistID uint) ([]*entity.Song, error) {
+func (r *songRepo) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error) {
 	var list []*entity.Song
 	err := r.db.WithContext(ctx).Where("artist_id = ?", artistID).Order("title").Find(&list).Error
 	return list, err

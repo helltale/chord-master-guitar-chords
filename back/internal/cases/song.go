@@ -7,6 +7,7 @@ import (
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
+	"github.com/google/uuid"
 )
 
 const semitonesPerOct = 12
@@ -22,11 +23,11 @@ func NewSongCases(artistRepo repository.ArtistRepository, songRepo repository.So
 	return &SongCases{artistRepo: artistRepo, songRepo: songRepo}
 }
 
-func (c *SongCases) ListByArtistID(ctx context.Context, artistID uint) ([]*entity.Song, error) {
+func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error) {
 	return c.songRepo.ListByArtistID(ctx, artistID)
 }
 
-func (c *SongCases) List(ctx context.Context, artistID *uint, limit, offset int) ([]*entity.Song, int64, error) {
+func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
 	// TODO: Think again about whether this is really necessary.
 	// It's as if you want it to be clearly and precisely regulated only during a request.
 	if limit <= 0 {
@@ -38,13 +39,13 @@ func (c *SongCases) List(ctx context.Context, artistID *uint, limit, offset int)
 	return c.songRepo.List(ctx, artistID, limit, offset)
 }
 
-func (c *SongCases) GetByID(ctx context.Context, id uint) (*entity.Song, error) {
+func (c *SongCases) GetByID(ctx context.Context, id uuid.UUID) (*entity.Song, error) {
 	return c.songRepo.GetByID(ctx, id)
 }
 
 func (c *SongCases) Create(
 	ctx context.Context,
-	artistID uint,
+	artistID uuid.UUID,
 	title, slug string,
 	tonality int,
 	content entity.TabContent,
@@ -72,6 +73,7 @@ func (c *SongCases) Create(
 		return nil, ErrDuplicateSong
 	}
 	s := &entity.Song{
+		SongID:   uuid.New(),
 		ArtistID: artistID,
 		Title:    title,
 		Slug:     slug,
@@ -86,7 +88,7 @@ func (c *SongCases) Create(
 
 func (c *SongCases) Update(
 	ctx context.Context,
-	id uint,
+	id uuid.UUID,
 	title, slug *string,
 	tonality *int,
 	content *entity.TabContent,
@@ -125,7 +127,7 @@ func (c *SongCases) Update(
 	return s, nil
 }
 
-func (c *SongCases) Transpose(ctx context.Context, songID uint, semitones int) (*entity.Song, error) {
+func (c *SongCases) Transpose(ctx context.Context, songID uuid.UUID, semitones int) (*entity.Song, error) {
 	s, err := c.songRepo.GetByID(ctx, songID)
 	if err != nil {
 		return nil, err

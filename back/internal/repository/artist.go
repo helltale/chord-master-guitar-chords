@@ -5,13 +5,14 @@ import (
 	"errors"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
 var ErrNotFound = errors.New("not found")
 
 type ArtistRepository interface {
-	GetByID(ctx context.Context, id uint) (*entity.Artist, error)
+	GetByID(ctx context.Context, id uuid.UUID) (*entity.Artist, error)
 	GetBySlug(ctx context.Context, slug string) (*entity.Artist, error)
 	List(ctx context.Context, limit, offset int) ([]*entity.Artist, int64, error)
 	Create(ctx context.Context, a *entity.Artist) error
@@ -26,7 +27,7 @@ func NewArtistRepository(db *gorm.DB) ArtistRepository {
 	return &artistRepo{db: db}
 }
 
-func (r *artistRepo) GetByID(ctx context.Context, id uint) (*entity.Artist, error) {
+func (r *artistRepo) GetByID(ctx context.Context, id uuid.UUID) (*entity.Artist, error) {
 	var a entity.Artist
 	err := r.db.WithContext(ctx).First(&a, id).Error
 	if err != nil {

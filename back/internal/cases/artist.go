@@ -8,6 +8,7 @@ import (
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
+	"github.com/google/uuid"
 )
 
 const maxListLimit = 100
@@ -59,7 +60,7 @@ func (c *ArtistCases) Create(ctx context.Context, name, slug string) (*entity.Ar
 	if existing != nil {
 		return nil, ErrDuplicateArtist
 	}
-	a := &entity.Artist{Name: name, Slug: slug}
+	a := &entity.Artist{ArtistID: uuid.New(), Name: name, Slug: slug}
 	if createErr := c.repo.Create(ctx, a); createErr != nil {
 		return nil, createErr
 	}
