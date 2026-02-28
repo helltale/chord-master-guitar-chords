@@ -1,8 +1,14 @@
 package main
 
 import (
+	"context"
+	"errors"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/config"
@@ -32,11 +38,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("db: %v", err)
 	}
-	defer func() {
-		if closeErr := sqlDB.Close(); closeErr != nil {
-			log.Printf("db close: %v", closeErr)
-		}
-	}()
 
 	artistRepo := repository.NewArtistRepository(gormDB)
 	songRepo := repository.NewSongRepository(gormDB)
@@ -58,8 +59,36 @@ func main() {
 		IdleTimeout:  cfg.Backend.IdleTimeout(),
 	}
 	log.Printf("listening on %s", addr)
-	if serveErr := httpSrv.ListenAndServe(); serveErr != nil {
-		//nolint:gocritic // exitAfterDefer: intentional exit on serve failure
-		log.Fatalf("serve: %v", serveErr)
+
+	serveDone := make(chan error, 1)
+	go func() {
+		serveDone <- httpSrv.ListenAndServe()
+	}()
+
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGINT, syscall.SIGTERM)
+
+	var exitCode int
+	select {
+	case sig := <-sigCh:
+		log.Printf("received %v, shutting down", sig)
+	case err := <-serveDone:
+		if err != nil && !errors.Is(err, http.ErrServerClosed) {
+			log.Printf("serve: %v", err)
+			exitCode = 1
+		}
 	}
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	defer cancel()
+	if shutdownErr := httpSrv.Shutdown(shutdownCtx); shutdownErr != nil {
+		log.Printf("shutdown: %v", shutdownErr)
+		exitCode = 1
+	}
+
+	if closeErr := sqlDB.Close(); closeErr != nil {
+		log.Printf("db close: %v", closeErr)
+		exitCode = 1
+	}
+	os.Exit(exitCode)
 }
