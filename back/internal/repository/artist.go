@@ -2,10 +2,13 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
 	"gorm.io/gorm"
 )
+
+var ErrNotFound = errors.New("not found")
 
 type ArtistRepository interface {
 	GetByID(ctx context.Context, id uint) (*entity.Artist, error)
@@ -27,8 +30,8 @@ func (r *artistRepo) GetByID(ctx context.Context, id uint) (*entity.Artist, erro
 	var a entity.Artist
 	err := r.db.WithContext(ctx).First(&a, id).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}
@@ -39,8 +42,8 @@ func (r *artistRepo) GetBySlug(ctx context.Context, slug string) (*entity.Artist
 	var a entity.Artist
 	err := r.db.WithContext(ctx).Where("slug = ?", slug).First(&a).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}

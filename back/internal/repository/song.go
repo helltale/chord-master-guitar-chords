@@ -2,12 +2,12 @@ package repository
 
 import (
 	"context"
+	"errors"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
 	"gorm.io/gorm"
 )
 
-// SongRepository defines song/tablature data access.
 type SongRepository interface {
 	GetByID(ctx context.Context, id uint) (*entity.Song, error)
 	GetByArtistIDAndSlug(ctx context.Context, artistID uint, slug string) (*entity.Song, error)
@@ -29,8 +29,8 @@ func (r *songRepo) GetByID(ctx context.Context, id uint) (*entity.Song, error) {
 	var s entity.Song
 	err := r.db.WithContext(ctx).Preload("Artist").First(&s, id).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}
@@ -41,8 +41,8 @@ func (r *songRepo) GetByArtistIDAndSlug(ctx context.Context, artistID uint, slug
 	var s entity.Song
 	err := r.db.WithContext(ctx).Where("artist_id = ? AND slug = ?", artistID, slug).First(&s).Error
 	if err != nil {
-		if err == gorm.ErrRecordNotFound {
-			return nil, nil
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, ErrNotFound
 		}
 		return nil, err
 	}

@@ -9,6 +9,10 @@ import (
 	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
 )
 
+const semitonesPerOct = 12
+
+var ErrDuplicateSong = errors.New("song with this slug already exists for this artist")
+
 type SongCases struct {
 	artistRepo repository.ArtistRepository
 	songRepo   repository.SongRepository
@@ -23,11 +27,13 @@ func (c *SongCases) ListByArtistID(ctx context.Context, artistID uint) ([]*entit
 }
 
 func (c *SongCases) List(ctx context.Context, artistID *uint, limit, offset int) ([]*entity.Song, int64, error) {
+	// TODO: Think again about whether this is really necessary.
+	// It's as if you want it to be clearly and precisely regulated only during a request.
 	if limit <= 0 {
 		limit = 20
 	}
-	if limit > 100 {
-		limit = 100
+	if limit > maxListLimit {
+		limit = maxListLimit
 	}
 	return c.songRepo.List(ctx, artistID, limit, offset)
 }
@@ -36,7 +42,13 @@ func (c *SongCases) GetByID(ctx context.Context, id uint) (*entity.Song, error) 
 	return c.songRepo.GetByID(ctx, id)
 }
 
-func (c *SongCases) Create(ctx context.Context, artistID uint, title, slug string, tonality int, content entity.TabContent) (*entity.Song, error) {
+func (c *SongCases) Create(
+	ctx context.Context,
+	artistID uint,
+	title, slug string,
+	tonality int,
+	content entity.TabContent,
+) (*entity.Song, error) {
 	title = strings.TrimSpace(title)
 	slug = strings.TrimSpace(strings.ToLower(slug))
 	if title == "" {
@@ -52,9 +64,12 @@ func (c *SongCases) Create(ctx context.Context, artistID uint, title, slug strin
 	if err != nil {
 		return nil, err
 	}
-	existing, _ := c.songRepo.GetByArtistIDAndSlug(ctx, artistID, slug)
+	existing, errExisting := c.songRepo.GetByArtistIDAndSlug(ctx, artistID, slug)
+	if errExisting != nil && !errors.Is(errExisting, repository.ErrNotFound) {
+		return nil, errExisting
+	}
 	if existing != nil {
-		return nil, errors.New("song with this slug already exists for this artist")
+		return nil, ErrDuplicateSong
 	}
 	s := &entity.Song{
 		ArtistID: artistID,
@@ -63,16 +78,25 @@ func (c *SongCases) Create(ctx context.Context, artistID uint, title, slug strin
 		Tonality: tonality,
 		Content:  content,
 	}
-	if err := c.songRepo.Create(ctx, s); err != nil {
-		return nil, err
+	if createErr := c.songRepo.Create(ctx, s); createErr != nil {
+		return nil, createErr
 	}
 	return s, nil
 }
 
-func (c *SongCases) Update(ctx context.Context, id uint, title, slug *string, tonality *int, content *entity.TabContent) (*entity.Song, error) {
+func (c *SongCases) Update(
+	ctx context.Context,
+	id uint,
+	title, slug *string,
+	tonality *int,
+	content *entity.TabContent,
+) (*entity.Song, error) {
 	s, err := c.songRepo.GetByID(ctx, id)
-	if err != nil || s == nil {
-		return nil, nil
+	if err != nil {
+		return nil, err
+	}
+	if s == nil {
+		return nil, repository.ErrNotFound
 	}
 	if title != nil {
 		s.Title = strings.TrimSpace(*title)
@@ -95,16 +119,19 @@ func (c *SongCases) Update(ctx context.Context, id uint, title, slug *string, to
 	if content != nil {
 		s.Content = *content
 	}
-	if err := c.songRepo.Update(ctx, s); err != nil {
-		return nil, err
+	if updateErr := c.songRepo.Update(ctx, s); updateErr != nil {
+		return nil, updateErr
 	}
 	return s, nil
 }
 
 func (c *SongCases) Transpose(ctx context.Context, songID uint, semitones int) (*entity.Song, error) {
 	s, err := c.songRepo.GetByID(ctx, songID)
-	if err != nil || s == nil {
-		return nil, nil
+	if err != nil {
+		return nil, err
+	}
+	if s == nil {
+		return nil, repository.ErrNotFound
 	}
 	transposed := transposeContent(s.Content, semitones)
 	s.Content = transposed
@@ -118,7 +145,7 @@ func transposeContent(c entity.TabContent, semitones int) entity.TabContent {
 	}
 	out := entity.TabContent{
 		Sections: make([]entity.Section, len(c.Sections)),
-		AsciiTab: c.AsciiTab,
+		ASCIITab: c.ASCIITab,
 	}
 	for i, sec := range c.Sections {
 		out.Sections[i] = entity.Section{
@@ -140,10 +167,9 @@ func transposeContent(c entity.TabContent, semitones int) entity.TabContent {
 	return out
 }
 
-var chordNames = []string{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
-var chordNamesFlat = []string{"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"}
-
 func transposeChord(chord string, semitones int) string {
+	chordNames := []string{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
+	chordNamesFlat := []string{"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"}
 	if chord == "" || semitones == 0 {
 		return chord
 	}
@@ -160,7 +186,7 @@ func transposeChord(chord string, semitones int) string {
 				}
 			}
 			suffix := chord[len(root):]
-			newIdx := (i + semitones%12 + 12) % 12
+			newIdx := (i + semitones%semitonesPerOct + semitonesPerOct) % semitonesPerOct
 			newRoot := chordNames[newIdx]
 			return newRoot + suffix
 		}
