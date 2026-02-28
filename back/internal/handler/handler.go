@@ -85,7 +85,7 @@ func (srv *server) GetArtistBySlug(
 	if a == nil {
 		return gen.GetArtistBySlug404Response{}, nil
 	}
-	songs, err := srv.songCases.ListByArtistID(ctx, a.ID)
+	songs, err := srv.songCases.ListByArtistID(ctx, a.ArtistID)
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +94,7 @@ func (srv *server) GetArtistBySlug(
 		songItems = append(songItems, srv.songToListItem(s))
 	}
 	return gen.GetArtistBySlug200JSONResponse{
-		Id:        int64(a.ID), //nolint:gosec // G115: ID from DB
+		ArtistId:  a.ArtistID,
 		Name:      a.Name,
 		Slug:      a.Slug,
 		CreatedAt: timePtr(a.CreatedAt),
@@ -113,14 +113,7 @@ func (srv *server) ListSongs(
 	if request.Params.Offset != nil {
 		offset = *request.Params.Offset
 	}
-	var artistID *uint
-	if request.Params.ArtistId != nil {
-		// API uses int, DB uses uint; value is bounded by request validation.
-		//nolint:gosec // G115: safe conversion
-		id := uint(*request.Params.ArtistId)
-		artistID = &id
-	}
-	list, total, err := srv.songCases.List(ctx, artistID, limit, offset)
+	list, total, err := srv.songCases.List(ctx, request.Params.ArtistId, limit, offset)
 	if err != nil {
 		return nil, err
 	}
@@ -146,10 +139,9 @@ func (srv *server) CreateSong(
 		tonality = *request.Body.Tonality
 	}
 	content := tabContentFromAPI(request.Body.Content)
-	//nolint:gosec // G115: ArtistId from API is bounded
 	s, err := srv.songCases.Create(
 		ctx,
-		uint(request.Body.ArtistId),
+		request.Body.ArtistId,
 		request.Body.Title,
 		request.Body.Slug,
 		tonality,
@@ -162,8 +154,8 @@ func (srv *server) CreateSong(
 		return nil, err
 	}
 	return gen.CreateSong201JSONResponse{
-		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
-		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
+		SongId:    s.SongID,
+		ArtistId:  ptr(s.ArtistID),
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
@@ -174,10 +166,7 @@ func (srv *server) CreateSong(
 }
 
 func (srv *server) GetSong(ctx context.Context, request gen.GetSongRequestObject) (gen.GetSongResponseObject, error) {
-	if request.SongId <= 0 {
-		return gen.GetSong404Response{}, nil
-	}
-	s, err := srv.songCases.GetByID(ctx, uint(request.SongId))
+	s, err := srv.songCases.GetByID(ctx, request.SongId)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return gen.GetSong404Response{}, nil
@@ -188,8 +177,8 @@ func (srv *server) GetSong(ctx context.Context, request gen.GetSongRequestObject
 		return gen.GetSong404Response{}, nil
 	}
 	return gen.GetSong200JSONResponse{
-		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
-		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
+		SongId:    s.SongID,
+		ArtistId:  ptr(s.ArtistID),
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
@@ -203,9 +192,6 @@ func (srv *server) UpdateSong(
 	ctx context.Context,
 	request gen.UpdateSongRequestObject,
 ) (gen.UpdateSongResponseObject, error) {
-	if request.SongId <= 0 {
-		return gen.UpdateSong404Response{}, nil
-	}
 	var content *entity.TabContent
 	if request.Body != nil && request.Body.Content != nil {
 		c := tabContentFromAPI(request.Body.Content)
@@ -218,7 +204,7 @@ func (srv *server) UpdateSong(
 		slug = request.Body.Slug
 		tonality = request.Body.Tonality
 	}
-	s, err := srv.songCases.Update(ctx, uint(request.SongId), title, slug, tonality, content)
+	s, err := srv.songCases.Update(ctx, request.SongId, title, slug, tonality, content)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return gen.UpdateSong404Response{}, nil
@@ -229,8 +215,8 @@ func (srv *server) UpdateSong(
 		return gen.UpdateSong404Response{}, nil
 	}
 	return gen.UpdateSong200JSONResponse{
-		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
-		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
+		SongId:    s.SongID,
+		ArtistId:  ptr(s.ArtistID),
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
@@ -244,10 +230,7 @@ func (srv *server) TransposeSong(
 	ctx context.Context,
 	request gen.TransposeSongRequestObject,
 ) (gen.TransposeSongResponseObject, error) {
-	if request.SongId <= 0 {
-		return gen.TransposeSong404Response{}, nil
-	}
-	s, err := srv.songCases.Transpose(ctx, uint(request.SongId), request.Params.Semitones)
+	s, err := srv.songCases.Transpose(ctx, request.SongId, request.Params.Semitones)
 	if err != nil {
 		if errors.Is(err, repository.ErrNotFound) {
 			return gen.TransposeSong404Response{}, nil
@@ -258,8 +241,8 @@ func (srv *server) TransposeSong(
 		return gen.TransposeSong404Response{}, nil
 	}
 	return gen.TransposeSong200JSONResponse{
-		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
-		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
+		SongId:    s.SongID,
+		ArtistId:  ptr(s.ArtistID),
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
@@ -275,7 +258,7 @@ func timePtr(t time.Time) *time.Time { return &t }
 
 func (srv *server) artistToAPI(a *entity.Artist) gen.Artist {
 	return gen.Artist{
-		Id:        int64(a.ID), //nolint:gosec // G115: ID from DB
+		ArtistId:  a.ArtistID,
 		Name:      a.Name,
 		Slug:      a.Slug,
 		CreatedAt: timePtr(a.CreatedAt),
@@ -284,10 +267,10 @@ func (srv *server) artistToAPI(a *entity.Artist) gen.Artist {
 
 func (srv *server) songToListItem(s *entity.Song) gen.SongListItem {
 	return gen.SongListItem{
-		Id:       int64(s.ID), //nolint:gosec // G115: ID from DB
+		SongId:   s.SongID,
 		Title:    s.Title,
 		Slug:     s.Slug,
-		ArtistId: ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
+		ArtistId: ptr(s.ArtistID),
 		Tonality: ptr(s.Tonality),
 	}
 }
