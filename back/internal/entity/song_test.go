@@ -1,4 +1,4 @@
-package entity
+package entity //nolint:testpackage // тесты методов типов и экспортируемых функций
 
 import (
 	"encoding/json"
@@ -49,31 +49,36 @@ func TestBlock_UnmarshalJSON(t *testing.T) {
 			if tt.wantErr {
 				return
 			}
-			if b.Kind != tt.want.Kind {
-				t.Errorf("Kind = %q, want %q", b.Kind, tt.want.Kind)
-			}
-			if b.Label != tt.want.Label {
-				t.Errorf("Label = %q, want %q", b.Label, tt.want.Label)
-			}
-			if len(b.Chords) != len(tt.want.Chords) {
-				t.Errorf("Chords length = %d, want %d", len(b.Chords), len(tt.want.Chords))
-			} else {
-				for i := range tt.want.Chords {
-					if b.Chords[i] != tt.want.Chords[i] {
-						t.Errorf("Chords[%d] = %q, want %q", i, b.Chords[i], tt.want.Chords[i])
-					}
-				}
-			}
-			if len(b.Segments) != len(tt.want.Segments) {
-				t.Errorf("Segments length = %d, want %d", len(b.Segments), len(tt.want.Segments))
-			} else {
-				for i := range tt.want.Segments {
-					if b.Segments[i].Chord != tt.want.Segments[i].Chord || b.Segments[i].Text != tt.want.Segments[i].Text {
-						t.Errorf("Segments[%d] = %+v, want %+v", i, b.Segments[i], tt.want.Segments[i])
-					}
-				}
-			}
+			assertBlockEqual(t, b, tt.want)
 		})
+	}
+}
+
+func assertBlockEqual(t *testing.T, b, want Block) {
+	t.Helper()
+	if b.Kind != want.Kind {
+		t.Errorf("Kind = %q, want %q", b.Kind, want.Kind)
+	}
+	if b.Label != want.Label {
+		t.Errorf("Label = %q, want %q", b.Label, want.Label)
+	}
+	if len(b.Chords) != len(want.Chords) {
+		t.Errorf("Chords length = %d, want %d", len(b.Chords), len(want.Chords))
+	} else {
+		for i := range want.Chords {
+			if b.Chords[i] != want.Chords[i] {
+				t.Errorf("Chords[%d] = %q, want %q", i, b.Chords[i], want.Chords[i])
+			}
+		}
+	}
+	if len(b.Segments) != len(want.Segments) {
+		t.Errorf("Segments length = %d, want %d", len(b.Segments), len(want.Segments))
+	} else {
+		for i := range want.Segments {
+			if b.Segments[i].Chord != want.Segments[i].Chord || b.Segments[i].Text != want.Segments[i].Text {
+				t.Errorf("Segments[%d] = %+v, want %+v", i, b.Segments[i], want.Segments[i])
+			}
+		}
 	}
 }
 
@@ -83,7 +88,16 @@ func TestTabContent_Value(t *testing.T) {
 		c    TabContent
 	}{
 		{"empty", TabContent{}},
-		{"with sections", TabContent{Sections: []Section{{Type: "verse", Label: "1", ChordSequence: []string{"C"}, Blocks: nil}}}},
+		{
+			"with sections",
+			TabContent{
+				Sections: []Section{{
+					Type: "verse", Label: "1",
+					ChordSequence: []string{"C"},
+					Blocks:        nil,
+				}},
+			},
+		},
 		{"with chord_tabs", TabContent{ChordTabs: map[string]string{"C": "x32010"}}},
 	}
 	for _, tt := range tests {
@@ -102,15 +116,17 @@ func TestTabContent_Value(t *testing.T) {
 				return
 			}
 			var decoded TabContent
-			if err := json.Unmarshal(b, &decoded); err != nil {
-				t.Errorf("Value() produced invalid JSON: %v", err)
+			if decodeErr := json.Unmarshal(b, &decoded); decodeErr != nil {
+				t.Errorf("Value() produced invalid JSON: %v", decodeErr)
 			}
 		})
 	}
 }
 
 func TestTabContent_Scan(t *testing.T) {
-	validJSON := []byte(`{"sections":[{"type":"verse","label":"1","chord_sequence":["C"],"blocks":[]}],"chord_tabs":{}}`)
+	validJSON := []byte(
+		`{"sections":[{"type":"verse","label":"1","chord_sequence":["C"],"blocks":[]}],"chord_tabs":{}}`,
+	)
 	tests := []struct {
 		name    string
 		value   any

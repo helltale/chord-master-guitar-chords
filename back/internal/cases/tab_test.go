@@ -1,4 +1,4 @@
-package cases
+package cases //nolint:testpackage // тесты только экспортируемого API (UsedChords, UsedChordTabs)
 
 import (
 	"testing"
@@ -45,7 +45,13 @@ func TestUsedChords(t *testing.T) {
 				Sections: []entity.Section{
 					{
 						Blocks: []entity.Block{
-							{Kind: "lyrics", Segments: []entity.ChordSegment{{Chord: "F", Text: "hello"}, {Chord: "G", Text: "world"}}},
+							{
+								Kind: "lyrics",
+								Segments: []entity.ChordSegment{
+									{Chord: "F", Text: "hello"},
+									{Chord: "G", Text: "world"},
+								},
+							},
 						},
 					},
 				},
@@ -116,7 +122,9 @@ func TestUsedChordTabs(t *testing.T) {
 		{
 			name: "nil chord_tabs",
 			content: entity.TabContent{
-				Sections: []entity.Section{{ChordSequence: []string{"C"}}},
+				Sections: []entity.Section{
+					{ChordSequence: []string{"C"}},
+				},
 				ChordTabs: nil,
 			},
 			want: map[string]string{},

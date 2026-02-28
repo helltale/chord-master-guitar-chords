@@ -1,4 +1,4 @@
-package cases
+package cases //nolint:testpackage // нужен доступ к &SongCases{songRepo} для Update/Transpose/Search
 
 import (
 	"context"
@@ -32,7 +32,7 @@ func TestSongCases_Create(t *testing.T) {
 			artistID: artistID,
 			title:    "",
 			slug:     "my-song",
-			setupMocks: func(ar *testdata.MockArtistRepository, sr *testdata.MockSongRepository) {
+			setupMocks: func(_ *testdata.MockArtistRepository, _ *testdata.MockSongRepository) {
 				// no repo calls
 			},
 			wantErr: true,
@@ -43,7 +43,7 @@ func TestSongCases_Create(t *testing.T) {
 			artistID: artistID,
 			title:    "My Song",
 			slug:     "",
-			setupMocks: func(ar *testdata.MockArtistRepository, sr *testdata.MockSongRepository) {
+			setupMocks: func(_ *testdata.MockArtistRepository, _ *testdata.MockSongRepository) {
 				// no repo calls
 			},
 			wantErr: true,
@@ -53,7 +53,7 @@ func TestSongCases_Create(t *testing.T) {
 			artistID:   artistID,
 			title:      "My Song",
 			slug:       "my song!",
-			setupMocks: func(ar *testdata.MockArtistRepository, sr *testdata.MockSongRepository) {},
+			setupMocks: func(_ *testdata.MockArtistRepository, _ *testdata.MockSongRepository) {},
 			wantErr:    true,
 		},
 		{
@@ -61,7 +61,7 @@ func TestSongCases_Create(t *testing.T) {
 			artistID: artistID,
 			title:    "My Song",
 			slug:     "my-song",
-			setupMocks: func(ar *testdata.MockArtistRepository, sr *testdata.MockSongRepository) {
+			setupMocks: func(ar *testdata.MockArtistRepository, _ *testdata.MockSongRepository) {
 				ar.EXPECT().GetByID(gomock.Any(), artistID).Return(nil, repository.ErrNotFound)
 			},
 			wantErr: true,
@@ -72,8 +72,10 @@ func TestSongCases_Create(t *testing.T) {
 			title:    "My Song",
 			slug:     "my-song",
 			setupMocks: func(ar *testdata.MockArtistRepository, sr *testdata.MockSongRepository) {
-				ar.EXPECT().GetByID(gomock.Any(), artistID).Return(&entity.Artist{ArtistID: artistID, Name: "A", Slug: "a"}, nil)
-				sr.EXPECT().GetByArtistIDAndSlug(gomock.Any(), artistID, "my-song").Return(&entity.Song{}, nil)
+				ar.EXPECT().GetByID(gomock.Any(), artistID).
+					Return(&entity.Artist{ArtistID: artistID, Name: "A", Slug: "a"}, nil)
+				sr.EXPECT().GetByArtistIDAndSlug(gomock.Any(), artistID, "my-song").
+					Return(&entity.Song{}, nil)
 			},
 			wantErr: true,
 			errIs:   ErrDuplicateSong,
@@ -85,14 +87,17 @@ func TestSongCases_Create(t *testing.T) {
 			slug:     "my-song",
 			tonality: 2,
 			setupMocks: func(ar *testdata.MockArtistRepository, sr *testdata.MockSongRepository) {
-				ar.EXPECT().GetByID(gomock.Any(), artistID).Return(&entity.Artist{ArtistID: artistID, Name: "A", Slug: "a"}, nil)
-				sr.EXPECT().GetByArtistIDAndSlug(gomock.Any(), artistID, "my-song").Return(nil, repository.ErrNotFound)
-				sr.EXPECT().Create(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, s *entity.Song) error {
-					if s.Title != "My Song" || s.Slug != "my-song" || s.Tonality != 2 {
-						t.Errorf("Create called with wrong song: %+v", s)
-					}
-					return nil
-				})
+				ar.EXPECT().GetByID(gomock.Any(), artistID).
+					Return(&entity.Artist{ArtistID: artistID, Name: "A", Slug: "a"}, nil)
+				sr.EXPECT().GetByArtistIDAndSlug(gomock.Any(), artistID, "my-song").
+					Return(nil, repository.ErrNotFound)
+				sr.EXPECT().Create(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, s *entity.Song) error {
+						if s.Title != "My Song" || s.Slug != "my-song" || s.Tonality != 2 {
+							t.Errorf("Create called with wrong song: %+v", s)
+						}
+						return nil
+					})
 			},
 			wantErr: false,
 		},
@@ -149,7 +154,8 @@ func TestSongCases_Update(t *testing.T) {
 			id:    songID,
 			title: strPtr("   "),
 			setupMocks: func(sr *testdata.MockSongRepository) {
-				sr.EXPECT().GetByID(gomock.Any(), songID).Return(&entity.Song{SongID: songID, Title: "Old", Slug: "old"}, nil)
+				oldSong := &entity.Song{SongID: songID, Title: "Old", Slug: "old"}
+				sr.EXPECT().GetByID(gomock.Any(), songID).Return(oldSong, nil)
 			},
 			wantErr: true,
 		},
@@ -158,7 +164,8 @@ func TestSongCases_Update(t *testing.T) {
 			id:   songID,
 			slug: strPtr(""),
 			setupMocks: func(sr *testdata.MockSongRepository) {
-				sr.EXPECT().GetByID(gomock.Any(), songID).Return(&entity.Song{SongID: songID, Title: "Old", Slug: "old"}, nil)
+				oldSong := &entity.Song{SongID: songID, Title: "Old", Slug: "old"}
+				sr.EXPECT().GetByID(gomock.Any(), songID).Return(oldSong, nil)
 			},
 			wantErr: true,
 		},
@@ -167,7 +174,8 @@ func TestSongCases_Update(t *testing.T) {
 			id:   songID,
 			slug: strPtr("bad slug!"),
 			setupMocks: func(sr *testdata.MockSongRepository) {
-				sr.EXPECT().GetByID(gomock.Any(), songID).Return(&entity.Song{SongID: songID, Title: "Old", Slug: "old"}, nil)
+				oldSong := &entity.Song{SongID: songID, Title: "Old", Slug: "old"}
+				sr.EXPECT().GetByID(gomock.Any(), songID).Return(oldSong, nil)
 			},
 			wantErr: true,
 		},
@@ -178,12 +186,13 @@ func TestSongCases_Update(t *testing.T) {
 			setupMocks: func(sr *testdata.MockSongRepository) {
 				s := &entity.Song{SongID: songID, Title: "Old", Slug: "old"}
 				sr.EXPECT().GetByID(gomock.Any(), songID).Return(s, nil)
-				sr.EXPECT().Update(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, s *entity.Song) error {
-					if s.Title != "New Title" {
-						t.Errorf("Update title = %q, want New Title", s.Title)
-					}
-					return nil
-				})
+				sr.EXPECT().Update(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, s *entity.Song) error {
+						if s.Title != "New Title" {
+							t.Errorf("Update title = %q, want New Title", s.Title)
+						}
+						return nil
+					})
 			},
 			wantErr: false,
 		},

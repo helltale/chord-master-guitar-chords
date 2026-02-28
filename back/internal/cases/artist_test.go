@@ -1,4 +1,4 @@
-package cases
+package cases //nolint:testpackage // table tests с единой сигнатурой setupMocks
 
 import (
 	"context"
@@ -26,7 +26,7 @@ func TestArtistCases_Create(t *testing.T) {
 			name:   "empty name",
 			nameIn: "",
 			slugIn: "artist",
-			setupMocks: func(ar *testdata.MockArtistRepository) {
+			setupMocks: func(_ *testdata.MockArtistRepository) {
 				// no calls
 			},
 			wantErr: true,
@@ -35,14 +35,14 @@ func TestArtistCases_Create(t *testing.T) {
 			name:       "empty slug",
 			nameIn:     "Artist",
 			slugIn:     "",
-			setupMocks: func(ar *testdata.MockArtistRepository) {},
+			setupMocks: func(_ *testdata.MockArtistRepository) {},
 			wantErr:    true,
 		},
 		{
 			name:       "invalid slug",
 			nameIn:     "Artist",
 			slugIn:     "bad slug!",
-			setupMocks: func(ar *testdata.MockArtistRepository) {},
+			setupMocks: func(_ *testdata.MockArtistRepository) {},
 			wantErr:    true,
 		},
 		{
@@ -65,12 +65,13 @@ func TestArtistCases_Create(t *testing.T) {
 			slugIn: "new-artist",
 			setupMocks: func(ar *testdata.MockArtistRepository) {
 				ar.EXPECT().GetBySlug(gomock.Any(), "new-artist").Return(nil, nil)
-				ar.EXPECT().Create(gomock.Any(), gomock.Any()).DoAndReturn(func(_ context.Context, a *entity.Artist) error {
-					if a.Name != "New Artist" || a.Slug != "new-artist" {
-						t.Errorf("Create artist = %+v", a)
-					}
-					return nil
-				})
+				ar.EXPECT().Create(gomock.Any(), gomock.Any()).
+					DoAndReturn(func(_ context.Context, a *entity.Artist) error {
+						if a.Name != "New Artist" || a.Slug != "new-artist" {
+							t.Errorf("Create artist = %+v", a)
+						}
+						return nil
+					})
 			},
 			wantErr: false,
 		},

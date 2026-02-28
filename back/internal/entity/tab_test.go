@@ -1,4 +1,4 @@
-package entity
+package entity //nolint:testpackage // тесты экспортируемых функций
 
 import (
 	"testing"
@@ -46,8 +46,8 @@ func TestTransposeChord(t *testing.T) {
 		{"C - 1", "C", -1, "B"},
 		{"C - 2", "C", -2, "A#"},
 		{"Am + 2", "Am", 2, "Bm"},
-		{"F#m + 1 (root F suffix #m)", "F#m", 1, "F##m"}, // implementation parses as F + #m
-		{"Bb + 2 (suffix preserved)", "Bb", 2, "C#b"}, // root becomes C, suffix "b" kept
+		{"F#m + 1 (root F suffix #m)", "F#m", 1, "F##m"},
+		{"Bb + 2 (suffix preserved)", "Bb", 2, "C#b"},
 		{"Eb - 1 (suffix preserved)", "Eb", -1, "D#b"},
 		{"G7 + 5", "G7", 5, "C7"},
 		{"unknown root unchanged", "X", 2, "X"},
