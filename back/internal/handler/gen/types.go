@@ -9,6 +9,24 @@ import (
 	openapi_types "github.com/oapi-codegen/runtime/types"
 )
 
+// Defines values for BlockKind.
+const (
+	Instrumental BlockKind = "instrumental"
+	Lyrics       BlockKind = "lyrics"
+)
+
+// Valid indicates whether the value is a known member of the BlockKind enum.
+func (e BlockKind) Valid() bool {
+	switch e {
+	case Instrumental:
+		return true
+	case Lyrics:
+		return true
+	default:
+		return false
+	}
+}
+
 // Artist defines model for Artist.
 type Artist struct {
 	ArtistId  openapi_types.UUID `json:"artist_id"`
@@ -34,8 +52,29 @@ type ArtistWithSongs struct {
 
 // Block defines model for Block.
 type Block struct {
-	Chord  *string `json:"chord,omitempty"`
-	Lyrics *string `json:"lyrics,omitempty"`
+	// Chords Only for kind=instrumental; sequence of chords
+	Chords *[]string `json:"chords,omitempty"`
+	Kind   BlockKind `json:"kind"`
+
+	// Label Optional label for instrumental blocks (e.g. Intro, Proigrysh)
+	Label *string `json:"label,omitempty"`
+
+	// Segments Only for kind=lyrics; chord at segment start = switch point; text may be empty
+	Segments *[]ChordSegment `json:"segments,omitempty"`
+
+	// Tab Only for kind=instrumental; optional ASCII tab snippet
+	Tab *string `json:"tab,omitempty"`
+}
+
+// BlockKind defines model for Block.Kind.
+type BlockKind string
+
+// ChordSegment defines model for ChordSegment.
+type ChordSegment struct {
+	Chord string `json:"chord"`
+
+	// Text Lyrics fragment; empty string allowed (chord with no words)
+	Text *string `json:"text,omitempty"`
 }
 
 // CreateArtistRequest defines model for CreateArtistRequest.

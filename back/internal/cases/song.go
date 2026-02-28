@@ -152,9 +152,30 @@ func transposeContent(c entity.TabContent, semitones int) entity.TabContent {
 			out.Sections[i].ChordSequence[j] = transposeChord(ch, semitones)
 		}
 		for j, bl := range sec.Blocks {
-			out.Sections[i].Blocks[j] = entity.Block{
-				Chord:  transposeChord(bl.Chord, semitones),
-				Lyrics: bl.Lyrics,
+			out.Sections[i].Blocks[j] = transposeBlock(bl, semitones)
+		}
+	}
+	return out
+}
+
+func transposeBlock(bl entity.Block, semitones int) entity.Block {
+	out := entity.Block{Kind: bl.Kind, Label: bl.Label, Tab: bl.Tab}
+	switch bl.Kind {
+	case "instrumental":
+		if len(bl.Chords) > 0 {
+			out.Chords = make([]string, len(bl.Chords))
+			for k, ch := range bl.Chords {
+				out.Chords[k] = transposeChord(ch, semitones)
+			}
+		}
+	case "lyrics":
+		if len(bl.Segments) > 0 {
+			out.Segments = make([]entity.ChordSegment, len(bl.Segments))
+			for k, seg := range bl.Segments {
+				out.Segments[k] = entity.ChordSegment{
+					Chord: transposeChord(seg.Chord, semitones),
+					Text:  seg.Text,
+				}
 			}
 		}
 	}

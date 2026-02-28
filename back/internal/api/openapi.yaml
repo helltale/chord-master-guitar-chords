@@ -324,13 +324,43 @@ components:
           items:
             $ref: '#/components/schemas/Block'
 
-    Block:
+    ChordSegment:
       type: object
+      required:
+        - chord
       properties:
         chord:
           type: string
-        lyrics:
+        text:
           type: string
+          description: "Lyrics fragment; empty string allowed (chord with no words)"
+
+    Block:
+      type: object
+      required:
+        - kind
+      properties:
+        kind:
+          type: string
+          enum:
+            - instrumental
+            - lyrics
+        label:
+          type: string
+          description: "Optional label for instrumental blocks (e.g. Intro, Proigrysh)"
+        chords:
+          type: array
+          items:
+            type: string
+          description: "Only for kind=instrumental; sequence of chords"
+        tab:
+          type: string
+          description: "Only for kind=instrumental; optional ASCII tab snippet"
+        segments:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChordSegment'
+          description: "Only for kind=lyrics; chord at segment start = switch point; text may be empty"
 
     CreateSongRequest:
       type: object

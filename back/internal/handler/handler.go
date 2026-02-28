@@ -303,7 +303,7 @@ func section(s entity.Section) gen.Section {
 	if len(s.Blocks) > 0 {
 		list := make([]gen.Block, 0, len(s.Blocks))
 		for _, b := range s.Blocks {
-			list = append(list, gen.Block{Chord: ptr(b.Chord), Lyrics: ptr(b.Lyrics)})
+			list = append(list, blockToGen(b))
 		}
 		blocks = &list
 	}
@@ -313,6 +313,33 @@ func section(s entity.Section) gen.Section {
 		ChordSequence: chordSeq,
 		Blocks:        blocks,
 	}
+}
+
+func blockToGen(b entity.Block) gen.Block {
+	out := gen.Block{Kind: gen.BlockKind(b.Kind)}
+	if b.Label != "" {
+		out.Label = ptr(b.Label)
+	}
+	if len(b.Chords) > 0 {
+		out.Chords = &b.Chords
+	}
+	if b.Tab != "" {
+		out.Tab = ptr(b.Tab)
+	}
+	if len(b.Segments) > 0 {
+		list := make([]gen.ChordSegment, 0, len(b.Segments))
+		for _, seg := range b.Segments {
+			list = append(list, chordSegmentToGen(seg))
+		}
+		out.Segments = &list
+	}
+	return out
+}
+
+func chordSegmentToGen(s entity.ChordSegment) gen.ChordSegment {
+	out := gen.ChordSegment{Chord: s.Chord}
+	out.Text = ptr(s.Text)
+	return out
 }
 
 func tabContentFromAPI(c *gen.TabContent) entity.TabContent {
@@ -356,12 +383,29 @@ func sectionFromAPI(s gen.Section) entity.Section {
 }
 
 func blockFromAPI(b gen.Block) entity.Block {
-	out := entity.Block{}
-	if b.Chord != nil {
-		out.Chord = *b.Chord
+	out := entity.Block{Kind: string(b.Kind)}
+	if b.Label != nil {
+		out.Label = *b.Label
 	}
-	if b.Lyrics != nil {
-		out.Lyrics = *b.Lyrics
+	if b.Chords != nil {
+		out.Chords = *b.Chords
+	}
+	if b.Tab != nil {
+		out.Tab = *b.Tab
+	}
+	if b.Segments != nil {
+		out.Segments = make([]entity.ChordSegment, 0, len(*b.Segments))
+		for _, seg := range *b.Segments {
+			out.Segments = append(out.Segments, chordSegmentFromAPI(seg))
+		}
+	}
+	return out
+}
+
+func chordSegmentFromAPI(s gen.ChordSegment) entity.ChordSegment {
+	out := entity.ChordSegment{Chord: s.Chord}
+	if s.Text != nil {
+		out.Text = *s.Text
 	}
 	return out
 }
