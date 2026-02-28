@@ -28,14 +28,6 @@ func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*
 }
 
 func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
-	// TODO: Think again about whether this is really necessary.
-	// It's as if you want it to be clearly and precisely regulated only during a request.
-	if limit <= 0 {
-		limit = 20
-	}
-	if limit > maxListLimit {
-		limit = maxListLimit
-	}
 	return c.songRepo.List(ctx, artistID, limit, offset)
 }
 
@@ -160,9 +152,30 @@ func transposeContent(c entity.TabContent, semitones int) entity.TabContent {
 			out.Sections[i].ChordSequence[j] = transposeChord(ch, semitones)
 		}
 		for j, bl := range sec.Blocks {
-			out.Sections[i].Blocks[j] = entity.Block{
-				Chord:  transposeChord(bl.Chord, semitones),
-				Lyrics: bl.Lyrics,
+			out.Sections[i].Blocks[j] = transposeBlock(bl, semitones)
+		}
+	}
+	return out
+}
+
+func transposeBlock(bl entity.Block, semitones int) entity.Block {
+	out := entity.Block{Kind: bl.Kind, Label: bl.Label, Tab: bl.Tab}
+	switch bl.Kind {
+	case "instrumental":
+		if len(bl.Chords) > 0 {
+			out.Chords = make([]string, len(bl.Chords))
+			for k, ch := range bl.Chords {
+				out.Chords[k] = transposeChord(ch, semitones)
+			}
+		}
+	case "lyrics":
+		if len(bl.Segments) > 0 {
+			out.Segments = make([]entity.ChordSegment, len(bl.Segments))
+			for k, seg := range bl.Segments {
+				out.Segments[k] = entity.ChordSegment{
+					Chord: transposeChord(seg.Chord, semitones),
+					Text:  seg.Text,
+				}
 			}
 		}
 	}
