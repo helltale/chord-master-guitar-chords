@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"maps"
 	"time"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
@@ -122,6 +123,31 @@ func (srv *server) ListSongs(
 		items = append(items, srv.songToListItem(s))
 	}
 	return gen.ListSongs200JSONResponse{
+		Items: &items,
+		Total: ptr(int(total)),
+	}, nil
+}
+
+func (srv *server) Search(
+	ctx context.Context,
+	request gen.SearchRequestObject,
+) (gen.SearchResponseObject, error) {
+	limit, offset := 20, 0
+	if request.Params.Limit != nil {
+		limit = *request.Params.Limit
+	}
+	if request.Params.Offset != nil {
+		offset = *request.Params.Offset
+	}
+	list, total, err := srv.songCases.Search(ctx, request.Params.Q, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	items := make([]gen.SongListItem, 0, len(list))
+	for _, s := range list {
+		items = append(items, srv.songToListItem(s))
+	}
+	return gen.Search200JSONResponse{
 		Items: &items,
 		Total: ptr(int(total)),
 	}, nil
@@ -287,11 +313,12 @@ func tabContentToGen(c *entity.TabContent) *gen.TabContent {
 		}
 		sections = &list
 	}
-	var asciiTab *string
-	if c.ASCIITab != "" {
-		asciiTab = &c.ASCIITab
+	usedTabs := cases.UsedChordTabs(*c)
+	var chordTabs *map[string]string
+	if len(usedTabs) > 0 {
+		chordTabs = &usedTabs
 	}
-	return &gen.TabContent{Sections: sections, AsciiTab: asciiTab}
+	return &gen.TabContent{Sections: sections, ChordTabs: chordTabs}
 }
 
 func section(s entity.Section) gen.Section {
@@ -354,8 +381,9 @@ func tabContentFromAPI(c *gen.TabContent) entity.TabContent {
 		}
 	}
 	out := entity.TabContent{Sections: sections}
-	if c.AsciiTab != nil {
-		out.ASCIITab = *c.AsciiTab
+	if c.ChordTabs != nil && len(*c.ChordTabs) > 0 {
+		out.ChordTabs = make(map[string]string, len(*c.ChordTabs))
+		maps.Copy(out.ChordTabs, *c.ChordTabs)
 	}
 	return out
 }

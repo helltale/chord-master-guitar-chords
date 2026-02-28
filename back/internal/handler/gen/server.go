@@ -26,6 +26,9 @@ type ServerInterface interface {
 	// Get artist by slug
 	// (GET /artists/{artistSlug})
 	GetArtistBySlug(w http.ResponseWriter, r *http.Request, artistSlug string)
+	// Search songs by artist name/slug or song title
+	// (GET /search)
+	Search(w http.ResponseWriter, r *http.Request, params SearchParams)
 	// List songs
 	// (GET /songs)
 	ListSongs(w http.ResponseWriter, r *http.Request, params ListSongsParams)
@@ -62,6 +65,12 @@ func (_ Unimplemented) CreateArtist(w http.ResponseWriter, r *http.Request) {
 // Get artist by slug
 // (GET /artists/{artistSlug})
 func (_ Unimplemented) GetArtistBySlug(w http.ResponseWriter, r *http.Request, artistSlug string) {
+	w.WriteHeader(http.StatusNotImplemented)
+}
+
+// Search songs by artist name/slug or song title
+// (GET /search)
+func (_ Unimplemented) Search(w http.ResponseWriter, r *http.Request, params SearchParams) {
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
@@ -169,6 +178,56 @@ func (siw *ServerInterfaceWrapper) GetArtistBySlug(w http.ResponseWriter, r *htt
 
 	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		siw.Handler.GetArtistBySlug(w, r, artistSlug)
+	}))
+
+	for _, middleware := range siw.HandlerMiddlewares {
+		handler = middleware(handler)
+	}
+
+	handler.ServeHTTP(w, r)
+}
+
+// Search operation middleware
+func (siw *ServerInterfaceWrapper) Search(w http.ResponseWriter, r *http.Request) {
+
+	var err error
+
+	// Parameter object where we will unmarshal all parameters from the context
+	var params SearchParams
+
+	// ------------- Required query parameter "q" -------------
+
+	if paramValue := r.URL.Query().Get("q"); paramValue != "" {
+
+	} else {
+		siw.ErrorHandlerFunc(w, r, &RequiredParamError{ParamName: "q"})
+		return
+	}
+
+	err = runtime.BindQueryParameterWithOptions("form", true, true, "q", r.URL.Query(), &params.Q, runtime.BindQueryParameterOptions{Type: "string", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "q", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "limit" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "limit", r.URL.Query(), &params.Limit, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "limit", Err: err})
+		return
+	}
+
+	// ------------- Optional query parameter "offset" -------------
+
+	err = runtime.BindQueryParameterWithOptions("form", true, false, "offset", r.URL.Query(), &params.Offset, runtime.BindQueryParameterOptions{Type: "integer", Format: ""})
+	if err != nil {
+		siw.ErrorHandlerFunc(w, r, &InvalidParamFormatError{ParamName: "offset", Err: err})
+		return
+	}
+
+	handler := http.Handler(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		siw.Handler.Search(w, r, params)
 	}))
 
 	for _, middleware := range siw.HandlerMiddlewares {
@@ -451,6 +510,9 @@ func HandlerWithOptions(si ServerInterface, options ChiServerOptions) http.Handl
 		r.Get(options.BaseURL+"/artists/{artistSlug}", wrapper.GetArtistBySlug)
 	})
 	r.Group(func(r chi.Router) {
+		r.Get(options.BaseURL+"/search", wrapper.Search)
+	})
+	r.Group(func(r chi.Router) {
 		r.Get(options.BaseURL+"/songs", wrapper.ListSongs)
 	})
 	r.Group(func(r chi.Router) {
@@ -534,6 +596,23 @@ type GetArtistBySlug404Response struct {
 func (response GetArtistBySlug404Response) VisitGetArtistBySlugResponse(w http.ResponseWriter) error {
 	w.WriteHeader(404)
 	return nil
+}
+
+type SearchRequestObject struct {
+	Params SearchParams
+}
+
+type SearchResponseObject interface {
+	VisitSearchResponse(w http.ResponseWriter) error
+}
+
+type Search200JSONResponse SongList
+
+func (response Search200JSONResponse) VisitSearchResponse(w http.ResponseWriter) error {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(200)
+
+	return json.NewEncoder(w).Encode(response)
 }
 
 type ListSongsRequestObject struct {
@@ -674,6 +753,9 @@ type StrictServerInterface interface {
 	// Get artist by slug
 	// (GET /artists/{artistSlug})
 	GetArtistBySlug(ctx context.Context, request GetArtistBySlugRequestObject) (GetArtistBySlugResponseObject, error)
+	// Search songs by artist name/slug or song title
+	// (GET /search)
+	Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error)
 	// List songs
 	// (GET /songs)
 	ListSongs(ctx context.Context, request ListSongsRequestObject) (ListSongsResponseObject, error)
@@ -796,6 +878,32 @@ func (sh *strictHandler) GetArtistBySlug(w http.ResponseWriter, r *http.Request,
 		sh.options.ResponseErrorHandlerFunc(w, r, err)
 	} else if validResponse, ok := response.(GetArtistBySlugResponseObject); ok {
 		if err := validResponse.VisitGetArtistBySlugResponse(w); err != nil {
+			sh.options.ResponseErrorHandlerFunc(w, r, err)
+		}
+	} else if response != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, fmt.Errorf("unexpected response type: %T", response))
+	}
+}
+
+// Search operation middleware
+func (sh *strictHandler) Search(w http.ResponseWriter, r *http.Request, params SearchParams) {
+	var request SearchRequestObject
+
+	request.Params = params
+
+	handler := func(ctx context.Context, w http.ResponseWriter, r *http.Request, request interface{}) (interface{}, error) {
+		return sh.ssi.Search(ctx, request.(SearchRequestObject))
+	}
+	for _, middleware := range sh.middlewares {
+		handler = middleware(handler, "Search")
+	}
+
+	response, err := handler(r.Context(), w, r, request)
+
+	if err != nil {
+		sh.options.ResponseErrorHandlerFunc(w, r, err)
+	} else if validResponse, ok := response.(SearchResponseObject); ok {
+		if err := validResponse.VisitSearchResponse(w); err != nil {
 			sh.options.ResponseErrorHandlerFunc(w, r, err)
 		}
 	} else if response != nil {

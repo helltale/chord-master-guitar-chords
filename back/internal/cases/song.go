@@ -10,8 +10,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const semitonesPerOct = 12
-
 var ErrDuplicateSong = errors.New("song with this slug already exists for this artist")
 
 type SongCases struct {
@@ -25,6 +23,14 @@ func NewSongCases(artistRepo repository.ArtistRepository, songRepo repository.So
 
 func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error) {
 	return c.songRepo.ListByArtistID(ctx, artistID)
+}
+
+func (c *SongCases) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Song, int64, error) {
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return nil, 0, nil
+	}
+	return c.songRepo.Search(ctx, query, limit, offset)
 }
 
 func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
@@ -138,8 +144,8 @@ func transposeContent(c entity.TabContent, semitones int) entity.TabContent {
 		return c
 	}
 	out := entity.TabContent{
-		Sections: make([]entity.Section, len(c.Sections)),
-		ASCIITab: c.ASCIITab,
+		Sections:  make([]entity.Section, len(c.Sections)),
+		ChordTabs: transposeChordTabs(c.ChordTabs, semitones),
 	}
 	for i, sec := range c.Sections {
 		out.Sections[i] = entity.Section{
@@ -149,11 +155,22 @@ func transposeContent(c entity.TabContent, semitones int) entity.TabContent {
 			Blocks:        make([]entity.Block, len(sec.Blocks)),
 		}
 		for j, ch := range sec.ChordSequence {
-			out.Sections[i].ChordSequence[j] = transposeChord(ch, semitones)
+			out.Sections[i].ChordSequence[j] = entity.TransposeChord(ch, semitones)
 		}
 		for j, bl := range sec.Blocks {
 			out.Sections[i].Blocks[j] = transposeBlock(bl, semitones)
 		}
+	}
+	return out
+}
+
+func transposeChordTabs(chordTabs map[string]string, semitones int) map[string]string {
+	if chordTabs == nil || semitones == 0 {
+		return chordTabs
+	}
+	out := make(map[string]string, len(chordTabs))
+	for chord, tab := range chordTabs {
+		out[entity.TransposeChord(chord, semitones)] = tab
 	}
 	return out
 }
@@ -165,7 +182,7 @@ func transposeBlock(bl entity.Block, semitones int) entity.Block {
 		if len(bl.Chords) > 0 {
 			out.Chords = make([]string, len(bl.Chords))
 			for k, ch := range bl.Chords {
-				out.Chords[k] = transposeChord(ch, semitones)
+				out.Chords[k] = entity.TransposeChord(ch, semitones)
 			}
 		}
 	case "lyrics":
@@ -173,38 +190,11 @@ func transposeBlock(bl entity.Block, semitones int) entity.Block {
 			out.Segments = make([]entity.ChordSegment, len(bl.Segments))
 			for k, seg := range bl.Segments {
 				out.Segments[k] = entity.ChordSegment{
-					Chord: transposeChord(seg.Chord, semitones),
+					Chord: entity.TransposeChord(seg.Chord, semitones),
 					Text:  seg.Text,
 				}
 			}
 		}
 	}
 	return out
-}
-
-func transposeChord(chord string, semitones int) string {
-	chordNames := []string{"C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"}
-	chordNamesFlat := []string{"C", "Db", "D", "Eb", "E", "F", "Gb", "G", "Ab", "A", "Bb", "B"}
-	if chord == "" || semitones == 0 {
-		return chord
-	}
-	for i, name := range chordNames {
-		if len(chord) >= len(name) && (chord[:len(name)] == name || (len(chord) > len(name) && chord[0] == name[0])) {
-			root := chord[:len(name)]
-			if root != name {
-				for k, n := range chordNamesFlat {
-					if chord[:len(n)] == n {
-						root = n
-						i = k
-						break
-					}
-				}
-			}
-			suffix := chord[len(root):]
-			newIdx := (i + semitones%semitonesPerOct + semitonesPerOct) % semitonesPerOct
-			newRoot := chordNames[newIdx]
-			return newRoot + suffix
-		}
-	}
-	return chord
 }
