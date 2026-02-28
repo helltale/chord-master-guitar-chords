@@ -22,13 +22,14 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version-file: go.mod
-          cache-dependency-path: go.sum
+          go-version-file: back/go.mod
+          cache-dependency-path: back/go.sum
 
       - name: Run golangci-lint
         uses: golangci/golangci-lint-action@v7
         with:
           version: v2.6.2
+          working-directory: back
           args: --timeout=5m
           only-new-issues: false
 
