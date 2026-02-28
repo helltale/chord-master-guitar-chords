@@ -8,8 +8,11 @@ import (
 )
 
 func Migration20250221000000(db *gorm.DB) error {
-	if err := db.AutoMigrate(&entity.Artist{}, &entity.Song{}); err != nil {
-		return errors.Wrap(err, "auto migrate artists and songs")
+	if err := db.AutoMigrate(&entity.Artist{}); err != nil {
+		return errors.Wrap(err, "auto migrate artists")
+	}
+	if err := db.AutoMigrate(&entity.Song{}); err != nil {
+		return errors.Wrap(err, "auto migrate songs")
 	}
 	return nil
 }

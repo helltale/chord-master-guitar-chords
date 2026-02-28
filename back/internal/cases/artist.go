@@ -46,7 +46,7 @@ func (c *ArtistCases) Create(ctx context.Context, name, slug string) (*entity.Ar
 		return nil, errors.New("slug must be lowercase alphanumeric with hyphens or underscores")
 	}
 	existing, err := c.repo.GetBySlug(ctx, slug)
-	if err != nil {
+	if err != nil && !errors.Is(err, repository.ErrNotFound) {
 		return nil, err
 	}
 	if existing != nil {
