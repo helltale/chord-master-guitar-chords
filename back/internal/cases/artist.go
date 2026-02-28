@@ -26,14 +26,6 @@ func NewArtistCases(repo repository.ArtistRepository) *ArtistCases {
 }
 
 func (c *ArtistCases) List(ctx context.Context, limit, offset int) ([]*entity.Artist, int64, error) {
-	// TODO: Think again about whether this is really necessary.
-	// It's as if you want it to be clearly and precisely regulated only during a request.
-	if limit <= 0 {
-		limit = 20
-	}
-	if limit > maxListLimit {
-		limit = maxListLimit
-	}
 	return c.repo.List(ctx, limit, offset)
 }
 

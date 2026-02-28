@@ -28,14 +28,6 @@ func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*
 }
 
 func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
-	// TODO: Think again about whether this is really necessary.
-	// It's as if you want it to be clearly and precisely regulated only during a request.
-	if limit <= 0 {
-		limit = 20
-	}
-	if limit > maxListLimit {
-		limit = maxListLimit
-	}
 	return c.songRepo.List(ctx, artistID, limit, offset)
 }
 
