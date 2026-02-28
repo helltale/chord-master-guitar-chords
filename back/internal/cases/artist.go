@@ -11,6 +11,8 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate go run go.uber.org/mock/mockgen@latest -package=testdata -destination=./testdata/artist_repo_mock.go github.com/Helltale/amdm-guitar-chords/back/internal/repository ArtistRepository
+
 var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-_][a-z0-9]+)*$`)
 
 var ErrDuplicateArtist = errors.New("artist with this slug already exists")
@@ -44,7 +46,7 @@ func (c *ArtistCases) Create(ctx context.Context, name, slug string) (*entity.Ar
 		return nil, errors.New("slug must be lowercase alphanumeric with hyphens or underscores")
 	}
 	existing, err := c.repo.GetBySlug(ctx, slug)
-	if err != nil {
+	if err != nil && !errors.Is(err, repository.ErrNotFound) {
 		return nil, err
 	}
 	if existing != nil {

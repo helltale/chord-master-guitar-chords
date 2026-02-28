@@ -63,10 +63,9 @@ func (srv *server) CreateArtist(
 	}
 	a, err := srv.artistCases.Create(ctx, request.Body.Name, request.Body.Slug)
 	if err != nil {
-		if errors.Is(err, cases.ErrDuplicateArtist) {
-			return gen.CreateArtist400Response{}, nil
-		}
-		return nil, err
+		// Валидация и дубликат slug — клиентская ошибка (намеренно возвращаем 400, не err).
+		//nolint:nilerr // возврат 400 по контракту API при любой ошибке создания
+		return gen.CreateArtist400Response{}, nil
 	}
 	artist := srv.artistToAPI(a)
 	return gen.CreateArtist201JSONResponse(artist), nil
@@ -174,10 +173,9 @@ func (srv *server) CreateSong(
 		content,
 	)
 	if err != nil {
-		if errors.Is(err, cases.ErrDuplicateSong) {
-			return gen.CreateSong400Response{}, nil
-		}
-		return nil, err
+		// Валидация и дубликат slug — клиентская ошибка (намеренно возвращаем 400, не err).
+		//nolint:nilerr // возврат 400 по контракту API при любой ошибке создания
+		return gen.CreateSong400Response{}, nil
 	}
 	return gen.CreateSong201JSONResponse{
 		SongId:    s.SongID,

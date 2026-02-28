@@ -10,6 +10,8 @@ import (
 	"github.com/google/uuid"
 )
 
+//go:generate go run go.uber.org/mock/mockgen@latest -package=testdata -destination=./testdata/song_repo_mock.go github.com/Helltale/amdm-guitar-chords/back/internal/repository SongRepository
+
 var ErrDuplicateSong = errors.New("song with this slug already exists for this artist")
 
 type SongCases struct {
