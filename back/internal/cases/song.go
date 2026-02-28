@@ -27,6 +27,14 @@ func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*
 	return c.songRepo.ListByArtistID(ctx, artistID)
 }
 
+func (c *SongCases) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Song, int64, error) {
+	query = strings.TrimSpace(query)
+	if query == "" {
+		return nil, 0, nil
+	}
+	return c.songRepo.Search(ctx, query, limit, offset)
+}
+
 func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
 	return c.songRepo.List(ctx, artistID, limit, offset)
 }

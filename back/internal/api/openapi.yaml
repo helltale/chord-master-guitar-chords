@@ -115,6 +115,34 @@ paths:
         '400':
           description: Validation error
 
+  /search:
+    get:
+      operationId: search
+      summary: Search songs by artist name/slug or song title
+      parameters:
+        - name: q
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: List of matching songs
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SongList'
+
   /songs/{songId}:
     get:
       operationId: getSong

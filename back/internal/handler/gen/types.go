@@ -147,6 +147,13 @@ type ListArtistsParams struct {
 	Offset *int `form:"offset,omitempty" json:"offset,omitempty"`
 }
 
+// SearchParams defines parameters for Search.
+type SearchParams struct {
+	Q      string `form:"q" json:"q"`
+	Limit  *int   `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int   `form:"offset,omitempty" json:"offset,omitempty"`
+}
+
 // ListSongsParams defines parameters for ListSongs.
 type ListSongsParams struct {
 	ArtistId *openapi_types.UUID `form:"artist_id,omitempty" json:"artist_id,omitempty"`

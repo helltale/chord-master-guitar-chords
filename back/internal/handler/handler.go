@@ -127,6 +127,31 @@ func (srv *server) ListSongs(
 	}, nil
 }
 
+func (srv *server) Search(
+	ctx context.Context,
+	request gen.SearchRequestObject,
+) (gen.SearchResponseObject, error) {
+	limit, offset := 20, 0
+	if request.Params.Limit != nil {
+		limit = *request.Params.Limit
+	}
+	if request.Params.Offset != nil {
+		offset = *request.Params.Offset
+	}
+	list, total, err := srv.songCases.Search(ctx, request.Params.Q, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	items := make([]gen.SongListItem, 0, len(list))
+	for _, s := range list {
+		items = append(items, srv.songToListItem(s))
+	}
+	return gen.Search200JSONResponse{
+		Items: &items,
+		Total: ptr(int(total)),
+	}, nil
+}
+
 func (srv *server) CreateSong(
 	ctx context.Context,
 	request gen.CreateSongRequestObject,
