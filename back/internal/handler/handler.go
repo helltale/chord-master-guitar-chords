@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"errors"
+	"maps"
 	"time"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
@@ -382,9 +383,7 @@ func tabContentFromAPI(c *gen.TabContent) entity.TabContent {
 	out := entity.TabContent{Sections: sections}
 	if c.ChordTabs != nil && len(*c.ChordTabs) > 0 {
 		out.ChordTabs = make(map[string]string, len(*c.ChordTabs))
-		for k, v := range *c.ChordTabs {
-			out.ChordTabs[k] = v
-		}
+		maps.Copy(out.ChordTabs, *c.ChordTabs)
 	}
 	return out
 }

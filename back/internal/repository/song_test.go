@@ -1,6 +1,10 @@
-package repository
+package repository_test
 
-import "testing"
+import (
+	"testing"
+
+	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
+)
 
 func TestEscapeLikePattern(t *testing.T) {
 	tests := []struct {
@@ -17,8 +21,8 @@ func TestEscapeLikePattern(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := escapeLikePattern(tt.input); got != tt.want {
-				t.Errorf("escapeLikePattern(%q) = %q, want %q", tt.input, got, tt.want)
+			if got := repository.EscapeLikePattern(tt.input); got != tt.want {
+				t.Errorf("EscapeLikePattern(%q) = %q, want %q", tt.input, got, tt.want)
 			}
 		})
 	}

@@ -11,7 +11,7 @@ import (
 )
 
 type TabContent struct {
-	Sections  []Section        `json:"sections"`
+	Sections  []Section         `json:"sections"`
 	ChordTabs map[string]string `json:"chord_tabs,omitempty"`
 }
 

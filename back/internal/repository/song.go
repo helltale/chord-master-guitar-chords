@@ -76,8 +76,8 @@ func (r *songRepo) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*e
 	return list, err
 }
 
-// escapeLikePattern escapes \ % _ for safe use in PostgreSQL ILIKE (escape char is backslash).
-func escapeLikePattern(s string) string {
+// EscapeLikePattern escapes \ % _ for safe use in PostgreSQL ILIKE (escape char is backslash).
+func EscapeLikePattern(s string) string {
 	s = strings.ReplaceAll(s, `\`, `\\`)
 	s = strings.ReplaceAll(s, "%", `\%`)
 	s = strings.ReplaceAll(s, "_", `\_`)
@@ -85,7 +85,7 @@ func escapeLikePattern(s string) string {
 }
 
 func (r *songRepo) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Song, int64, error) {
-	pattern := "%" + escapeLikePattern(query) + "%"
+	pattern := "%" + EscapeLikePattern(query) + "%"
 	var total int64
 	err := r.db.WithContext(ctx).Raw(
 		`SELECT COUNT(DISTINCT songs.song_id) FROM songs
