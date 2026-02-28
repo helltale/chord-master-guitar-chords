@@ -1,4 +1,4 @@
-module github.com/Helltale/amdm-guitar-chords
+module github.com/Helltale/amdm-guitar-chords/back
 
 go 1.24.0
 
