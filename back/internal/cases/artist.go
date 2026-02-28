@@ -10,7 +10,11 @@ import (
 	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
 )
 
+const maxListLimit = 100
+
 var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-_][a-z0-9]+)*$`)
+
+var ErrDuplicateArtist = errors.New("artist with this slug already exists")
 
 type ArtistCases struct {
 	repo repository.ArtistRepository
@@ -21,11 +25,13 @@ func NewArtistCases(repo repository.ArtistRepository) *ArtistCases {
 }
 
 func (c *ArtistCases) List(ctx context.Context, limit, offset int) ([]*entity.Artist, int64, error) {
+	// TODO: Think again about whether this is really necessary.
+	// It's as if you want it to be clearly and precisely regulated only during a request.
 	if limit <= 0 {
 		limit = 20
 	}
-	if limit > 100 {
-		limit = 100
+	if limit > maxListLimit {
+		limit = maxListLimit
 	}
 	return c.repo.List(ctx, limit, offset)
 }
@@ -51,11 +57,11 @@ func (c *ArtistCases) Create(ctx context.Context, name, slug string) (*entity.Ar
 		return nil, err
 	}
 	if existing != nil {
-		return nil, errors.New("artist with this slug already exists")
+		return nil, ErrDuplicateArtist
 	}
 	a := &entity.Artist{Name: name, Slug: slug}
-	if err := c.repo.Create(ctx, a); err != nil {
-		return nil, err
+	if createErr := c.repo.Create(ctx, a); createErr != nil {
+		return nil, createErr
 	}
 	return a, nil
 }

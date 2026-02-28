@@ -4,16 +4,15 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/go-chi/chi/v5"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
-
 	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/config"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/handler"
-	"github.com/Helltale/amdm-guitar-chords/back/internal/migration"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/handler/gen"
+	"github.com/Helltale/amdm-guitar-chords/back/internal/migration"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
+	"github.com/go-chi/chi/v5"
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 )
 
 func main() {
@@ -26,35 +25,41 @@ func main() {
 	if err != nil {
 		log.Fatalf("db open: %v", err)
 	}
+	if migrateErr := migration.Run(gormDB, migration.NewMigrations()); migrateErr != nil {
+		log.Fatalf("migrate: %v", migrateErr)
+	}
+	sqlDB, err := gormDB.DB()
+	if err != nil {
+		log.Fatalf("db: %v", err)
+	}
 	defer func() {
-		sqlDB, err := gormDB.DB()
-		if err != nil {
-			log.Printf("db close: %v", err)
-			return
-		}
-		if err := sqlDB.Close(); err != nil {
-			log.Printf("db close: %v", err)
+		if closeErr := sqlDB.Close(); closeErr != nil {
+			log.Printf("db close: %v", closeErr)
 		}
 	}()
-
-	if err := migration.Run(gormDB, migration.NewMigrations()); err != nil {
-		log.Fatalf("migrate: %v", err)
-	}
 
 	artistRepo := repository.NewArtistRepository(gormDB)
 	songRepo := repository.NewSongRepository(gormDB)
 	artistCases := cases.NewArtistCases(artistRepo)
 	songCases := cases.NewSongCases(artistRepo, songRepo)
-	srv := handler.NewServer(artistCases, songCases)
+	server := handler.NewServer(artistCases, songCases)
 
-	r := chi.NewRouter()
+	rounter := chi.NewRouter()
 	apiRouter := chi.NewRouter()
-	gen.HandlerFromMux(gen.NewStrictHandler(srv, nil), apiRouter)
-	r.Mount("/api/amdm/v1", apiRouter)
+	gen.HandlerFromMux(gen.NewStrictHandler(server, nil), apiRouter)
+	rounter.Mount("/api/amdm/v1", apiRouter)
 
 	addr := ":" + cfg.Backend.Port
+	httpSrv := &http.Server{
+		Addr:         addr,
+		Handler:      rounter,
+		ReadTimeout:  cfg.Backend.ReadTimeout(),
+		WriteTimeout: cfg.Backend.WriteTimeout(),
+		IdleTimeout:  cfg.Backend.IdleTimeout(),
+	}
 	log.Printf("listening on %s", addr)
-	if err := http.ListenAndServe(addr, r); err != nil {
-		log.Fatalf("serve: %v", err)
+	if serveErr := httpSrv.ListenAndServe(); serveErr != nil {
+		//nolint:gocritic // exitAfterDefer: intentional exit on serve failure
+		log.Fatalf("serve: %v", serveErr)
 	}
 }

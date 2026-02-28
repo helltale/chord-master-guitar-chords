@@ -11,7 +11,7 @@ import (
 
 type TabContent struct {
 	Sections []Section `json:"sections"`
-	AsciiTab string    `json:"ascii_tab,omitempty"`
+	ASCIITab string    `json:"ascii_tab,omitempty"`
 }
 
 type Section struct {
@@ -26,11 +26,11 @@ type Block struct {
 	Lyrics string `json:"lyrics"`
 }
 
-func (c TabContent) Value() (driver.Value, error) {
+func (c *TabContent) Value() (driver.Value, error) {
 	return json.Marshal(c)
 }
 
-func (c *TabContent) Scan(value interface{}) error {
+func (c *TabContent) Scan(value any) error {
 	if value == nil {
 		*c = TabContent{}
 		return nil
@@ -43,14 +43,14 @@ func (c *TabContent) Scan(value interface{}) error {
 }
 
 type Song struct {
-	ID        uint           `gorm:"primaryKey" json:"id"`
-	ArtistID  uint           `gorm:"not null;index" json:"artist_id"`
-	Artist    *Artist        `gorm:"foreignKey:ArtistID" json:"artist,omitempty"`
-	Title     string         `gorm:"size:255;not null" json:"title"`
+	ID        uint           `gorm:"primaryKey"                                          json:"id"`
+	ArtistID  uint           `gorm:"not null;index"                                      json:"artist_id"`
+	Artist    *Artist        `gorm:"foreignKey:ArtistID"                                 json:"artist,omitempty"`
+	Title     string         `gorm:"size:255;not null"                                   json:"title"`
 	Slug      string         `gorm:"size:255;not null;index:idx_song_artist_slug,unique" json:"slug"`
-	Tonality  int            `gorm:"default:0" json:"tonality"`
-	Content   TabContent     `gorm:"type:jsonb;default:'{}'" json:"content"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
+	Tonality  int            `gorm:"default:0"                                           json:"tonality"`
+	Content   TabContent     `gorm:"type:jsonb;default:'{}'"                             json:"content"`
+	CreatedAt time.Time      `                                                           json:"created_at"`
+	UpdatedAt time.Time      `                                                           json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index"                                               json:"-"`
 }

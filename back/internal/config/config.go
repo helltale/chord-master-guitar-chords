@@ -2,6 +2,7 @@ package config
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-playground/validator/v10"
 	"github.com/ilyakaznacheev/cleanenv"
@@ -21,9 +22,12 @@ type DatabaseConfig struct {
 
 //nolint:golines // long struct tags with metadata
 type BackendConfig struct {
-	Port     string `env:"SERVER_PORT" env-default:"8081" validate:"required"`
-	LogLevel string `env:"BACKEND_LOG_LEVEL" env-default:"info" validate:"oneof=debug info warn error"`
-	Env      string `env:"BACKEND_ENV" env-default:"development" validate:"oneof=development production staging"`
+	Port            string `env:"SERVER_PORT" env-default:"8081" validate:"required"`
+	LogLevel        string `env:"BACKEND_LOG_LEVEL" env-default:"info" validate:"oneof=debug info warn error"`
+	Env             string `env:"BACKEND_ENV" env-default:"development" validate:"oneof=development production staging"`
+	ReadTimeoutSec  int    `env:"SERVER_READ_TIMEOUT_SEC" env-default:"15" validate:"min=1,max=300"`
+	WriteTimeoutSec int    `env:"SERVER_WRITE_TIMEOUT_SEC" env-default:"15" validate:"min=1,max=300"`
+	IdleTimeoutSec  int    `env:"SERVER_IDLE_TIMEOUT_SEC" env-default:"60" validate:"min=1,max=600"`
 }
 
 type Config struct {
@@ -66,4 +70,16 @@ func (c *Config) Validate() error {
 func (c *DatabaseConfig) DSN() string {
 	return fmt.Sprintf("host=%s port=%s user=%s password=%s dbname=%s sslmode=%s",
 		c.Host, c.Port, c.User, c.Password, c.DBName, c.SSLMode)
+}
+
+func (c *BackendConfig) ReadTimeout() time.Duration {
+	return time.Duration(c.ReadTimeoutSec) * time.Second
+}
+
+func (c *BackendConfig) WriteTimeout() time.Duration {
+	return time.Duration(c.WriteTimeoutSec) * time.Second
+}
+
+func (c *BackendConfig) IdleTimeout() time.Duration {
+	return time.Duration(c.IdleTimeoutSec) * time.Second
 }

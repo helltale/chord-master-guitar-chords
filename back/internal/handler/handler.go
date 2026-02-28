@@ -2,11 +2,13 @@ package handler
 
 import (
 	"context"
+	"errors"
 	"time"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/entity"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/handler/gen"
+	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
 )
 
 var _ gen.StrictServerInterface = (*server)(nil)
@@ -16,6 +18,9 @@ type server struct {
 	songCases   *cases.SongCases
 }
 
+// NewServer returns the HTTP handler implementation (server is unexported by design).
+//
+//revive:disable-next-line:unexported-return
 func NewServer(artistCases *cases.ArtistCases, songCases *cases.SongCases) *server {
 	return &server{
 		artistCases: artistCases,
@@ -23,7 +28,10 @@ func NewServer(artistCases *cases.ArtistCases, songCases *cases.SongCases) *serv
 	}
 }
 
-func (srv *server) ListArtists(ctx context.Context, request gen.ListArtistsRequestObject) (gen.ListArtistsResponseObject, error) {
+func (srv *server) ListArtists(
+	ctx context.Context,
+	request gen.ListArtistsRequestObject,
+) (gen.ListArtistsResponseObject, error) {
 	limit, offset := 20, 0
 	if request.Params.Limit != nil {
 		limit = *request.Params.Limit
@@ -45,26 +53,33 @@ func (srv *server) ListArtists(ctx context.Context, request gen.ListArtistsReque
 	}, nil
 }
 
-func (srv *server) CreateArtist(ctx context.Context, request gen.CreateArtistRequestObject) (gen.CreateArtistResponseObject, error) {
+func (srv *server) CreateArtist(
+	ctx context.Context,
+	request gen.CreateArtistRequestObject,
+) (gen.CreateArtistResponseObject, error) {
 	if request.Body == nil {
 		return gen.CreateArtist400Response{}, nil
 	}
 	a, err := srv.artistCases.Create(ctx, request.Body.Name, request.Body.Slug)
 	if err != nil {
-		return gen.CreateArtist400Response{}, nil
+		if errors.Is(err, cases.ErrDuplicateArtist) {
+			return gen.CreateArtist400Response{}, nil
+		}
+		return nil, err
 	}
 	artist := srv.artistToAPI(a)
-	return gen.CreateArtist201JSONResponse{
-		Id:        artist.Id,
-		Name:      artist.Name,
-		Slug:      artist.Slug,
-		CreatedAt: artist.CreatedAt,
-	}, nil
+	return gen.CreateArtist201JSONResponse(artist), nil
 }
 
-func (srv *server) GetArtistBySlug(ctx context.Context, request gen.GetArtistBySlugRequestObject) (gen.GetArtistBySlugResponseObject, error) {
+func (srv *server) GetArtistBySlug(
+	ctx context.Context,
+	request gen.GetArtistBySlugRequestObject,
+) (gen.GetArtistBySlugResponseObject, error) {
 	a, err := srv.artistCases.GetBySlug(ctx, request.ArtistSlug)
 	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return gen.GetArtistBySlug404Response{}, nil
+		}
 		return nil, err
 	}
 	if a == nil {
@@ -79,7 +94,7 @@ func (srv *server) GetArtistBySlug(ctx context.Context, request gen.GetArtistByS
 		songItems = append(songItems, srv.songToListItem(s))
 	}
 	return gen.GetArtistBySlug200JSONResponse{
-		Id:        int64(a.ID),
+		Id:        int64(a.ID), //nolint:gosec // G115: ID from DB
 		Name:      a.Name,
 		Slug:      a.Slug,
 		CreatedAt: timePtr(a.CreatedAt),
@@ -87,7 +102,10 @@ func (srv *server) GetArtistBySlug(ctx context.Context, request gen.GetArtistByS
 	}, nil
 }
 
-func (srv *server) ListSongs(ctx context.Context, request gen.ListSongsRequestObject) (gen.ListSongsResponseObject, error) {
+func (srv *server) ListSongs(
+	ctx context.Context,
+	request gen.ListSongsRequestObject,
+) (gen.ListSongsResponseObject, error) {
 	limit, offset := 20, 0
 	if request.Params.Limit != nil {
 		limit = *request.Params.Limit
@@ -97,6 +115,8 @@ func (srv *server) ListSongs(ctx context.Context, request gen.ListSongsRequestOb
 	}
 	var artistID *uint
 	if request.Params.ArtistId != nil {
+		// API uses int, DB uses uint; value is bounded by request validation.
+		//nolint:gosec // G115: safe conversion
 		id := uint(*request.Params.ArtistId)
 		artistID = &id
 	}
@@ -114,7 +134,10 @@ func (srv *server) ListSongs(ctx context.Context, request gen.ListSongsRequestOb
 	}, nil
 }
 
-func (srv *server) CreateSong(ctx context.Context, request gen.CreateSongRequestObject) (gen.CreateSongResponseObject, error) {
+func (srv *server) CreateSong(
+	ctx context.Context,
+	request gen.CreateSongRequestObject,
+) (gen.CreateSongResponseObject, error) {
 	if request.Body == nil {
 		return gen.CreateSong400Response{}, nil
 	}
@@ -123,17 +146,28 @@ func (srv *server) CreateSong(ctx context.Context, request gen.CreateSongRequest
 		tonality = *request.Body.Tonality
 	}
 	content := tabContentFromAPI(request.Body.Content)
-	s, err := srv.songCases.Create(ctx, uint(request.Body.ArtistId), request.Body.Title, request.Body.Slug, tonality, content)
+	//nolint:gosec // G115: ArtistId from API is bounded
+	s, err := srv.songCases.Create(
+		ctx,
+		uint(request.Body.ArtistId),
+		request.Body.Title,
+		request.Body.Slug,
+		tonality,
+		content,
+	)
 	if err != nil {
-		return gen.CreateSong400Response{}, nil
+		if errors.Is(err, cases.ErrDuplicateSong) {
+			return gen.CreateSong400Response{}, nil
+		}
+		return nil, err
 	}
 	return gen.CreateSong201JSONResponse{
-		Id:        int64(s.ID),
-		ArtistId:  ptr(int64(s.ArtistID)),
+		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
+		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
-		Content:   сontent(&s.Content),
+		Content:   tabContentToGen(&s.Content),
 		CreatedAt: timePtr(s.CreatedAt),
 		UpdatedAt: timePtr(s.UpdatedAt),
 	}, nil
@@ -145,24 +179,30 @@ func (srv *server) GetSong(ctx context.Context, request gen.GetSongRequestObject
 	}
 	s, err := srv.songCases.GetByID(ctx, uint(request.SongId))
 	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return gen.GetSong404Response{}, nil
+		}
 		return nil, err
 	}
 	if s == nil {
 		return gen.GetSong404Response{}, nil
 	}
 	return gen.GetSong200JSONResponse{
-		Id:        int64(s.ID),
-		ArtistId:  ptr(int64(s.ArtistID)),
+		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
+		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
-		Content:   сontent(&s.Content),
+		Content:   tabContentToGen(&s.Content),
 		CreatedAt: timePtr(s.CreatedAt),
 		UpdatedAt: timePtr(s.UpdatedAt),
 	}, nil
 }
 
-func (srv *server) UpdateSong(ctx context.Context, request gen.UpdateSongRequestObject) (gen.UpdateSongResponseObject, error) {
+func (srv *server) UpdateSong(
+	ctx context.Context,
+	request gen.UpdateSongRequestObject,
+) (gen.UpdateSongResponseObject, error) {
 	if request.SongId <= 0 {
 		return gen.UpdateSong404Response{}, nil
 	}
@@ -180,41 +220,50 @@ func (srv *server) UpdateSong(ctx context.Context, request gen.UpdateSongRequest
 	}
 	s, err := srv.songCases.Update(ctx, uint(request.SongId), title, slug, tonality, content)
 	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return gen.UpdateSong404Response{}, nil
+		}
 		return gen.UpdateSong400Response{}, nil
 	}
 	if s == nil {
 		return gen.UpdateSong404Response{}, nil
 	}
 	return gen.UpdateSong200JSONResponse{
-		Id:        int64(s.ID),
-		ArtistId:  ptr(int64(s.ArtistID)),
+		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
+		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
-		Content:   сontent(&s.Content),
+		Content:   tabContentToGen(&s.Content),
 		CreatedAt: timePtr(s.CreatedAt),
 		UpdatedAt: timePtr(s.UpdatedAt),
 	}, nil
 }
 
-func (srv *server) TransposeSong(ctx context.Context, request gen.TransposeSongRequestObject) (gen.TransposeSongResponseObject, error) {
+func (srv *server) TransposeSong(
+	ctx context.Context,
+	request gen.TransposeSongRequestObject,
+) (gen.TransposeSongResponseObject, error) {
 	if request.SongId <= 0 {
 		return gen.TransposeSong404Response{}, nil
 	}
 	s, err := srv.songCases.Transpose(ctx, uint(request.SongId), request.Params.Semitones)
 	if err != nil {
+		if errors.Is(err, repository.ErrNotFound) {
+			return gen.TransposeSong404Response{}, nil
+		}
 		return nil, err
 	}
 	if s == nil {
 		return gen.TransposeSong404Response{}, nil
 	}
 	return gen.TransposeSong200JSONResponse{
-		Id:        int64(s.ID),
-		ArtistId:  ptr(int64(s.ArtistID)),
+		Id:        int64(s.ID),            //nolint:gosec // G115: ID from DB
+		ArtistId:  ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
 		Title:     s.Title,
 		Slug:      s.Slug,
 		Tonality:  ptr(s.Tonality),
-		Content:   сontent(&s.Content),
+		Content:   tabContentToGen(&s.Content),
 		CreatedAt: timePtr(s.CreatedAt),
 		UpdatedAt: timePtr(s.UpdatedAt),
 	}, nil
@@ -226,7 +275,7 @@ func timePtr(t time.Time) *time.Time { return &t }
 
 func (srv *server) artistToAPI(a *entity.Artist) gen.Artist {
 	return gen.Artist{
-		Id:        int64(a.ID),
+		Id:        int64(a.ID), //nolint:gosec // G115: ID from DB
 		Name:      a.Name,
 		Slug:      a.Slug,
 		CreatedAt: timePtr(a.CreatedAt),
@@ -235,15 +284,15 @@ func (srv *server) artistToAPI(a *entity.Artist) gen.Artist {
 
 func (srv *server) songToListItem(s *entity.Song) gen.SongListItem {
 	return gen.SongListItem{
-		Id:       int64(s.ID),
+		Id:       int64(s.ID), //nolint:gosec // G115: ID from DB
 		Title:    s.Title,
 		Slug:     s.Slug,
-		ArtistId: ptr(int64(s.ArtistID)),
+		ArtistId: ptr(int64(s.ArtistID)), //nolint:gosec // G115: ID from DB
 		Tonality: ptr(s.Tonality),
 	}
 }
 
-func сontent(c *entity.TabContent) *gen.TabContent {
+func tabContentToGen(c *entity.TabContent) *gen.TabContent {
 	if c == nil {
 		return nil
 	}
@@ -256,8 +305,8 @@ func сontent(c *entity.TabContent) *gen.TabContent {
 		sections = &list
 	}
 	var asciiTab *string
-	if c.AsciiTab != "" {
-		asciiTab = &c.AsciiTab
+	if c.ASCIITab != "" {
+		asciiTab = &c.ASCIITab
 	}
 	return &gen.TabContent{Sections: sections, AsciiTab: asciiTab}
 }
@@ -296,7 +345,7 @@ func tabContentFromAPI(c *gen.TabContent) entity.TabContent {
 	}
 	out := entity.TabContent{Sections: sections}
 	if c.AsciiTab != nil {
-		out.AsciiTab = *c.AsciiTab
+		out.ASCIITab = *c.AsciiTab
 	}
 	return out
 }
