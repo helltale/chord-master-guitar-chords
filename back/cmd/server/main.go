@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"database/sql"
 	"errors"
 	"log"
 	"net/http"
@@ -20,6 +21,8 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
+
+const shutdownTimeout = 10 * time.Second
 
 func main() {
 	cfg, err := config.Load()
@@ -59,7 +62,10 @@ func main() {
 		IdleTimeout:  cfg.Backend.IdleTimeout(),
 	}
 	log.Printf("listening on %s", addr)
+	os.Exit(runUntilShutdown(httpSrv, sqlDB))
+}
 
+func runUntilShutdown(httpSrv *http.Server, sqlDB *sql.DB) int {
 	serveDone := make(chan error, 1)
 	go func() {
 		serveDone <- httpSrv.ListenAndServe()
@@ -72,14 +78,14 @@ func main() {
 	select {
 	case sig := <-sigCh:
 		log.Printf("received %v, shutting down", sig)
-	case err := <-serveDone:
-		if err != nil && !errors.Is(err, http.ErrServerClosed) {
-			log.Printf("serve: %v", err)
+	case serveErr := <-serveDone:
+		if serveErr != nil && !errors.Is(serveErr, http.ErrServerClosed) {
+			log.Printf("serve: %v", serveErr)
 			exitCode = 1
 		}
 	}
 
-	shutdownCtx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
 	defer cancel()
 	if shutdownErr := httpSrv.Shutdown(shutdownCtx); shutdownErr != nil {
 		log.Printf("shutdown: %v", shutdownErr)
@@ -90,5 +96,5 @@ func main() {
 		log.Printf("db close: %v", closeErr)
 		exitCode = 1
 	}
-	os.Exit(exitCode)
+	return exitCode
 }
