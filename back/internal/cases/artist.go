@@ -11,8 +11,6 @@ import (
 	"github.com/google/uuid"
 )
 
-const maxListLimit = 100
-
 var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-_][a-z0-9]+)*$`)
 
 var ErrDuplicateArtist = errors.New("artist with this slug already exists")
