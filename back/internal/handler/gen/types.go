@@ -129,8 +129,9 @@ type SongListItem struct {
 
 // TabContent defines model for TabContent.
 type TabContent struct {
-	AsciiTab *string    `json:"ascii_tab,omitempty"`
-	Sections *[]Section `json:"sections,omitempty"`
+	// ChordTabs Chord name to ASCII tab string (only chords used in the piece are returned)
+	ChordTabs *map[string]string `json:"chord_tabs,omitempty"`
+	Sections  *[]Section         `json:"sections,omitempty"`
 }
 
 // UpdateSongRequest defines model for UpdateSongRequest.

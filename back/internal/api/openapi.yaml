@@ -333,8 +333,11 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/Section'
-        ascii_tab:
-          type: string
+        chord_tabs:
+          type: object
+          additionalProperties:
+            type: string
+          description: "Chord name to ASCII tab string (only chords used in the piece are returned)"
 
     Section:
       type: object
