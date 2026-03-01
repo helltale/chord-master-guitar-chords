@@ -12,7 +12,7 @@ on:
 
 jobs:
   integration:
-    name: Integration Tests
+    name: Integration Test (Go)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

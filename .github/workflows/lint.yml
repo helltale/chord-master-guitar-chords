@@ -12,7 +12,7 @@ on:
 
 jobs:
   lint-back:
-    name: Lint Go Code
+    name: Lint (Go)
     runs-on: ubuntu-latest
 
     steps:
@@ -34,7 +34,7 @@ jobs:
           only-new-issues: false
 
   lint-web:
-    name: Lint Web
+    name: Lint (Web)
     runs-on: ubuntu-latest
 
     steps:
