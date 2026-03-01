@@ -1,9 +1,12 @@
-# Placeholder: replace with actual frontend build when web app is implemented
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY package.json package-lock.json* ./
+RUN npm ci
+COPY . .
+RUN npm run build
+
 FROM nginx:alpine
-
-# Default nginx config - serve static from /usr/share/nginx/html
-# Add custom conf and build artifacts when frontend is ready
-RUN echo '<!DOCTYPE html><html><head><title>AmDm Guitar Chords</title></head><body><h1>Coming soon</h1></body></html>' > /usr/share/nginx/html/index.html
-
+COPY --from=builder /app/dist /usr/share/nginx/html
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 EXPOSE 80
 CMD ["nginx", "-g", "daemon off;"]
