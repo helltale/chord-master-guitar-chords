@@ -14,7 +14,7 @@ function ensureLyricsBlock(block: Block): Block {
   return { kind: 'lyrics', segments: [{ chord: '', text: '' }] }
 }
 
-export function LyricsBlockEditor({ block, blockIndex, onChange }: LyricsBlockEditorProps) {
+export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: LyricsBlockEditorProps) {
   const b = ensureLyricsBlock(block)
   const segments = b.segments ?? []
 

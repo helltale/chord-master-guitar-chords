@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import type { CreateSongRequest, TabContent } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
-import { LyricsWysiwygEditor, isContentEmpty } from '@/components/LyricsWysiwygEditor'
+import { LyricsWysiwygEditor } from '@/components/LyricsWysiwygEditor'
+import { isContentEmpty } from '@/utils/tabContent'
 import { slugFromString } from '@/utils/slug'
 
 interface CreateSongFormProps {
