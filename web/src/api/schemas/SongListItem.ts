@@ -1,0 +1,9 @@
+/** Generated from OpenAPI schema "SongListItem". Do not edit. */
+
+export type SongListItem = {
+  song_id: string;
+  artist_id?: string;
+  title: string;
+  slug: string;
+  tonality?: number;
+};

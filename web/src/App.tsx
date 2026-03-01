@@ -1,0 +1,23 @@
+import { Routes, Route } from 'react-router-dom'
+import { RootLayout } from '@/layout/RootLayout'
+import { HomePage } from '@/pages/HomePage'
+import { ArtistPage } from '@/pages/ArtistPage'
+import { SongPage } from '@/pages/SongPage'
+import { CreateArtistPage } from '@/pages/CreateArtistPage'
+import { CreateSongPage } from '@/pages/CreateSongPage'
+
+function App() {
+  return (
+    <Routes>
+      <Route element={<RootLayout />}>
+        <Route path="/" element={<HomePage />} />
+        <Route path="/artist/:artistSlug" element={<ArtistPage />} />
+        <Route path="/song/:songId" element={<SongPage />} />
+        <Route path="/artists/new" element={<CreateArtistPage />} />
+        <Route path="/songs/new" element={<CreateSongPage />} />
+      </Route>
+    </Routes>
+  )
+}
+
+export default App
