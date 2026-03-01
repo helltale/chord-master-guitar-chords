@@ -363,7 +363,7 @@ func blockToGen(b entity.Block) gen.Block {
 
 func chordSegmentToGen(s entity.ChordSegment) gen.ChordSegment {
 	var chordUnion gen.ChordSegment_Chord
-	_ = chordUnion.FromChordSegmentChord1(gen.ChordSegmentChord1(s.Chord))
+	_ = chordUnion.FromChordSegmentChord1(s.Chord)
 	out := gen.ChordSegment{Chord: chordUnion}
 	out.Text = ptr(s.Text)
 	return out
