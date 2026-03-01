@@ -362,7 +362,9 @@ func blockToGen(b entity.Block) gen.Block {
 }
 
 func chordSegmentToGen(s entity.ChordSegment) gen.ChordSegment {
-	out := gen.ChordSegment{Chord: s.Chord}
+	var chordUnion gen.ChordSegment_Chord
+	_ = chordUnion.FromChordSegmentChord1(gen.ChordSegmentChord1(s.Chord))
+	out := gen.ChordSegment{Chord: chordUnion}
 	out.Text = ptr(s.Text)
 	return out
 }
@@ -429,9 +431,20 @@ func blockFromAPI(b gen.Block) entity.Block {
 }
 
 func chordSegmentFromAPI(s gen.ChordSegment) entity.ChordSegment {
-	out := entity.ChordSegment{Chord: s.Chord}
+	chordStr := chordSegmentChordToString(s.Chord)
+	out := entity.ChordSegment{Chord: chordStr}
 	if s.Text != nil {
 		out.Text = *s.Text
 	}
 	return out
+}
+
+func chordSegmentChordToString(c gen.ChordSegment_Chord) string {
+	if v, err := c.AsCommonChord(); err == nil {
+		return string(v)
+	}
+	if v, err := c.AsChordSegmentChord1(); err == nil {
+		return v
+	}
+	return ""
 }

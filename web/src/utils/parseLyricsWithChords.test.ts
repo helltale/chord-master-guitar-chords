@@ -90,4 +90,21 @@ describe('parseLyricsWithChords', () => {
     expect(result.sections![0].blocks).toHaveLength(1)
     expect(result.sections![0].blocks![0].segments).toHaveLength(2)
   })
+
+  it('supports chord mid-word (полуслове)', () => {
+    const result = parseLyricsWithChords('полу[Am]слове')
+    expect(result.sections![0].blocks![0].segments).toEqual([
+      { chord: '', text: 'полу' },
+      { chord: 'Am', text: 'слове' },
+    ])
+  })
+
+  it('supports chord with only spaces (chord after word)', () => {
+    const result = parseLyricsWithChords('[F] слово   [Dm]   [Am] ещё')
+    expect(result.sections![0].blocks![0].segments).toEqual([
+      { chord: 'F', text: ' слово   ' },
+      { chord: 'Dm', text: '   ' },
+      { chord: 'Am', text: ' ещё' },
+    ])
+  })
 })

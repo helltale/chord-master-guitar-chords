@@ -361,10 +361,42 @@ components:
         - chord
       properties:
         chord:
-          type: string
+          oneOf:
+            - $ref: '#/components/schemas/CommonChord'
+            - type: string
+          description: "Chord name; common values from CommonChord enum, or any string for custom chords"
         text:
           type: string
           description: "Lyrics fragment; empty string allowed (chord with no words)"
+
+    CommonChord:
+      type: string
+      enum:
+        - Am
+        - C
+        - F
+        - G
+        - Dm
+        - Em
+        - Bm
+        - A
+        - D
+        - E
+        - B
+        - F#m
+        - C#m
+        - Bb
+        - Gm
+        - A7
+        - E7
+        - D7
+        - C7
+        - G7
+        - F#
+        - Ab
+        - Eb
+        - Db
+      description: "Common chord name for chord picker UI"
 
     Block:
       type: object

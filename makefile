@@ -22,5 +22,5 @@ gen-web:
 docker-build:
 	docker compose build --no-cache
 
-docker-build-web-host: build-web
-	docker build -f web/Dockerfile.host -t amdm-guitar-chords-web ./web
+restart:
+	docker compose down -v && docker compose build --no-cache web && docker compose up -d

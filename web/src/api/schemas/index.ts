@@ -10,6 +10,8 @@ export type { SongList } from './SongList';
 export type { TabContent } from './TabContent';
 export type { Section } from './Section';
 export type { ChordSegment } from './ChordSegment';
+export type { CommonChord } from './CommonChord';
 export type { Block } from './Block';
 export type { CreateSongRequest } from './CreateSongRequest';
 export type { UpdateSongRequest } from './UpdateSongRequest';
+export { COMMON_CHORDS } from './CommonChord';
