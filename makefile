@@ -18,3 +18,9 @@ gen-back:
 
 gen-web:
 	cd web && node scripts/gen-api-types.js
+
+docker-build:
+	docker compose build --no-cache
+
+docker-build-web-host: build-web
+	docker build -f web/Dockerfile.host -t amdm-guitar-chords-web ./web
