@@ -11,8 +11,8 @@ on:
       - master
 
 jobs:
-  test:
-    name: Unit Tests
+  test-back:
+    name: Unit Tests (Go)
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -27,3 +27,25 @@ jobs:
       - name: Run unit tests
         working-directory: back
         run: go test ./... -v -count=1
+
+  test-web:
+    name: Unit Tests (Web)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+        working-directory: web
+
+      - name: Run unit tests
+        run: npm run test
+        working-directory: web
