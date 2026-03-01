@@ -49,9 +49,10 @@ function schemaToTs(schema, schemas, currentName, imports) {
       return 'number';
     case 'boolean':
       return 'boolean';
-    case 'array':
+    case 'array': {
       const items = schemaToTs(schema.items || {}, schemas, currentName, imports);
       return `${items}[]`;
+    }
     case 'object': {
       if (schema.additionalProperties !== undefined) {
         const value = schemaToTs(
