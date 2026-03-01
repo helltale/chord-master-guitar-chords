@@ -8,6 +8,7 @@ test: utest itest
 
 utest:
 	cd back && go test ./... -v -count=1
+	cd web && npm run test
 
 itest:
 	cd back && go test -tags=integration -v -count=1 ./tests/...

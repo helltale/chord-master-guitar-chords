@@ -1,5 +1,6 @@
 import type { CreateSongRequest } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
+import { slugFromString } from '@/utils/slug'
 
 interface CreateSongFormProps {
   artists: Artist[]
@@ -7,14 +8,6 @@ interface CreateSongFormProps {
   onSubmit: (body: CreateSongRequest) => void
   loading: boolean
   error: Error | null
-}
-
-function slugFromTitle(title: string): string {
-  return title
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9а-яё-]/gi, '')
 }
 
 export function CreateSongForm({
@@ -41,7 +34,7 @@ export function CreateSongForm({
     if (!form) return
     const slugField = form.elements.namedItem('slug') as HTMLInputElement
     if (slugField && !slugField.dataset.touched) return
-    const slug = slugFromTitle(e.target.value)
+    const slug = slugFromString(e.target.value)
     if (slug) slugField.value = slug
   }
 

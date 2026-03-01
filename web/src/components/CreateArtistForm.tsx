@@ -1,17 +1,10 @@
 import type { CreateArtistRequest } from '@/api/schemas'
+import { slugFromString } from '@/utils/slug'
 
 interface CreateArtistFormProps {
   onSubmit: (body: CreateArtistRequest) => void
   loading: boolean
   error: Error | null
-}
-
-function slugFromName(name: string): string {
-  return name
-    .trim()
-    .toLowerCase()
-    .replace(/\s+/g, '-')
-    .replace(/[^a-z0-9а-яё-]/gi, '')
 }
 
 export function CreateArtistForm({
@@ -33,7 +26,7 @@ export function CreateArtistForm({
     if (!form) return
     const slugField = form.elements.namedItem('slug') as HTMLInputElement
     if (slugField && !slugField.dataset.touched) return
-    const slug = slugFromName(e.target.value)
+    const slug = slugFromString(e.target.value)
     if (slug) slugField.value = slug
   }
 
