@@ -22,9 +22,9 @@ describe('SongContent', () => {
     }
     render(<SongContent content={content} />)
     expect(screen.getByText('Verse 1')).toBeInTheDocument()
-    expect(screen.getByText(/\[Am\]/)).toBeInTheDocument()
+    expect(screen.getByText('Am')).toBeInTheDocument()
     expect(screen.getByText(/first/)).toBeInTheDocument()
-    expect(screen.getByText(/\[C\]/)).toBeInTheDocument()
+    expect(screen.getByText('C')).toBeInTheDocument()
     expect(screen.getByText(/second/)).toBeInTheDocument()
   })
 

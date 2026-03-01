@@ -40,6 +40,11 @@ function schemaToTs(schema, schemas, currentName, imports) {
     return out ? `(${out})` : 'Record<string, never>';
   }
 
+  if (schema.oneOf) {
+    const parts = schema.oneOf.map((s) => schemaToTs(s, schemas, currentName, imports)).filter((p) => p !== 'unknown');
+    return parts.length ? `(${parts.join(' | ')})` : 'unknown';
+  }
+
   switch (schema.type) {
     case 'string':
       if (Array.isArray(schema.enum)) return schema.enum.map((e) => `'${String(e).replace(/'/g, "\\'")}'`).join(' | ');
@@ -96,9 +101,16 @@ function emitSchema(name, schema, schemas) {
       : '';
 
   const isInline = body.startsWith('{') || body.startsWith('(');
-  const exportType = isInline ? `export type ${name} = ${body};\n` : `export type ${name} = ${body};\n`;
+  let out = `/** Generated from OpenAPI schema "${name}". Do not edit. */\n\n` + importLines;
+  out += isInline ? `export type ${name} = ${body};\n` : `export type ${name} = ${body};\n`;
 
-  return `/** Generated from OpenAPI schema "${name}". Do not edit. */\n\n` + importLines + exportType;
+  // Export constant array for CommonChord enum (chord picker UI)
+  if (name === 'CommonChord' && schema?.type === 'string' && Array.isArray(schema.enum)) {
+    const values = schema.enum.map((v) => `'${String(v).replace(/'/g, "\\'")}'`).join(', ');
+    out += `\n/** All common chord values for chord picker. */\nexport const COMMON_CHORDS: ${name}[] = [${values}];\n`;
+  }
+
+  return out;
 }
 
 function main() {
@@ -120,9 +132,11 @@ function main() {
   }
 
   const indexLines = names.map((n) => `export type { ${n} } from './${n}';`);
+  const commonChordExport =
+    names.includes('CommonChord') ? "\nexport { COMMON_CHORDS } from './CommonChord';" : '';
   fs.writeFileSync(
     path.join(SCHEMAS_DIR, 'index.ts'),
-    '/** Barrel: all API schema types. */\n\n' + indexLines.join('\n') + '\n'
+    '/** Barrel: all API schema types. */\n\n' + indexLines.join('\n') + commonChordExport + '\n'
   );
 
   // Remove types.ts if it existed (we no longer generate it)

@@ -1,5 +1,8 @@
-import type { CreateSongRequest } from '@/api/schemas'
+import { useState } from 'react'
+import type { CreateSongRequest, TabContent } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
+import { LyricsWysiwygEditor } from '@/components/LyricsWysiwygEditor'
+import { isContentEmpty } from '@/utils/tabContent'
 import { slugFromString } from '@/utils/slug'
 
 interface CreateSongFormProps {
@@ -10,6 +13,10 @@ interface CreateSongFormProps {
   error: Error | null
 }
 
+const emptyContent: TabContent = {
+  sections: [{ type: 'verse', label: '', blocks: [{ kind: 'lyrics', segments: [{ chord: '', text: '' }] }] }],
+}
+
 export function CreateSongForm({
   artists,
   artistsLoading,
@@ -17,6 +24,8 @@ export function CreateSongForm({
   loading,
   error,
 }: CreateSongFormProps) {
+  const [content, setContent] = useState<TabContent>(emptyContent)
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
@@ -26,7 +35,8 @@ export function CreateSongForm({
     const tonalityRaw = (form.elements.namedItem('tonality') as HTMLInputElement).value
     if (!artist_id || !title || !slug) return
     const tonality = tonalityRaw ? parseInt(tonalityRaw, 10) : undefined
-    onSubmit({ artist_id, title, slug, tonality })
+    const contentToSend = isContentEmpty(content) ? undefined : content
+    onSubmit({ artist_id, title, slug, tonality, content: contentToSend })
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +114,15 @@ export function CreateSongForm({
           type="number"
           step={1}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+      <div>
+        <label id="song-content-label" className="block text-sm font-medium text-gray-700 mb-1">
+          Текст с аккордами (опционально)
+        </label>
+        <LyricsWysiwygEditor
+          value={content}
+          onChange={setContent}
         />
       </div>
       <button

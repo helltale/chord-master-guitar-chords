@@ -18,15 +18,18 @@ export function SongContent({ content }: SongContentProps) {
           {(section.blocks ?? []).map((block, bidx) => (
             <div key={bidx} className="mb-4">
               {block.kind === 'lyrics' && (
-                <div className="font-mono text-gray-800 whitespace-pre-wrap">
+                <div className="font-mono text-gray-800 leading-relaxed">
                   {(block.segments ?? []).map((seg, sidx) => (
-                    <span key={sidx}>
-                      {seg.chord && (
-                        <span className="font-semibold text-indigo-600 mr-1">
-                          [{seg.chord}]
-                        </span>
-                      )}
-                      {seg.text ?? ''}
+                    <span
+                      key={sidx}
+                      className="inline-block align-top min-w-[0.25rem]"
+                    >
+                      <span className="block text-xs font-semibold text-indigo-600 whitespace-nowrap mb-0.5">
+                        {seg.chord || '\u00A0'}
+                      </span>
+                      <span className="whitespace-pre-wrap break-words">
+                        {seg.text ?? ''}
+                      </span>
                     </span>
                   ))}
                 </div>
