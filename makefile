@@ -1,5 +1,6 @@
 lint:
 	cd back && golangci-lint run ./...
+	cd web && npm run lint
 
 tidy:
 	cd back && go mod tidy
