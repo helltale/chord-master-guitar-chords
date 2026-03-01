@@ -4,6 +4,8 @@ lint:
 tidy:
 	cd back && go mod tidy
 
+test: utest itest
+
 utest:
 	cd back && go test ./... -v -count=1
 

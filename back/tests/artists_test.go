@@ -200,7 +200,9 @@ func TestArtists_ListPagination(t *testing.T) {
 		t.Fatalf("list: status = %d", resp.StatusCode)
 	}
 	var list struct {
-		Items *[]struct{ Name string `json:"name"` }
+		Items *[]struct {
+			Name string `json:"name"`
+		}
 		Total *int `json:"total"`
 	}
 	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
