@@ -1,5 +1,6 @@
 import type { CreateSongRequest } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
+import { parseLyricsWithChords } from '@/utils/parseLyricsWithChords'
 import { slugFromString } from '@/utils/slug'
 
 interface CreateSongFormProps {
@@ -24,9 +25,11 @@ export function CreateSongForm({
     const title = (form.elements.namedItem('title') as HTMLInputElement).value.trim()
     const slug = (form.elements.namedItem('slug') as HTMLInputElement).value.trim()
     const tonalityRaw = (form.elements.namedItem('tonality') as HTMLInputElement).value
+    const lyricsRaw = (form.elements.namedItem('lyrics') as HTMLTextAreaElement).value.trim()
     if (!artist_id || !title || !slug) return
     const tonality = tonalityRaw ? parseInt(tonalityRaw, 10) : undefined
-    onSubmit({ artist_id, title, slug, tonality })
+    const content = lyricsRaw ? parseLyricsWithChords(lyricsRaw) : undefined
+    onSubmit({ artist_id, title, slug, tonality, content })
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -104,6 +107,18 @@ export function CreateSongForm({
           type="number"
           step={1}
           className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        />
+      </div>
+      <div>
+        <label htmlFor="song-lyrics" className="block text-sm font-medium text-gray-700 mb-1">
+          Текст с аккордами (опционально)
+        </label>
+        <textarea
+          id="song-lyrics"
+          name="lyrics"
+          rows={10}
+          placeholder="Аккорды в квадратных скобках: [Am] текст [C] ещё текст. Строка «Припев:» или «Куплет 1:» начинает новую секцию. Каждая строка — отдельная строка в песне."
+          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono text-sm"
         />
       </div>
       <button
