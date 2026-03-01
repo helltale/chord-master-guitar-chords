@@ -1,7 +1,5 @@
 # Интеграционные тесты API
 
-Интеграционные тесты проверяют полный путь запроса: HTTP → роутер → handler → cases → repository → PostgreSQL. Используется реальная БД (без моков), что даёт уверенность в работоспособности сценариев и граничных случаях в условиях, близких к продакшену.
-
 ## Требования и запуск
 
 - **По умолчанию** тесты сами поднимают **PostgreSQL в Docker** (testcontainers), прогоняют тесты и **полностью удаляют контейнер** после завершения. Нужен запущенный Docker (docker socket доступен тестам).
@@ -13,78 +11,49 @@
 
 **Вариант без Docker (своя БД):** задайте переменную окружения `TEST_DATABASE_DSN` (полная строка подключения к PostgreSQL, например `postgres://amdm:amdm@localhost:5432/amdm_test?sslmode=disable`). Тогда контейнер не создаётся, тесты подключаются к указанной БД. Удобно для CI с уже поднятой БД или для отладки.
 
-## Стратегия и границы
+## Какие тесты что проверяют
 
-| Уровень              | Что проверяем |
-|----------------------|----------------|
-| **HTTP + роутинг**   | Коды ответов, Content-Type, формат JSON по OpenAPI. |
-| **Валидация**        | 400 на пустые/некорректные поля, дубликаты slug, несуществующие artist_id. |
-| **Консистентность**  | После Create/Update/Transpose данные при Get/List совпадают с ожидаемыми. |
-| **Поиск**            | Поиск по названию песни, имени/slug артиста, пагинация, пустой запрос. |
-| **Граничные случаи**  | 404 для несуществующих id/slug, пустые списки, limit/offset. |
+### Artists (`artists_integration_test.go`)
 
-Тесты не подменяют БД на in-memory: используется тот же драйвер и миграции, что и в приложении.
+| Тест | Что проверяет |
+|------|----------------|
+| **TestArtists_ListEmpty** | `GET /artists` на пустой БД возвращает `200`, `items: []`, `total: 0`. |
+| **TestArtists_CreateSuccess** | `POST /artists` с валидными `name` и `slug` → `201`, в теле есть `artist_id`, `name`, `slug`; затем `GET /artists/{slug}` возвращает того же артиста (`200`), в т.ч. поле `songs` (массив). |
+| **TestArtists_CreateDuplicateSlug_Returns400** | Первый `POST /artists` с `slug` → `201`; второй с тем же `slug` → `400`. |
+| **TestArtists_CreateValidation_Returns400** | `POST /artists` с пустым `name`, пустым `slug` или невалидным `slug` (пробелы/спецсимволы) → `400` (подтесты: empty_name, empty_slug, invalid_slug). |
+| **TestArtists_GetBySlug_NotFound_Returns404** | `GET /artists/non-existent-slug-12345` → `404`. |
+| **TestArtists_ListPagination** | Создаются 3 артиста (Charlie, Alice, Bob); `GET /artists?limit=2&offset=1` → `200`, порядок по `name`, в `items` ровно 2 элемента (Bob, Charlie), `total` ≥ 3. |
 
----
+### Songs (`songs_integration_test.go`)
 
-## Сценарии по доменам
+| Тест | Что проверяет |
+|------|----------------|
+| **TestSongs_CreateSuccess** | Создание артиста через API, затем `POST /songs` с валидным `artist_id`, `title`, `slug` → `201`, в ответе `song_id`, `artist_id`, `title`, `slug`, `tonality`; `GET /songs/{id}` возвращает те же данные. |
+| **TestSongs_CreateDuplicateSlug_Returns400** | У одного артиста создаётся песня с `slug`; вторая песня с тем же `slug` у того же артиста → `400`. |
+| **TestSongs_CreateValidation_Returns400** | `POST /songs` с пустым `title`, пустым `slug` или невалидным `slug` → `400` (подтесты: empty_title, empty_slug, invalid_slug). |
+| **TestSongs_Get_NotFound_Returns404** | `GET /songs/11111111-1111-1111-1111-111111111111` (валидный UUID, записи нет) → `404`. |
+| **TestSongs_ListByArtistId** | Создаётся артист и одна песня; `GET /songs?artist_id={id}` → `200`, `total: 1`, в `items` одна песня с ожидаемым `title`. |
+| **TestSongs_UpdateSuccess** | Создаётся артист и песня; `PUT /songs/{id}` с новыми `title` и `slug` → `200`, в ответе обновлённые поля; `GET /songs/{id}` возвращает те же обновлённые данные. |
+| **TestSongs_Update_NotFound_Returns404** | `PUT /songs/11111111-1111-1111-1111-111111111111` с телом → `404`. |
+| **TestSongs_TransposeSuccess** | Создаётся песня с `content` (аккорды C, G) и `tonality: 0`; `POST /songs/{id}/transpose?semitones=2` → `200`, в ответе `tonality: 2` и в `content.sections` аккорды сдвинуты (D, A). |
+| **TestSongs_Transpose_NotFound_Returns404** | `POST /songs/11111111-1111-1111-1111-111111111111/transpose?semitones=1` → `404`. |
 
-### 1. Artists
+### Search (`search_integration_test.go`)
 
-| Сценарий | Цель | Контрольные точки |
-|----------|------|-------------------|
-| **List (пустая БД)** | Пустой список без ошибки | `200`, `items: []`, `total: 0`. |
-| **List (пагинация)** | Корректные limit/offset | Создать N артистов, запросить `limit=2&offset=1` → порядок по `name`, `total=N`, в `items` ровно 2 элемента. |
-| **Create (успех)** | Создание и отдача в ответе | `201`, в теле `artist_id`, `name`, `slug`, `created_at`; последующий `GET /artists/{slug}` возвращает того же артиста. |
-| **Create (дубликат slug)** | Конфликт по slug | Второй `POST /artists` с тем же `slug` → `400`. |
-| **Create (валидация)** | Отклонение невалидных данных | `400` при пустом `name` или `slug`, при slug с пробелами/заглавными/спецсимволами (по правилам cases). |
-| **GetBySlug (успех)** | Получение артиста и его песен | `200`, поля артиста совпадают; `songs` — массив (может быть пустым). |
-| **GetBySlug (404)** | Несуществующий slug | `404` для неизвестного slug. |
-
-### 2. Songs
-
-| Сценарий | Цель | Контрольные точки |
-|----------|------|-------------------|
-| **Create (успех)** | Создание песни при валидном artist_id | `201`, в теле `song_id`, `artist_id`, `title`, `slug`, `tonality`, `content`, даты; `GET /songs/{id}` возвращает те же данные. |
-| **Create (дубликат slug у артиста)** | Уникальность (artist_id, slug) | Второй Create с тем же `artist_id` и `slug` → `400`. |
-| **Create (валидация)** | Пустой title/slug, невалидный slug | `400`. |
-| **Create (чужой artist_id)** | Песня только у существующего артиста | `artist_id` = несуществующий UUID → ожидаем ошибку (500 или 400 в зависимости от реализации). |
-| **Get (200/404)** | Получение по ID | Существующий `song_id` → `200` и полное тело; несуществующий UUID → `404`. |
-| **List (все / по artist_id)** | Список и фильтр | Без `artist_id` — все песни (пагинация); с `artist_id` — только песни этого артиста; `total` совпадает с фактическим количеством. |
-| **Update (успех)** | Частичное обновление | `PUT` с `title` и/или `slug`, `tonality`, `content` → `200`; при следующем `GET` поля обновлены. |
-| **Update (404 / валидация)** | Несуществующий id, пустой title | Несуществующий `song_id` → `404`; пустой `title` после trim → `400`. |
-| **Transpose (успех)** | Транспонирование контента | Песня с контентом (аккорды C, G); `POST .../transpose?semitones=2` → `200`, в `content` аккорды сдвинуты (например D, A), `tonality` увеличен на 2. |
-| **Transpose (404)** | Песня не найдена | Несуществующий `song_id` → `404`. |
-
-### 3. Search
-
-| Сценарий | Цель | Контрольные точки |
-|----------|------|-------------------|
-| **Пустой запрос** | Без лишних вызовов БД | `q=` или пустой/пробельный `q` → `200`, `items: []`, `total: 0`. |
-| **По названию песни** | Поиск по title | Создать песню с уникальным title; запрос с подстрокой title → в результатах эта песня, порядок по artist/song. |
-| **По имени/slug артиста** | Поиск по artist name/slug | Создать артиста и песню; искать по name или slug артиста → песни этого артиста в ответе. |
-| **Пагинация** | limit/offset | Много совпадений; проверить `limit` и `offset` в ответе и соответствие `total`. |
+| Тест | Что проверяет |
+|------|----------------|
+| **TestSearch_EmptyQuery_ReturnsEmpty** | `GET /search?q=%20` (пробел) → `200`, `items: []`, `total: 0` (пустой запрос не дергает поиск по БД). |
+| **TestSearch_BySongTitle** | Создаётся артист и песня с уникальным title; `GET /search?q=UniqueTitleForSearch` → `200`, в `items` есть песня с подстрокой в title, `total` ≥ 1. |
+| **TestSearch_ByArtistName** | Создаётся артист "BandForSearch" и песня "Any Song"; поиск `q=BandForSearch` → в результатах есть "Any Song", `total` ≥ 1. |
+| **TestSearch_Pagination** | Создаётся артист и 5 песен (PageSongA–E); `GET /search?q=PageSong&limit=2&offset=1` → `200`, `total` ≥ 5, в `items` ровно 2 элемента. |
 
 ---
 
 ## Структура тестов
 
-- **`setup_test.go`** — `TestMain`: при отсутствии `TEST_DATABASE_DSN` поднимает контейнер PostgreSQL (postgres:16-alpine) через testcontainers, выставляет DSN в env, по завершении тестов останавливает и удаляет контейнер. Там же: `NewTestServer`, `openTestDB`, подключение к БД (из env или config), миграции, создание `*httptest.Server` с chi + handler, базовый URL `/api`.
+- **`setup_test.go`** — `TestMain`: при отсутствии `TEST_DATABASE_DSN` поднимает контейнер PostgreSQL (postgres:16-alpine) через testcontainers, выставляет DSN в env, по завершении тестов останавливает и удаляет контейнер. Там же: `NewTestServer`, `openTestDB`, подключение к БД (из env или config), миграции, создание `*httptest.Server` с chi + handler, базовый URL `/api`. Логирование GORM в тестах отключено (`logger.Silent`): проверка «такой slug уже есть?» перед созданием и запросы к несуществующим id/slug дают «record not found» — это ожидаемое поведение, а не ошибка теста; тесты проверяют запись в БД через GET после Create/Update и проверку полей ответа.
 - **`artists_integration_test.go`** — табличные и отдельные тесты по сценариям Artists.
 - **`songs_integration_test.go`** — сценарии Songs (Create, Get, List, Update, Transpose).
 - **`search_integration_test.go`** — сценарии Search.
 
 В каждом файле: подготовка данных через API или напрямую в БД (где удобнее), вызов HTTP, проверка статуса и при необходимости распарсенного JSON (id, slug, total, поля content и т.д.).
-
----
-
-## Контрольные точки (checklist)
-
-- [ ] Все ответы успешных операций возвращают ожидаемые поля по OpenAPI (в т.ч. даты, вложенный `content` для песен).
-- [ ] 400 возвращается при дубликате slug (artist и song), при пустых/невалидных name/title/slug.
-- [ ] 404 — для несуществующего artist slug и song id.
-- [ ] После Create/Update данные при Get и List консистентны (в т.ч. после Transpose — контент и tonality).
-- [ ] Поиск находит песни по названию и по артисту; пустой запрос не ломает и не дергает лишний поиск.
-- [ ] Пагинация (artists, songs, search): `total` корректен, `items` и `limit`/`offset` соответствуют запросу.
-
-Эти пункты закрываются описанными выше сценариями в коде тестов.

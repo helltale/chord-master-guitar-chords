@@ -20,12 +20,11 @@ import (
 	postgresmod "github.com/testcontainers/testcontainers-go/modules/postgres"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
+	"gorm.io/gorm/logger"
 )
 
 const apiBase = "/api"
 
-// NewTestServer создаёт HTTP-сервер для интеграционных тестов: реальная БД, миграции,
-// repository → cases → handler. BaseURL для API: /api.
 func NewTestServer(t *testing.T) *httptest.Server {
 	db, err := openTestDB()
 	if err != nil {
@@ -60,7 +59,9 @@ func openTestDB() (*gorm.DB, error) {
 		}
 		dsn = cfg.Database.DSN()
 	}
-	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
+		Logger: logger.Default.LogMode(logger.Silent),
+	})
 	if err != nil {
 		return nil, fmt.Errorf("open db: %w", err)
 	}
