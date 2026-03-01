@@ -1,4 +1,4 @@
-import { renderHook, waitFor } from '@testing-library/react'
+import { act, renderHook } from '@testing-library/react'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { useSearch } from './useSearch'
 
@@ -24,19 +24,20 @@ describe('useSearch', () => {
         ({ query, limit }) => useSearch(query, limit),
         { initialProps: { query: 'foo', limit: 20 } }
       )
-      vi.advanceTimersByTime(350)
-      await waitFor(() => {
-        expect(result.current.items.length).toBe(1)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(350)
       })
+      expect(result.current.items).toHaveLength(1)
       expect(searchMock).toHaveBeenCalledWith({ q: 'foo', limit: 20 })
 
-      rerender({ query: '', limit: 20 })
-      await waitFor(() => {
-        expect(result.current.items).toEqual([])
-        expect(result.current.total).toBe(0)
+      await act(async () => {
+        rerender({ query: '', limit: 20 })
       })
+      expect(result.current.items).toEqual([])
+      expect(result.current.total).toBe(0)
+
       const callCountAfterClear = searchMock.mock.calls.length
-      vi.advanceTimersByTime(500)
+      await vi.advanceTimersByTimeAsync(500)
       expect(searchMock.mock.calls.length).toBe(callCountAfterClear)
     })
   })
@@ -52,15 +53,13 @@ describe('useSearch', () => {
         { initialProps: { query: 'song', limit: 20 } }
       )
       expect(searchMock).not.toHaveBeenCalled()
-      vi.advanceTimersByTime(300)
-      await waitFor(() => {
-        expect(searchMock).toHaveBeenCalledWith({ q: 'song', limit: 20 })
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(300)
       })
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-        expect(result.current.items).toEqual(items)
-        expect(result.current.total).toBe(1)
-      })
+      expect(searchMock).toHaveBeenCalledWith({ q: 'song', limit: 20 })
+      expect(result.current.loading).toBe(false)
+      expect(result.current.items).toEqual(items)
+      expect(result.current.total).toBe(1)
     })
 
     it('sets error and clears items on API failure', async () => {
@@ -70,13 +69,13 @@ describe('useSearch', () => {
         ({ query, limit }) => useSearch(query, limit),
         { initialProps: { query: 'fail', limit: 20 } }
       )
-      vi.advanceTimersByTime(300)
-      await waitFor(() => {
-        expect(result.current.loading).toBe(false)
-        expect(result.current.error).toBe(err)
-        expect(result.current.items).toEqual([])
-        expect(result.current.total).toBe(0)
+      await act(async () => {
+        await vi.advanceTimersByTimeAsync(300)
       })
+      expect(result.current.loading).toBe(false)
+      expect(result.current.error).toBe(err)
+      expect(result.current.items).toEqual([])
+      expect(result.current.total).toBe(0)
     })
   })
 })

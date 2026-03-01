@@ -12,7 +12,7 @@ describe('ChordFingeringPanel', () => {
     expect(screen.getByText('Аппликатуры аккордов')).toBeInTheDocument()
     expect(screen.getByText('Am')).toBeInTheDocument()
     expect(screen.getByText('C')).toBeInTheDocument()
-    expect(screen.getByText(/e\|-0-\|/)).toBeInTheDocument()
+    expect(screen.getAllByText(/e\|-0-\|/).length).toBe(2)
   })
 
   it('renders nothing when chordTabs is empty', () => {
