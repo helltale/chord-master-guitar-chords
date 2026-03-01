@@ -1,0 +1,15 @@
+/** Barrel: all API schema types. */
+
+export type { Artist } from './Artist';
+export type { ArtistWithSongs } from './ArtistWithSongs';
+export type { ArtistList } from './ArtistList';
+export type { CreateArtistRequest } from './CreateArtistRequest';
+export type { SongListItem } from './SongListItem';
+export type { Song } from './Song';
+export type { SongList } from './SongList';
+export type { TabContent } from './TabContent';
+export type { Section } from './Section';
+export type { ChordSegment } from './ChordSegment';
+export type { Block } from './Block';
+export type { CreateSongRequest } from './CreateSongRequest';
+export type { UpdateSongRequest } from './UpdateSongRequest';

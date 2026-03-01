@@ -11,3 +11,9 @@ utest:
 
 itest:
 	cd back && go test -tags=integration -v -count=1 ./tests/...
+
+gen-back:
+	cd back/internal/api && go generate .
+
+gen-web:
+	cd web && node scripts/gen-api-types.js
