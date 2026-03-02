@@ -1,19 +1,11 @@
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react'
+import { useCallback, useEffect, useMemo, useState, type ReactNode } from 'react'
 import type { LocaleKey } from '@/locales/keys'
 import { ru } from '@/locales/ru'
 import { en } from '@/locales/en'
+import { I18nContext } from './context'
+import type { Locale } from './context'
 
 const STORAGE_KEY = 'locale'
-
-export type Locale = 'ru' | 'en'
 
 const dictionaries: Record<Locale, typeof ru> = { ru, en }
 
@@ -27,14 +19,6 @@ function getStoredLocale(): Locale {
 function setStoredLocale(locale: Locale) {
   localStorage.setItem(STORAGE_KEY, locale)
 }
-
-interface I18nContextValue {
-  locale: Locale
-  setLocale: (next: Locale) => void
-  t: (key: LocaleKey) => string
-}
-
-const I18nContext = createContext<I18nContextValue | null>(null)
 
 export function I18nProvider({ children }: { children: ReactNode }) {
   const [locale, setLocaleState] = useState<Locale>(getStoredLocale)
@@ -54,7 +38,7 @@ export function I18nProvider({ children }: { children: ReactNode }) {
     [dict]
   )
 
-  const value = useMemo<I18nContextValue>(
+  const value = useMemo(
     () => ({ locale, setLocale, t }),
     [locale, setLocale, t]
   )
@@ -64,20 +48,4 @@ export function I18nProvider({ children }: { children: ReactNode }) {
       {children}
     </I18nContext.Provider>
   )
-}
-
-export function useI18n(): I18nContextValue {
-  const ctx = useContext(I18nContext)
-  if (!ctx) {
-    throw new Error('useI18n must be used within I18nProvider')
-  }
-  return ctx
-}
-
-/**
- * Hook for components that need the translation function and optional locale/setLocale.
- * Re-renders only when locale changes.
- */
-export function useTranslation() {
-  return useI18n()
 }
