@@ -1,4 +1,4 @@
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
 import { useArtistBySlug } from '@/hooks'
 import { SongCard } from '@/components/SongCard'
@@ -21,9 +21,6 @@ export function ArtistPage() {
         <p className="text-red-600 dark:text-red-400" role="alert">
           {error ? error.message : t('common.artistNotFound')}
         </p>
-        <Link to="/" className="mt-4 inline-block text-indigo-600 dark:text-indigo-400 hover:underline">
-          {t('common.backToHome')}
-        </Link>
       </div>
     )
   }

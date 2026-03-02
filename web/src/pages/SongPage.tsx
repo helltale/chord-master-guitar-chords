@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 import { useSong, useTransposeSong } from '@/hooks'
 import { useTranslation } from '@/contexts/I18nContext'
 import { SongContent } from '@/components/SongContent'
@@ -36,9 +36,6 @@ export function SongPage() {
         <p className="text-red-600 dark:text-red-400" role="alert">
           {error ? error.message : t('common.songNotFound')}
         </p>
-        <Link to="/" className="mt-4 inline-block text-indigo-600 dark:text-indigo-400 hover:underline">
-          {t('common.backToHome')}
-        </Link>
       </div>
     )
   }

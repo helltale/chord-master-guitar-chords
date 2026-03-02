@@ -1,4 +1,4 @@
-import { useNavigate, Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
 import { useCreateSong, useListArtists } from '@/hooks'
 import { CreateSongForm } from '@/components/CreateSongForm'
@@ -26,11 +26,6 @@ export function CreateSongPage() {
         loading={loading}
         error={error}
       />
-      <p className="mt-4">
-        <Link to="/" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-          {t('common.backToHome')}
-        </Link>
-      </p>
     </div>
   )
 }
