@@ -11,7 +11,6 @@ export function HomePage() {
     <div className="relative flex-1 flex flex-col min-h-0 -mx-4 -my-6 px-4 py-6">
       <MouseReactiveBackground />
       <div className="relative z-10 flex-1 flex flex-col items-center justify-center py-4">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-6">Главная</h1>
         <SearchBar
           query={query}
           onQueryChange={setQuery}

@@ -26,7 +26,7 @@ export function SearchBar({
       <input
         id="search"
         type="search"
-        placeholder="Поиск по песням и исполнителям..."
+        placeholder="Поиск..."
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
         className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"

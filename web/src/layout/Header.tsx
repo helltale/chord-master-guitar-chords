@@ -37,12 +37,6 @@ export function Header() {
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
           <Link
-            to="/"
-            className="text-gray-600 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 font-medium"
-          >
-            Главная
-          </Link>
-          <Link
             to="/artists/new"
             className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
           >
