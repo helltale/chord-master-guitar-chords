@@ -26,7 +26,7 @@ type ServerInterface interface {
 	// Get artist by slug
 	// (GET /artists/{artistSlug})
 	GetArtistBySlug(w http.ResponseWriter, r *http.Request, artistSlug string)
-	// Search songs by artist name/slug or song title
+	// Search artists and songs by name/slug or song title
 	// (GET /search)
 	Search(w http.ResponseWriter, r *http.Request, params SearchParams)
 	// List songs
@@ -68,7 +68,7 @@ func (_ Unimplemented) GetArtistBySlug(w http.ResponseWriter, r *http.Request, a
 	w.WriteHeader(http.StatusNotImplemented)
 }
 
-// Search songs by artist name/slug or song title
+// Search artists and songs by name/slug or song title
 // (GET /search)
 func (_ Unimplemented) Search(w http.ResponseWriter, r *http.Request, params SearchParams) {
 	w.WriteHeader(http.StatusNotImplemented)
@@ -606,7 +606,7 @@ type SearchResponseObject interface {
 	VisitSearchResponse(w http.ResponseWriter) error
 }
 
-type Search200JSONResponse SongList
+type Search200JSONResponse SearchResult
 
 func (response Search200JSONResponse) VisitSearchResponse(w http.ResponseWriter) error {
 	w.Header().Set("Content-Type", "application/json")
@@ -753,7 +753,7 @@ type StrictServerInterface interface {
 	// Get artist by slug
 	// (GET /artists/{artistSlug})
 	GetArtistBySlug(ctx context.Context, request GetArtistBySlugRequestObject) (GetArtistBySlugResponseObject, error)
-	// Search songs by artist name/slug or song title
+	// Search artists and songs by name/slug or song title
 	// (GET /search)
 	Search(ctx context.Context, request SearchRequestObject) (SearchResponseObject, error)
 	// List songs

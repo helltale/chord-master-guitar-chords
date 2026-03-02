@@ -24,21 +24,26 @@ func TestSearch_EmptyQuery_ReturnsEmpty(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Errorf("GET /search?q= : status = %d, want 200", resp.StatusCode)
 	}
-	var list struct {
-		Items *[]any `json:"items"`
-		Total *int   `json:"total"`
+	var result struct {
+		Artists      []any `json:"artists"`
+		TotalArtists int   `json:"total_artists"`
+		Songs        []any `json:"songs"`
+		TotalSongs   int   `json:"total_songs"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		t.Fatal(err)
 	}
-	if list.Items == nil {
-		list.Items = &[]any{}
+	if len(result.Artists) != 0 {
+		t.Errorf("artists length = %d, want 0", len(result.Artists))
 	}
-	if len(*list.Items) != 0 {
-		t.Errorf("items length = %d, want 0", len(*list.Items))
+	if result.TotalArtists != 0 {
+		t.Errorf("total_artists = %d, want 0", result.TotalArtists)
 	}
-	if list.Total == nil || *list.Total != 0 {
-		t.Errorf("total = %v, want 0", list.Total)
+	if len(result.Songs) != 0 {
+		t.Errorf("songs length = %d, want 0", len(result.Songs))
+	}
+	if result.TotalSongs != 0 {
+		t.Errorf("total_songs = %d, want 0", result.TotalSongs)
 	}
 }
 
@@ -62,29 +67,25 @@ func TestSearch_BySongTitle(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("search: %d", resp.StatusCode)
 	}
-	var list struct {
-		Items *[]struct {
-			Title string `json:"title"`
-		} `json:"items"`
-		Total *int `json:"total"`
+	var result struct {
+		Songs      []struct{ Title string `json:"title"` } `json:"songs"`
+		TotalSongs int `json:"total_songs"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		t.Fatal(err)
 	}
-	if list.Total == nil || *list.Total < 1 {
-		t.Errorf("total = %v, want at least 1", list.Total)
+	if result.TotalSongs < 1 {
+		t.Errorf("total_songs = %d, want at least 1", result.TotalSongs)
 	}
 	found := false
-	if list.Items != nil {
-		for _, it := range *list.Items {
-			if strings.Contains(it.Title, "UniqueTitleForSearch") {
-				found = true
-				break
-			}
+	for _, it := range result.Songs {
+		if strings.Contains(it.Title, "UniqueTitleForSearch") {
+			found = true
+			break
 		}
 	}
 	if !found {
-		t.Errorf("search by title: expected song %q in items %+v", uniqueTitle, list.Items)
+		t.Errorf("search by title: expected song %q in songs %+v", uniqueTitle, result.Songs)
 	}
 }
 
@@ -107,29 +108,40 @@ func TestSearch_ByArtistName(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("search: %d", resp.StatusCode)
 	}
-	var list struct {
-		Items *[]struct {
-			Title string `json:"title"`
-		} `json:"items"`
-		Total *int `json:"total"`
+	var result struct {
+		Artists      []struct{ Name string `json:"name"` } `json:"artists"`
+		Songs        []struct{ Title string `json:"title"` } `json:"songs"`
+		TotalArtists int `json:"total_artists"`
+		TotalSongs   int `json:"total_songs"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		t.Fatal(err)
 	}
-	if list.Total == nil || *list.Total < 1 {
-		t.Errorf("total = %v, want at least 1", list.Total)
+	if result.TotalArtists < 1 {
+		t.Errorf("total_artists = %d, want at least 1", result.TotalArtists)
 	}
-	found := false
-	if list.Items != nil {
-		for _, it := range *list.Items {
-			if it.Title == "Any Song" {
-				found = true
-				break
-			}
+	if result.TotalSongs < 1 {
+		t.Errorf("total_songs = %d, want at least 1", result.TotalSongs)
+	}
+	artistFound := false
+	for _, a := range result.Artists {
+		if a.Name == "BandForSearch" {
+			artistFound = true
+			break
 		}
 	}
-	if !found {
-		t.Errorf("search by artist name: expected 'Any Song' in items %+v", list.Items)
+	if !artistFound {
+		t.Errorf("search by artist name: expected artist 'BandForSearch' in artists %+v", result.Artists)
+	}
+	songFound := false
+	for _, it := range result.Songs {
+		if it.Title == "Any Song" {
+			songFound = true
+			break
+		}
+	}
+	if !songFound {
+		t.Errorf("search by artist name: expected 'Any Song' in songs %+v", result.Songs)
 	}
 }
 
@@ -156,19 +168,17 @@ func TestSearch_Pagination(t *testing.T) {
 	if resp.StatusCode != http.StatusOK {
 		t.Fatalf("search: %d", resp.StatusCode)
 	}
-	var list struct {
-		Items *[]struct {
-			Title string `json:"title"`
-		} `json:"items"`
-		Total *int `json:"total"`
+	var result struct {
+		Songs      []struct{ Title string `json:"title"` } `json:"songs"`
+		TotalSongs int `json:"total_songs"`
 	}
-	if err := json.NewDecoder(resp.Body).Decode(&list); err != nil {
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		t.Fatal(err)
 	}
-	if list.Total == nil || *list.Total < 5 {
-		t.Errorf("total = %v, want at least 5", list.Total)
+	if result.TotalSongs < 5 {
+		t.Errorf("total_songs = %d, want at least 5", result.TotalSongs)
 	}
-	if list.Items == nil || len(*list.Items) != 2 {
-		t.Errorf("items length = %d, want 2 (limit=2)", len(*list.Items))
+	if len(result.Songs) != 2 {
+		t.Errorf("songs length = %d, want 2 (limit=2)", len(result.Songs))
 	}
 }

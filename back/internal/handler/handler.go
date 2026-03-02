@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"maps"
+	"strings"
 	"time"
 
 	"github.com/Helltale/amdm-guitar-chords/back/internal/cases"
@@ -138,17 +139,36 @@ func (srv *server) Search(
 	if request.Params.Offset != nil {
 		offset = *request.Params.Offset
 	}
-	list, total, err := srv.songCases.Search(ctx, request.Params.Q, limit, offset)
+	q := strings.TrimSpace(request.Params.Q)
+	if q == "" {
+		return gen.Search200JSONResponse{
+			Artists:      []gen.Artist{},
+			TotalArtists: 0,
+			Songs:        []gen.SongListItem{},
+			TotalSongs:   0,
+		}, nil
+	}
+	artistList, totalArtists, err := srv.artistCases.Search(ctx, q, limit, offset)
 	if err != nil {
 		return nil, err
 	}
-	items := make([]gen.SongListItem, 0, len(list))
-	for _, s := range list {
-		items = append(items, srv.songToListItem(s))
+	songList, totalSongs, err := srv.songCases.Search(ctx, q, limit, offset)
+	if err != nil {
+		return nil, err
+	}
+	artists := make([]gen.Artist, 0, len(artistList))
+	for _, a := range artistList {
+		artists = append(artists, srv.artistToAPI(a))
+	}
+	songs := make([]gen.SongListItem, 0, len(songList))
+	for _, s := range songList {
+		songs = append(songs, srv.songToListItem(s))
 	}
 	return gen.Search200JSONResponse{
-		Items: &items,
-		Total: ptr(int(total)),
+		Artists:      artists,
+		TotalArtists: int(totalArtists),
+		Songs:        songs,
+		TotalSongs:   int(totalSongs),
 	}, nil
 }
 

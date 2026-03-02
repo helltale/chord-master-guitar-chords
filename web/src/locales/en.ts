@@ -20,6 +20,9 @@ export const en: LocaleDict = {
 
   'search.label': 'Search artists and songs',
   'search.placeholder': 'Search...',
+  'search.artists': 'Artists',
+  'search.songs': 'Songs',
+  'search.artistFoundForQuery': 'Artist found for «{query}»',
 
   'song.tonality': 'Key',
 

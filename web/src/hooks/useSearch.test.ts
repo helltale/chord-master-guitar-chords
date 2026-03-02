@@ -18,8 +18,13 @@ describe('useSearch', () => {
   })
 
   describe('when query is empty', () => {
-    it('clears items and does not call search API', async () => {
-      searchMock.mockResolvedValue({ items: [{ song_id: '1', title: 'x', slug: 'x' }], total: 1 })
+    it('clears artists/songs and does not call search API', async () => {
+      searchMock.mockResolvedValue({
+        artists: [],
+        total_artists: 0,
+        songs: [{ song_id: '1', title: 'x', slug: 'x' }],
+        total_songs: 1,
+      })
       const { rerender, result } = renderHook(
         ({ query, limit }) => useSearch(query, limit),
         { initialProps: { query: 'foo', limit: 20 } }
@@ -27,13 +32,14 @@ describe('useSearch', () => {
       await act(async () => {
         await vi.advanceTimersByTimeAsync(350)
       })
-      expect(result.current.items).toHaveLength(1)
+      expect(result.current.songs).toHaveLength(1)
       expect(searchMock).toHaveBeenCalledWith({ q: 'foo', limit: 20 })
 
       await act(async () => {
         rerender({ query: '', limit: 20 })
       })
-      expect(result.current.items).toEqual([])
+      expect(result.current.artists).toEqual([])
+      expect(result.current.songs).toEqual([])
       expect(result.current.total).toBe(0)
 
       const callCountAfterClear = searchMock.mock.calls.length
@@ -43,11 +49,14 @@ describe('useSearch', () => {
   })
 
   describe('when query is non-empty', () => {
-    it('calls search API after debounce and sets items/total on success', async () => {
-      const items = [
-        { song_id: '1', title: 'Song One', slug: 'song-one' },
-      ]
-      searchMock.mockResolvedValue({ items, total: 1 })
+    it('calls search API after debounce and sets artists/songs/total on success', async () => {
+      const songs = [{ song_id: '1', title: 'Song One', slug: 'song-one' }]
+      searchMock.mockResolvedValue({
+        artists: [],
+        total_artists: 0,
+        songs,
+        total_songs: 1,
+      })
       const { result } = renderHook(
         ({ query, limit }) => useSearch(query, limit),
         { initialProps: { query: 'song', limit: 20 } }
@@ -58,11 +67,11 @@ describe('useSearch', () => {
       })
       expect(searchMock).toHaveBeenCalledWith({ q: 'song', limit: 20 })
       expect(result.current.loading).toBe(false)
-      expect(result.current.items).toEqual(items)
+      expect(result.current.songs).toEqual(songs)
       expect(result.current.total).toBe(1)
     })
 
-    it('sets error and clears items on API failure', async () => {
+    it('sets error and clears artists/songs on API failure', async () => {
       const err = new Error('network error')
       searchMock.mockRejectedValue(err)
       const { result } = renderHook(
@@ -74,7 +83,8 @@ describe('useSearch', () => {
       })
       expect(result.current.loading).toBe(false)
       expect(result.current.error).toBe(err)
-      expect(result.current.items).toEqual([])
+      expect(result.current.artists).toEqual([])
+      expect(result.current.songs).toEqual([])
       expect(result.current.total).toBe(0)
     })
   })

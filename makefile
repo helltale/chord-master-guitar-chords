@@ -24,4 +24,4 @@ docker-build:
 	docker compose build --no-cache
 
 restart:
-	docker compose down -v && docker compose build --no-cache web && docker compose up -d
+	docker compose down -v && docker compose build --no-cache && docker compose up -d

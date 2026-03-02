@@ -70,13 +70,18 @@ describe('api client', () => {
   })
 
   describe('search', () => {
-    it('sends GET to /search with query and returns SongList', async () => {
-      const list = { items: [], total: 0 }
+    it('sends GET to /search with query and returns SearchResult', async () => {
+      const searchResult = {
+        artists: [],
+        total_artists: 0,
+        songs: [],
+        total_songs: 0,
+      }
       fetchMock.mockResolvedValueOnce({
         ok: true,
         status: 200,
         headers: new Headers(),
-        json: () => Promise.resolve(list),
+        json: () => Promise.resolve(searchResult),
       })
 
       const result = await search({ q: 'foo', limit: 10 })
@@ -88,7 +93,7 @@ describe('api client', () => {
       const url = fetchMock.mock.calls[0][0]
       expect(url).toContain('q=foo')
       expect(url).toContain('limit=10')
-      expect(result).toEqual(list)
+      expect(result).toEqual(searchResult)
     })
   })
 

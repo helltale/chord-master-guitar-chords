@@ -11,6 +11,7 @@ import type {
   CreateSongRequest,
   Song,
   SongList,
+  SearchResult,
   UpdateSongRequest,
 } from './schemas'
 
@@ -106,14 +107,32 @@ export function transposeSong(songId: string, semitones: number): Promise<Song> 
 
 // --- Search ---
 
-export function search(params: {
+/** Response may be new (artists+songs) or legacy (items+total). Normalized to SearchResult. */
+export async function search(params: {
   q: string
   limit?: number
   offset?: number
-}): Promise<SongList> {
+}): Promise<SearchResult> {
   const sp = new URLSearchParams()
-  sp.set('q', params.q)
+  sp.set('q', params.q.trim())
   if (params.limit != null) sp.set('limit', String(params.limit))
   if (params.offset != null) sp.set('offset', String(params.offset))
-  return request<SongList>(`/search?${sp.toString()}`)
+  const res = await request<SearchResult & { items?: unknown[]; total?: number }>(
+    `/search?${sp.toString()}`
+  )
+  // Support legacy backend response { items, total } → treat as songs only
+  if (!Array.isArray(res.artists) && Array.isArray(res.items)) {
+    return {
+      artists: [],
+      total_artists: 0,
+      songs: res.items as SearchResult['songs'],
+      total_songs: typeof res.total === 'number' ? res.total : 0,
+    }
+  }
+  return {
+    artists: res.artists ?? [],
+    total_artists: res.total_artists ?? 0,
+    songs: res.songs ?? [],
+    total_songs: res.total_songs ?? 0,
+  }
 }
