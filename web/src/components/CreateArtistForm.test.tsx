@@ -14,9 +14,9 @@ describe('CreateArtistForm', () => {
     renderWithI18n(
       <CreateArtistForm onSubmit={onSubmit} loading={false} error={null} />
     )
-    await userEvent.type(screen.getByLabelText(/имя/i), 'Test Artist')
-    await userEvent.type(screen.getByLabelText(/slug/i), 'test-artist')
-    await userEvent.click(screen.getByRole('button', { name: /создать артиста/i }))
+    await userEvent.type(screen.getByLabelText(/имя|name/i), 'Test Artist')
+    await userEvent.type(screen.getByLabelText(/slug|ЧПУ|адрес страницы/i), 'test-artist')
+    await userEvent.click(screen.getByRole('button', { name: /создать артиста|create artist/i }))
 
     expect(onSubmit).toHaveBeenCalledTimes(1)
     expect(onSubmit).toHaveBeenCalledWith({ name: 'Test Artist', slug: 'test-artist' })
