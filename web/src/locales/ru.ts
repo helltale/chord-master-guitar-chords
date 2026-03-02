@@ -20,6 +20,9 @@ export const ru: LocaleDict = {
 
   'search.label': 'Поиск исполнителей и произведений',
   'search.placeholder': 'Поиск...',
+  'search.artists': 'Исполнители',
+  'search.songs': 'Песни',
+  'search.artistFoundForQuery': 'По запросу «{query}» найден исполнитель',
 
   'song.tonality': 'Тональность',
 

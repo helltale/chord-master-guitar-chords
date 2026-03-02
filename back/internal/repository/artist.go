@@ -15,6 +15,7 @@ type ArtistRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (*entity.Artist, error)
 	GetBySlug(ctx context.Context, slug string) (*entity.Artist, error)
 	List(ctx context.Context, limit, offset int) ([]*entity.Artist, int64, error)
+	Search(ctx context.Context, query string, limit, offset int) ([]*entity.Artist, int64, error)
 	Create(ctx context.Context, a *entity.Artist) error
 	Update(ctx context.Context, a *entity.Artist) error
 }
@@ -58,6 +59,18 @@ func (r *artistRepo) List(ctx context.Context, limit, offset int) ([]*entity.Art
 	}
 	var list []*entity.Artist
 	err := r.db.WithContext(ctx).Limit(limit).Offset(offset).Order("name").Find(&list).Error
+	return list, total, err
+}
+
+func (r *artistRepo) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Artist, int64, error) {
+	pattern := "%" + EscapeLikePattern(query) + "%"
+	q := r.db.WithContext(ctx).Model(&entity.Artist{}).Where("name ILIKE ? OR slug ILIKE ?", pattern, pattern)
+	var total int64
+	if err := q.Count(&total).Error; err != nil {
+		return nil, 0, err
+	}
+	var list []*entity.Artist
+	err := q.Limit(limit).Offset(offset).Order("name").Find(&list).Error
 	return list, total, err
 }
 

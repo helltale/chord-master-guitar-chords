@@ -22,6 +22,9 @@ export type LocaleKey =
   // Search
   | 'search.label'
   | 'search.placeholder'
+  | 'search.artists'
+  | 'search.songs'
+  | 'search.artistFoundForQuery'
   // Song page
   | 'song.tonality'
   // Artist page

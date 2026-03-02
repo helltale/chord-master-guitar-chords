@@ -33,6 +33,10 @@ func (c *ArtistCases) GetBySlug(ctx context.Context, slug string) (*entity.Artis
 	return c.repo.GetBySlug(ctx, slug)
 }
 
+func (c *ArtistCases) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Artist, int64, error) {
+	return c.repo.Search(ctx, query, limit, offset)
+}
+
 func (c *ArtistCases) Create(ctx context.Context, name, slug string) (*entity.Artist, error) {
 	name = strings.TrimSpace(name)
 	slug = strings.TrimSpace(strings.ToLower(slug))

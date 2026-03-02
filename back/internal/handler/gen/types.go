@@ -190,6 +190,14 @@ type CreateSongRequest struct {
 	Tonality *int               `json:"tonality,omitempty"`
 }
 
+// SearchResult defines model for SearchResult.
+type SearchResult struct {
+	Artists      []Artist       `json:"artists"`
+	Songs        []SongListItem `json:"songs"`
+	TotalArtists int            `json:"total_artists"`
+	TotalSongs   int            `json:"total_songs"`
+}
+
 // Section defines model for Section.
 type Section struct {
 	Blocks        *[]Block  `json:"blocks,omitempty"`

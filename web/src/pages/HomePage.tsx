@@ -5,7 +5,7 @@ import { MouseReactiveBackground } from '@/components/MouseReactiveBackground'
 
 export function HomePage() {
   const [query, setQuery] = useState('')
-  const { items, total, loading, error } = useSearch(query)
+  const { artists, songs, totalArtists, totalSongs, total, loading, error } = useSearch(query)
 
   return (
     <div className="relative flex-1 flex flex-col min-h-0 -mx-4 -my-6 px-4 py-6">
@@ -14,7 +14,10 @@ export function HomePage() {
         <SearchBar
           query={query}
           onQueryChange={setQuery}
-          items={items}
+          artists={artists}
+          songs={songs}
+          totalArtists={totalArtists}
+          totalSongs={totalSongs}
           total={total}
           loading={loading}
           error={error}

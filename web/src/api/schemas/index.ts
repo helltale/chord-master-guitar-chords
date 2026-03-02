@@ -7,6 +7,7 @@ export type { CreateArtistRequest } from './CreateArtistRequest';
 export type { SongListItem } from './SongListItem';
 export type { Song } from './Song';
 export type { SongList } from './SongList';
+export type { SearchResult } from './SearchResult';
 export type { TabContent } from './TabContent';
 export type { Section } from './Section';
 export type { ChordSegment } from './ChordSegment';

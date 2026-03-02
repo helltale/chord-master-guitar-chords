@@ -102,6 +102,22 @@ func (mr *MockArtistRepositoryMockRecorder) List(ctx, limit, offset any) *gomock
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockArtistRepository)(nil).List), ctx, limit, offset)
 }
 
+// Search mocks base method.
+func (m *MockArtistRepository) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Artist, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Search", ctx, query, limit, offset)
+	ret0, _ := ret[0].([]*entity.Artist)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// Search indicates an expected call of Search.
+func (mr *MockArtistRepositoryMockRecorder) Search(ctx, query, limit, offset any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Search", reflect.TypeOf((*MockArtistRepository)(nil).Search), ctx, query, limit, offset)
+}
+
 // Update mocks base method.
 func (m *MockArtistRepository) Update(ctx context.Context, a *entity.Artist) error {
 	m.ctrl.T.Helper()
