@@ -37,7 +37,7 @@ export function CreateArtistForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="max-w-md space-y-4">
+    <form onSubmit={handleSubmit} className="space-y-5">
       {error && (
         <p className="text-red-600 dark:text-red-400 text-sm" role="alert">
           {error.message}
