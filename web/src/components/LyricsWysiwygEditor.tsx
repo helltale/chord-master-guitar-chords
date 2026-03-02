@@ -86,14 +86,14 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
 
   return (
     <div className="space-y-2">
-      <p className="text-sm text-gray-500">
+      <p className="text-sm text-gray-500 dark:text-gray-400">
         Редактор: клик по аккорду — изменить, кнопка ⊕ или Ctrl+Enter в тексте — вставить аккорд
         здесь.
       </p>
       <button
         type="button"
         onClick={() => setImportOpen(true)}
-        className="rounded border border-gray-300 bg-white px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
+        className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
       >
         Вставить из текста
       </button>
@@ -104,11 +104,11 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
           aria-modal="true"
           aria-labelledby="import-dialog-title"
         >
-          <div className="w-full max-w-lg rounded-lg bg-white p-4 shadow-xl">
-            <h2 id="import-dialog-title" className="mb-2 text-lg font-semibold text-gray-800">
+          <div className="w-full max-w-lg rounded-lg bg-white dark:bg-gray-800 p-4 shadow-xl">
+            <h2 id="import-dialog-title" className="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
               Вставить из текста
             </h2>
-            <p className="mb-2 text-sm text-gray-500">
+            <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
               Вставьте текст в формате [Am] слова [C] ещё слова. Строка «Припев:» или «Куплет 1:»
               начинает новую секцию.
             </p>
@@ -116,7 +116,7 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
               rows={8}
-              className="mb-4 w-full rounded border border-gray-300 px-3 py-2 font-mono text-sm"
+              className="mb-4 w-full rounded border border-gray-300 dark:border-gray-600 px-3 py-2 font-mono text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
               placeholder="[F] Улетают мысли, [Dm] тянутся [Am] за горизонт..."
             />
             <div className="flex justify-end gap-2">
@@ -126,14 +126,14 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
                   setImportOpen(false)
                   setImportText('')
                 }}
-                className="rounded border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
+                className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
                 Отмена
               </button>
               <button
                 type="button"
                 onClick={handleImportApply}
-                className="rounded bg-indigo-600 px-3 py-1 text-sm text-white hover:bg-indigo-700"
+                className="rounded bg-indigo-600 dark:bg-indigo-500 px-3 py-1 text-sm text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
                 Применить
               </button>
@@ -154,7 +154,7 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
       <button
         type="button"
         onClick={addSection}
-        className="rounded border border-dashed border-gray-300 bg-white px-4 py-2 text-sm text-gray-600 hover:border-indigo-400 hover:text-indigo-600"
+        className="rounded border border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
       >
         + Секция
       </button>

@@ -44,7 +44,7 @@ export function SectionEditor({
   }
 
   return (
-    <section className="mb-8 rounded-lg border border-gray-200 bg-gray-50/50 p-4">
+    <section className="mb-8 rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50/50 dark:bg-gray-800/50 p-4">
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <label className="sr-only" htmlFor={`section-label-${sectionIndex}`}>
           Название секции
@@ -55,13 +55,13 @@ export function SectionEditor({
           value={section.label ?? ''}
           onChange={(e) => onChange({ ...section, label: e.target.value })}
           placeholder="Куплет 1, Припев..."
-          className="rounded border border-gray-300 px-2 py-1 text-lg font-semibold text-gray-800 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="rounded border border-gray-300 dark:border-gray-600 px-2 py-1 text-lg font-semibold text-gray-800 dark:text-gray-200 bg-white dark:bg-gray-700 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
         {onRemoveSection && (
           <button
             type="button"
             onClick={onRemoveSection}
-            className="rounded px-2 py-1 text-sm text-gray-500 hover:bg-red-50 hover:text-red-600"
+            className="rounded px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
           >
             Удалить секцию
           </button>
@@ -78,7 +78,7 @@ export function SectionEditor({
             <button
               type="button"
               onClick={() => handleRemoveBlock(bidx)}
-              className="absolute -top-1 right-0 rounded px-1 text-xs text-gray-400 hover:text-red-600"
+              className="absolute -top-1 right-0 rounded px-1 text-xs text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400"
             >
               Удалить строку
             </button>
@@ -89,7 +89,7 @@ export function SectionEditor({
         <button
           type="button"
           onClick={handleAddLine}
-          className="rounded border border-gray-300 bg-white px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
+          className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
         >
           + Строка
         </button>
@@ -97,7 +97,7 @@ export function SectionEditor({
           <button
             type="button"
             onClick={onAddSectionAfter}
-            className="rounded border border-gray-300 bg-white px-3 py-1 text-sm text-gray-600 hover:bg-gray-50"
+            className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
           >
             + Секция
           </button>

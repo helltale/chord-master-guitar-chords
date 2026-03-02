@@ -54,7 +54,7 @@ export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: 
   }
 
   return (
-    <div className="mb-4 flex flex-wrap items-start gap-1 font-mono text-gray-800 leading-relaxed">
+    <div className="mb-4 flex flex-wrap items-start gap-1 font-mono text-gray-800 dark:text-gray-200 leading-relaxed">
       {segments.map((seg, sidx) => (
         <span key={sidx} className="inline-flex items-start gap-0.5">
           <SegmentCell
@@ -67,7 +67,7 @@ export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: 
             <button
               type="button"
               onClick={() => handleRemoveSegment(sidx)}
-              className="mt-1.5 rounded p-0.5 text-gray-400 hover:bg-red-50 hover:text-red-600"
+              className="mt-1.5 rounded p-0.5 text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
               title="Удалить сегмент"
               aria-label="Удалить сегмент"
             >
@@ -79,7 +79,7 @@ export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: 
       <button
         type="button"
         onClick={handleAddSegment}
-        className="mt-1.5 rounded border border-dashed border-gray-300 px-2 py-1 text-sm text-gray-500 hover:border-indigo-400 hover:text-indigo-600"
+        className="mt-1.5 rounded border border-dashed border-gray-300 dark:border-gray-600 px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
       >
         + Сегмент
       </button>

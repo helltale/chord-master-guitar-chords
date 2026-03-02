@@ -23,7 +23,7 @@ export function SongPage() {
 
   if (loading && !song) {
     return (
-      <div className="py-8 text-gray-500">
+      <div className="py-8 text-gray-500 dark:text-gray-400">
         Загрузка...
       </div>
     )
@@ -31,10 +31,10 @@ export function SongPage() {
   if (error || !song) {
     return (
       <div className="py-8">
-        <p className="text-red-600" role="alert">
+        <p className="text-red-600 dark:text-red-400" role="alert">
           {error ? error.message : 'Песня не найдена'}
         </p>
-        <Link to="/" className="mt-4 inline-block text-indigo-600 hover:underline">
+        <Link to="/" className="mt-4 inline-block text-indigo-600 dark:text-indigo-400 hover:underline">
           На главную
         </Link>
       </div>
@@ -48,9 +48,9 @@ export function SongPage() {
     <div className="max-w-5xl mx-auto">
       <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">{song.title}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{song.title}</h1>
           {song.tonality != null && (
-            <p className="text-gray-600 text-sm">Тональность: {song.tonality}</p>
+            <p className="text-gray-600 dark:text-gray-400 text-sm">Тональность: {song.tonality}</p>
           )}
         </div>
         <TransposeControl
@@ -63,7 +63,7 @@ export function SongPage() {
           {content?.sections && content.sections.length > 0 ? (
             <SongContent content={content} />
           ) : (
-            <p className="text-gray-500">Нет контента</p>
+            <p className="text-gray-500 dark:text-gray-400">Нет контента</p>
           )}
         </div>
         <div>

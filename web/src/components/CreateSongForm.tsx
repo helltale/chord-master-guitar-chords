@@ -55,12 +55,12 @@ export function CreateSongForm({
   return (
     <form onSubmit={handleSubmit} className="max-w-md space-y-4">
       {error && (
-        <p className="text-red-600 text-sm" role="alert">
+        <p className="text-red-600 dark:text-red-400 text-sm" role="alert">
           {error.message}
         </p>
       )}
       <div>
-        <label htmlFor="song-artist" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="song-artist" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Артист
         </label>
         <select
@@ -68,7 +68,7 @@ export function CreateSongForm({
           name="artist_id"
           required
           disabled={artistsLoading}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
           <option value="">Выберите артиста</option>
           {artists.map((a) => (
@@ -79,7 +79,7 @@ export function CreateSongForm({
         </select>
       </div>
       <div>
-        <label htmlFor="song-title" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="song-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Название
         </label>
         <input
@@ -88,11 +88,11 @@ export function CreateSongForm({
           type="text"
           required
           onChange={handleTitleChange}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
       <div>
-        <label htmlFor="song-slug" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="song-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Slug
         </label>
         <input
@@ -101,11 +101,11 @@ export function CreateSongForm({
           type="text"
           required
           onBlur={markSlugTouched}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
       <div>
-        <label htmlFor="song-tonality" className="block text-sm font-medium text-gray-700 mb-1">
+        <label htmlFor="song-tonality" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Тональность (число, опционально)
         </label>
         <input
@@ -113,11 +113,11 @@ export function CreateSongForm({
           name="tonality"
           type="number"
           step={1}
-          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         />
       </div>
       <div>
-        <label id="song-content-label" className="block text-sm font-medium text-gray-700 mb-1">
+        <label id="song-content-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Текст с аккордами (опционально)
         </label>
         <LyricsWysiwygEditor
@@ -128,7 +128,7 @@ export function CreateSongForm({
       <button
         type="submit"
         disabled={loading || artistsLoading}
-        className="rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50"
+        className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50"
       >
         {loading ? 'Создание...' : 'Создать песню'}
       </button>

@@ -34,7 +34,7 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
   return (
     <div
       ref={containerRef}
-      className="absolute top-full left-0 z-20 mt-1 w-64 rounded-lg border border-gray-200 bg-white p-2 shadow-lg"
+      className="absolute top-full left-0 z-20 mt-1 w-64 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-2 shadow-lg"
       role="listbox"
       aria-label="Выбор аккорда"
     >
@@ -44,8 +44,8 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
             key={chord}
             type="button"
             role="option"
-            className={`rounded px-2 py-1 text-sm font-medium hover:bg-indigo-50 ${
-              value === chord ? 'bg-indigo-100 text-indigo-800' : 'text-gray-700'
+            className={`rounded px-2 py-1 text-sm font-medium hover:bg-indigo-50 dark:hover:bg-indigo-900/50 ${
+              value === chord ? 'bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200' : 'text-gray-700 dark:text-gray-300'
             }`}
             onClick={() => {
               onSelect(chord)
@@ -56,7 +56,7 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
           </button>
         ))}
       </div>
-      <div className="flex gap-1 border-t border-gray-100 pt-2">
+      <div className="flex gap-1 border-t border-gray-100 dark:border-gray-600 pt-2">
         <label className="sr-only" htmlFor="chord-picker-custom">
           Другой аккорд
         </label>
@@ -65,7 +65,7 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
           ref={customInputRef}
           type="text"
           placeholder="Другой..."
-          className="flex-1 rounded border border-gray-300 px-2 py-1 text-sm"
+          className="flex-1 rounded border border-gray-300 dark:border-gray-600 px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               const v = (e.currentTarget.value || '').trim()
@@ -79,7 +79,7 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
         />
         <button
           type="button"
-          className="rounded bg-indigo-600 px-2 py-1 text-sm text-white hover:bg-indigo-700"
+          className="rounded bg-indigo-600 dark:bg-indigo-500 px-2 py-1 text-sm text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
           onClick={() => {
             const v = customInputRef.current?.value?.trim()
             if (v) {
