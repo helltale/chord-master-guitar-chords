@@ -1,4 +1,5 @@
 import type { Block, ChordSegment } from '@/api/schemas'
+import { useTranslation } from '@/contexts/I18nContext'
 import { SegmentCell } from './SegmentCell'
 
 interface LyricsBlockEditorProps {
@@ -15,6 +16,7 @@ function ensureLyricsBlock(block: Block): Block {
 }
 
 export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: LyricsBlockEditorProps) {
+  const { t } = useTranslation()
   const b = ensureLyricsBlock(block)
   const segments = b.segments ?? []
 
@@ -68,8 +70,8 @@ export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: 
               type="button"
               onClick={() => handleRemoveSegment(sidx)}
               className="mt-1.5 rounded p-0.5 text-gray-400 dark:text-gray-500 hover:bg-red-50 dark:hover:bg-red-900/30 hover:text-red-600 dark:hover:text-red-400"
-              title="Удалить сегмент"
-              aria-label="Удалить сегмент"
+              title={t('lyricsBlock.removeSegment')}
+              aria-label={t('lyricsBlock.removeSegment')}
             >
               ×
             </button>
@@ -81,7 +83,7 @@ export function LyricsBlockEditor({ block, blockIndex: _blockIndex, onChange }: 
         onClick={handleAddSegment}
         className="mt-1.5 rounded border border-dashed border-gray-300 dark:border-gray-600 px-2 py-1 text-sm text-gray-500 dark:text-gray-400 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
       >
-        + Сегмент
+        {t('lyricsBlock.addSegment')}
       </button>
     </div>
   )

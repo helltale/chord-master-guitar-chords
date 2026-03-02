@@ -1,6 +1,11 @@
 import { render, screen } from '@testing-library/react'
 import { describe, expect, it } from 'vitest'
+import { I18nProvider } from '@/contexts/I18nContext'
 import { ChordFingeringPanel } from './ChordFingeringPanel'
+
+function renderWithI18n(ui: React.ReactElement) {
+  return render(<I18nProvider>{ui}</I18nProvider>)
+}
 
 describe('ChordFingeringPanel', () => {
   it('renders chord names and tab for each entry', () => {
@@ -8,7 +13,7 @@ describe('ChordFingeringPanel', () => {
       Am: 'e|-0-|\nB|-1-|',
       C: 'e|-0-|\nB|-1-|\nG|-0-|',
     }
-    render(<ChordFingeringPanel chordTabs={chordTabs} />)
+    renderWithI18n(<ChordFingeringPanel chordTabs={chordTabs} />)
     expect(screen.getByText('Аппликатуры аккордов')).toBeInTheDocument()
     expect(screen.getByText('Am')).toBeInTheDocument()
     expect(screen.getByText('C')).toBeInTheDocument()
@@ -16,7 +21,7 @@ describe('ChordFingeringPanel', () => {
   })
 
   it('renders nothing when chordTabs is empty', () => {
-    const { container } = render(<ChordFingeringPanel chordTabs={{}} />)
+    const { container } = renderWithI18n(<ChordFingeringPanel chordTabs={{}} />)
     expect(container.firstChild).toBeNull()
   })
 })

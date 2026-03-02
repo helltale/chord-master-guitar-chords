@@ -1,15 +1,18 @@
+import { useTranslation } from '@/contexts/I18nContext'
+
 interface ChordFingeringPanelProps {
   chordTabs: Record<string, string>
 }
 
 export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
+  const { t } = useTranslation()
   const entries = Object.entries(chordTabs)
   if (entries.length === 0) return null
 
   return (
     <aside className="rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 p-4">
       <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
-        Аппликатуры аккордов
+        {t('chordPanel.title')}
       </h3>
       <div className="grid gap-4 sm:grid-cols-2">
         {entries.map(([chord, tab]) => (

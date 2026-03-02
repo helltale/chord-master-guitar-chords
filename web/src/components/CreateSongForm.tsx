@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import type { CreateSongRequest, TabContent } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
+import { useTranslation } from '@/contexts/I18nContext'
 import { LyricsWysiwygEditor } from '@/components/LyricsWysiwygEditor'
 import { isContentEmpty } from '@/utils/tabContent'
 import { slugFromString } from '@/utils/slug'
@@ -24,6 +25,7 @@ export function CreateSongForm({
   loading,
   error,
 }: CreateSongFormProps) {
+  const { t } = useTranslation()
   const [content, setContent] = useState<TabContent>(emptyContent)
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -61,7 +63,7 @@ export function CreateSongForm({
       )}
       <div>
         <label htmlFor="song-artist" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Артист
+          {t('createSong.artist')}
         </label>
         <select
           id="song-artist"
@@ -70,7 +72,7 @@ export function CreateSongForm({
           disabled={artistsLoading}
           className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         >
-          <option value="">Выберите артиста</option>
+          <option value="">{t('createSong.selectArtist')}</option>
           {artists.map((a) => (
             <option key={a.artist_id} value={a.artist_id}>
               {a.name}
@@ -80,7 +82,7 @@ export function CreateSongForm({
       </div>
       <div>
         <label htmlFor="song-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Название
+          {t('createSong.songTitle')}
         </label>
         <input
           id="song-title"
@@ -93,7 +95,7 @@ export function CreateSongForm({
       </div>
       <div>
         <label htmlFor="song-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Slug
+          {t('createSong.slug')}
         </label>
         <input
           id="song-slug"
@@ -106,7 +108,7 @@ export function CreateSongForm({
       </div>
       <div>
         <label htmlFor="song-tonality" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Тональность (число, опционально)
+          {t('createSong.tonalityOptional')}
         </label>
         <input
           id="song-tonality"
@@ -118,7 +120,7 @@ export function CreateSongForm({
       </div>
       <div>
         <label id="song-content-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Текст с аккордами (опционально)
+          {t('createSong.lyricsOptional')}
         </label>
         <LyricsWysiwygEditor
           value={content}
@@ -130,7 +132,7 @@ export function CreateSongForm({
         disabled={loading || artistsLoading}
         className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50"
       >
-        {loading ? 'Создание...' : 'Создать песню'}
+        {loading ? t('createSong.submitting') : t('createSong.submit')}
       </button>
     </form>
   )
