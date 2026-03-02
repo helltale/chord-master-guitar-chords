@@ -63,9 +63,8 @@ export function MouseReactiveBackground() {
   const initializedRef = useRef(false)
   const themeRef = useRef(theme)
 
-  themeRef.current = theme
-
   useEffect(() => {
+    themeRef.current = theme
     const container = containerRef.current
     const canvas = canvasRef.current
     if (!container || !canvas) return

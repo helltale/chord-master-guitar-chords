@@ -1,5 +1,6 @@
 import { useRef, useEffect } from 'react'
 import { COMMON_CHORDS } from '@/api/schemas'
+import { useTranslation } from '@/contexts/I18nContext'
 
 interface ChordPickerProps {
   isOpen: boolean
@@ -9,6 +10,7 @@ interface ChordPickerProps {
 }
 
 export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerProps) {
+  const { t } = useTranslation()
   const customInputRef = useRef<HTMLInputElement>(null)
   const containerRef = useRef<HTMLDivElement>(null)
 
@@ -36,7 +38,7 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
       ref={containerRef}
       className="absolute top-full left-0 z-20 mt-1 w-64 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-2 shadow-lg"
       role="listbox"
-      aria-label="Выбор аккорда"
+      aria-label={t('chordPicker.label')}
     >
       <div className="mb-2 grid grid-cols-4 gap-1">
         {COMMON_CHORDS.map((chord) => (
@@ -58,13 +60,13 @@ export function ChordPicker({ isOpen, onClose, value, onSelect }: ChordPickerPro
       </div>
       <div className="flex gap-1 border-t border-gray-100 dark:border-gray-600 pt-2">
         <label className="sr-only" htmlFor="chord-picker-custom">
-          Другой аккорд
+          {t('chordPicker.otherLabel')}
         </label>
         <input
           id="chord-picker-custom"
           ref={customInputRef}
           type="text"
-          placeholder="Другой..."
+          placeholder={t('chordPicker.otherPlaceholder')}
           className="flex-1 rounded border border-gray-300 dark:border-gray-600 px-2 py-1 text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
           onKeyDown={(e) => {
             if (e.key === 'Enter') {

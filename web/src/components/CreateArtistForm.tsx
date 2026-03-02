@@ -1,4 +1,5 @@
 import type { CreateArtistRequest } from '@/api/schemas'
+import { useTranslation } from '@/contexts/I18nContext'
 import { slugFromString } from '@/utils/slug'
 
 interface CreateArtistFormProps {
@@ -12,6 +13,7 @@ export function CreateArtistForm({
   loading,
   error,
 }: CreateArtistFormProps) {
+  const { t } = useTranslation()
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
@@ -43,7 +45,7 @@ export function CreateArtistForm({
       )}
       <div>
         <label htmlFor="artist-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Имя
+          {t('createArtist.name')}
         </label>
         <input
           id="artist-name"
@@ -56,7 +58,7 @@ export function CreateArtistForm({
       </div>
       <div>
         <label htmlFor="artist-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
-          Slug
+          {t('createArtist.slug')}
         </label>
         <input
           id="artist-slug"
@@ -72,7 +74,7 @@ export function CreateArtistForm({
         disabled={loading}
         className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50"
       >
-        {loading ? 'Создание...' : 'Создать артиста'}
+        {loading ? t('createArtist.submitting') : t('createArtist.submit')}
       </button>
     </form>
   )

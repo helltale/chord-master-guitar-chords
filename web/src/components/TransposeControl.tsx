@@ -1,3 +1,5 @@
+import { useTranslation } from '@/contexts/I18nContext'
+
 interface TransposeControlProps {
   onTranspose: (semitones: number) => void
   loading: boolean
@@ -11,9 +13,10 @@ export function TransposeControl({
   loading,
   disabled,
 }: TransposeControlProps) {
+  const { t } = useTranslation()
   return (
     <div className="flex flex-wrap items-center gap-2">
-      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Транспонировать:</span>
+      <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{t('transpose.label')}</span>
       <div className="flex flex-wrap gap-1">
         {SEMITONE_OPTIONS.map((n) => (
           <button
@@ -28,7 +31,7 @@ export function TransposeControl({
         ))}
       </div>
       {loading && (
-        <span className="text-sm text-gray-500 dark:text-gray-400">Загрузка...</span>
+        <span className="text-sm text-gray-500 dark:text-gray-400">{t('common.loading')}</span>
       )}
     </div>
   )

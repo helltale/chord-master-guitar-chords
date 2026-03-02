@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom'
 import { useTheme } from '@/contexts/ThemeContext'
+import { useTranslation } from '@/contexts/I18nContext'
+import type { Locale } from '@/contexts/I18nContext'
 
 function SunIcon() {
   return (
@@ -19,20 +21,37 @@ function MoonIcon() {
 
 export function Header() {
   const { theme, toggleTheme } = useTheme()
+  const { t, locale, setLocale } = useTranslation()
+
+  const themeTitle = theme === 'dark' ? t('header.lightTheme') : t('header.darkTheme')
+  const themeAria = theme === 'dark' ? t('header.lightThemeAria') : t('header.darkThemeAria')
 
   return (
     <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
       <div className="container mx-auto px-4 h-14 flex items-center justify-between">
         <Link to="/" className="text-xl font-semibold text-gray-800 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300">
-          AmDm Guitar Chords
+          {t('header.appName')}
         </Link>
         <nav className="flex items-center gap-4">
+          <div className="flex items-center gap-1">
+            {(['ru', 'en'] as Locale[]).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => setLocale(lang)}
+                className={`rounded px-2 py-1 text-sm font-medium ${locale === lang ? 'bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                aria-pressed={locale === lang}
+              >
+                {lang.toUpperCase()}
+              </button>
+            ))}
+          </div>
           <button
             type="button"
             onClick={toggleTheme}
             className="rounded-lg p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-            title={theme === 'dark' ? 'Светлая тема' : 'Тёмная тема'}
-            aria-label={theme === 'dark' ? 'Включить светлую тему' : 'Включить тёмную тему'}
+            title={themeTitle}
+            aria-label={themeAria}
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
@@ -40,13 +59,13 @@ export function Header() {
             to="/artists/new"
             className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
           >
-            Создать артиста
+            {t('header.createArtist')}
           </Link>
           <Link
             to="/songs/new"
             className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
           >
-            Создать песню
+            {t('header.createSong')}
           </Link>
         </nav>
       </div>

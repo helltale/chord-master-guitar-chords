@@ -1,5 +1,6 @@
 import { useState, useCallback, useEffect } from 'react'
 import type { TabContent, Section } from '@/api/schemas'
+import { useTranslation } from '@/contexts/I18nContext'
 import { parseLyricsWithChords } from '@/utils/parseLyricsWithChords'
 import { SectionEditor } from './SectionEditor'
 
@@ -19,6 +20,7 @@ interface LyricsWysiwygEditorProps {
 }
 
 export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProps) {
+  const { t } = useTranslation()
   const [content, setContent] = useState<TabContent>(() =>
     value.sections?.length ? value : emptyContent()
   )
@@ -87,15 +89,14 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
   return (
     <div className="space-y-2">
       <p className="text-sm text-gray-500 dark:text-gray-400">
-        Редактор: клик по аккорду — изменить, кнопка ⊕ или Ctrl+Enter в тексте — вставить аккорд
-        здесь.
+        {t('lyricsEditor.hint')}
       </p>
       <button
         type="button"
         onClick={() => setImportOpen(true)}
         className="rounded border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
       >
-        Вставить из текста
+        {t('lyricsEditor.pasteFromText')}
       </button>
       {importOpen && (
         <div
@@ -106,18 +107,17 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
         >
           <div className="w-full max-w-lg rounded-lg bg-white dark:bg-gray-800 p-4 shadow-xl">
             <h2 id="import-dialog-title" className="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
-              Вставить из текста
+              {t('lyricsEditor.importTitle')}
             </h2>
             <p className="mb-2 text-sm text-gray-500 dark:text-gray-400">
-              Вставьте текст в формате [Am] слова [C] ещё слова. Строка «Припев:» или «Куплет 1:»
-              начинает новую секцию.
+              {t('lyricsEditor.importHint')}
             </p>
             <textarea
               value={importText}
               onChange={(e) => setImportText(e.target.value)}
               rows={8}
               className="mb-4 w-full rounded border border-gray-300 dark:border-gray-600 px-3 py-2 font-mono text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
-              placeholder="[F] Улетают мысли, [Dm] тянутся [Am] за горизонт..."
+              placeholder={t('lyricsEditor.importPlaceholder')}
             />
             <div className="flex justify-end gap-2">
               <button
@@ -128,14 +128,14 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
                 }}
                 className="rounded border border-gray-300 dark:border-gray-600 px-3 py-1 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
               >
-                Отмена
+                {t('lyricsEditor.cancel')}
               </button>
               <button
                 type="button"
                 onClick={handleImportApply}
                 className="rounded bg-indigo-600 dark:bg-indigo-500 px-3 py-1 text-sm text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
               >
-                Применить
+                {t('lyricsEditor.apply')}
               </button>
             </div>
           </div>
@@ -156,7 +156,7 @@ export function LyricsWysiwygEditor({ value, onChange }: LyricsWysiwygEditorProp
         onClick={addSection}
         className="rounded border border-dashed border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:border-indigo-400 dark:hover:border-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-400"
       >
-        + Секция
+        {t('section.addSection')}
       </button>
     </div>
   )
