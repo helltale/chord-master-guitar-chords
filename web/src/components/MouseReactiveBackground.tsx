@@ -1,4 +1,5 @@
 import { useRef, useEffect } from 'react'
+import { useTheme } from '@/contexts/ThemeContext'
 
 const PARTICLE_COUNT = 90
 const CONNECT_DISTANCE = 140
@@ -42,12 +43,27 @@ function pointToSegmentDist(
   return Math.hypot(px - qx, py - qy)
 }
 
+const THEME_COLORS = {
+  dark: {
+    line: 'rgba(160, 160, 200',
+    particle: 'rgba(180, 180, 210, 0.5)',
+  },
+  light: {
+    line: 'rgba(100, 100, 130',
+    particle: 'rgba(80, 80, 110, 0.4)',
+  },
+} as const
+
 export function MouseReactiveBackground() {
+  const { theme } = useTheme()
   const containerRef = useRef<HTMLDivElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const mouseRef = useRef({ x: -9999, y: -9999 })
   const particlesRef = useRef<Particle[]>([])
   const initializedRef = useRef(false)
+  const themeRef = useRef(theme)
+
+  themeRef.current = theme
 
   useEffect(() => {
     const container = containerRef.current
@@ -182,7 +198,8 @@ export function MouseReactiveBackground() {
             }
           }
 
-          ctx.strokeStyle = `rgba(80, 80, 110, ${alpha})`
+          const colors = THEME_COLORS[themeRef.current]
+          ctx.strokeStyle = `${colors.line}, ${alpha})`
           ctx.lineWidth = alpha > 0.2 ? 1.2 : 0.8
           ctx.beginPath()
           ctx.moveTo(a.x, a.y)
@@ -191,7 +208,7 @@ export function MouseReactiveBackground() {
         }
       }
 
-      ctx.fillStyle = 'rgba(90, 90, 110, 0.5)'
+      ctx.fillStyle = THEME_COLORS[themeRef.current].particle
       for (let i = 0; i < particles.length; i++) {
         const p = particles[i]
         ctx.beginPath()
@@ -216,7 +233,7 @@ export function MouseReactiveBackground() {
       container.removeEventListener('mouseleave', handleMouseLeave)
       cancelAnimationFrame(animationId)
     }
-  }, [])
+  }, [theme])
 
   return (
     <div ref={containerRef} className="absolute inset-0 w-full h-full overflow-hidden">

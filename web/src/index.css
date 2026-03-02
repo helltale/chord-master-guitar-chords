@@ -1,5 +1,7 @@
 @import "tailwindcss";
 
+@custom-variant dark (&:where(.dark, .dark *));
+
 body {
-  @apply antialiased text-gray-900 bg-gray-50 min-h-screen;
+  @apply antialiased text-gray-900 bg-gray-50 min-h-screen dark:bg-gray-900 dark:text-gray-100;
 }

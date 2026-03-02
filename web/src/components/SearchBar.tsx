@@ -26,29 +26,29 @@ export function SearchBar({
       <input
         id="search"
         type="search"
-        placeholder="Поиск по песням и исполнителям..."
+        placeholder="Поиск..."
         value={query}
         onChange={(e) => onQueryChange(e.target.value)}
-        className="w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 placeholder-gray-500 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+        className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-4 py-3 text-gray-900 dark:text-gray-100 placeholder-gray-500 dark:placeholder-gray-400 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
         autoFocus
       />
       <div className="mt-4">
         {loading && (
-          <p className="text-gray-500 text-sm">Загрузка...</p>
+          <p className="text-gray-500 dark:text-gray-400 text-sm">Загрузка...</p>
         )}
         {error && (
-          <p className="text-red-600 text-sm" role="alert">
+          <p className="text-red-600 dark:text-red-400 text-sm" role="alert">
             Ошибка: {error.message}
           </p>
         )}
         {!loading && !error && query.trim() && (
           <>
-            <p className="text-gray-600 text-sm mb-2">
+            <p className="text-gray-600 dark:text-gray-400 text-sm mb-2">
               Найдено: {total}
             </p>
             <ul className="space-y-2" role="list">
               {items.length === 0 ? (
-                <li className="text-gray-500">Ничего не найдено</li>
+                <li className="text-gray-500 dark:text-gray-400">Ничего не найдено</li>
               ) : (
                 items.map((item) => (
                   <li key={item.song_id}>
