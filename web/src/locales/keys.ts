@@ -77,5 +77,32 @@ export type LocaleKey =
   | 'transpose.label'
   // Chord panel
   | 'chordPanel.title'
+  // Home page hero & search
+  | 'home.heroTitleLine1'
+  | 'home.heroTitleLine2'
+  | 'home.heroSubtitle'
+  | 'home.trendingTitle'
+  | 'home.trendingSubtitle'
+  | 'home.recentlyAddedTitle'
+  | 'home.recentlyAddedSubtitle'
+  | 'home.topResultsTitle'
+  // Extended search helpers
+  | 'search.helper'
+  | 'search.topMatches'
+  | 'search.noArtists'
+  | 'search.noSongs'
+  // Common extras
+  | 'common.view'
+  | 'common.favorite'
+  | 'common.share'
+  // Transpose extras
+  | 'transpose.original'
+  | 'transpose.down'
+  | 'transpose.up'
+  // Player controls
+  | 'player.previous'
+  | 'player.play'
+  | 'player.next'
+  | 'player.settings'
 
 export type LocaleDict = Record<LocaleKey, string>

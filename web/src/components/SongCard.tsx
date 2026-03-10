@@ -9,11 +9,13 @@ export function SongCard({ item }: SongCardProps) {
   return (
     <Link
       to={`/song/${item.song_id}`}
-      className="block rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-4 shadow-sm hover:border-indigo-300 dark:hover:border-indigo-500 hover:shadow-md transition"
+      className="group flex flex-col justify-between rounded-2xl border border-slate-800 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-950 px-4 py-3 text-sm text-slate-100 shadow-md shadow-black/50 transition hover:border-indigo-400 hover:shadow-[0_18px_40px_rgba(15,23,42,0.9)]"
     >
-      <span className="font-medium text-gray-900 dark:text-gray-100">{item.title}</span>
+      <span className="font-medium">{item.title}</span>
       {item.tonality != null && (
-        <span className="ml-2 text-gray-500 dark:text-gray-400 text-sm">({item.tonality})</span>
+        <span className="mt-1 inline-flex w-fit rounded-full bg-slate-900 px-2 py-0.5 text-[11px] text-slate-400">
+          KEY {item.tonality}
+        </span>
       )}
     </Link>
   )

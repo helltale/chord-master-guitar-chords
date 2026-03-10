@@ -10,18 +10,25 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
   if (entries.length === 0) return null
 
   return (
-    <aside className="rounded-lg border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 p-4">
-      <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300 mb-3">
+    <aside className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-950/60 p-4 shadow-sm shadow-black/40 dark:border-slate-800">
+      <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
         {t('chordPanel.title')}
       </h3>
-      <div className="grid gap-4 sm:grid-cols-2">
+      <div className="grid gap-3 sm:grid-cols-2">
         {entries.map(([chord, tab]) => (
           <div
             key={chord}
-            className="rounded border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-700 p-3 shadow-sm"
+            className="group cursor-pointer rounded-xl border border-slate-700 bg-slate-900/70 p-3 shadow-sm shadow-black/40 transition-colors hover:border-indigo-400"
           >
-            <div className="font-semibold text-indigo-600 dark:text-indigo-400 mb-1">{chord}</div>
-            <pre className="font-mono text-xs text-gray-700 dark:text-gray-300 whitespace-pre-wrap break-all">
+            <div className="mb-2 flex items-center justify-between">
+              <span className="font-mono text-sm font-bold text-indigo-300">
+                {chord}
+              </span>
+              <span className="rounded-full bg-slate-800 px-2 py-0.5 text-[10px] font-mono uppercase tracking-wide text-slate-400">
+                TAB
+              </span>
+            </div>
+            <pre className="max-h-28 overflow-y-auto whitespace-pre-wrap break-all rounded-lg bg-slate-950/70 p-2 font-mono text-[11px] text-slate-100 custom-scrollbar">
               {tab}
             </pre>
           </div>

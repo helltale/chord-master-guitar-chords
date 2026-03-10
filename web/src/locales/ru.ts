@@ -77,4 +77,34 @@ export const ru: LocaleDict = {
   'transpose.label': 'Транспонировать:',
 
   'chordPanel.title': 'Аппликатуры аккордов',
+
+  'home.heroTitleLine1': 'Каждый аккорд, каждая нота.',
+  'home.heroTitleLine2': 'Освой любимые песни.',
+  'home.heroSubtitle':
+    'Ищи исполнителей, песни и табулатуры. Меньше времени на разбор аккордов — больше на игру.',
+  'home.trendingTitle': 'Популярные песни',
+  'home.trendingSubtitle':
+    'Начните набирать запрос выше — мы покажем самые релевантные песни и исполнителей.',
+  'home.recentlyAddedTitle': 'Недавно добавленные',
+  'home.recentlyAddedSubtitle':
+    'Новые песни, которые вы добавите, появятся здесь. Используйте кнопки «Создать артиста» и «Создать песню» в шапке.',
+  'home.topResultsTitle': 'Лучшее совпадение',
+
+  'search.helper': 'Введите имя исполнителя, песню или аккорд, чтобы начать.',
+  'search.topMatches': 'Лучшие совпадения ниже',
+  'search.noArtists': 'По этому запросу пока нет исполнителей.',
+  'search.noSongs': 'По этому запросу пока нет песен.',
+
+  'common.view': 'Открыть',
+  'common.favorite': 'В избранное',
+  'common.share': 'Поделиться',
+
+  'transpose.original': 'Оригинал',
+  'transpose.down': 'Транспонировать ниже',
+  'transpose.up': 'Транспонировать выше',
+
+  'player.previous': 'Предыдущая песня',
+  'player.play': 'Воспроизвести',
+  'player.next': 'Следующая песня',
+  'player.settings': 'Настройки плеера',
 }

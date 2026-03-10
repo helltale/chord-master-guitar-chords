@@ -77,4 +77,34 @@ export const en: LocaleDict = {
   'transpose.label': 'Transpose:',
 
   'chordPanel.title': 'Chord fingerings',
+
+  'home.heroTitleLine1': 'Every chord, every note.',
+  'home.heroTitleLine2': 'Master your favorite songs.',
+  'home.heroSubtitle':
+    'Search artists, songs and tabs. Save time parsing chords – focus on playing.',
+  'home.trendingTitle': 'Trending songs',
+  'home.trendingSubtitle':
+    'Start typing in the search above – we will surface the most relevant artists and songs for you.',
+  'home.recentlyAddedTitle': 'Recently added',
+  'home.recentlyAddedSubtitle':
+    'New songs you add will appear here. Use “Create artist” and “Create song” in the header to grow your library.',
+  'home.topResultsTitle': 'Top match',
+
+  'search.helper': 'Type artist, song or chord name to start.',
+  'search.topMatches': 'Top matches below',
+  'search.noArtists': 'No artists for this query yet.',
+  'search.noSongs': 'No songs for this query yet.',
+
+  'common.view': 'Open',
+  'common.favorite': 'Favorite',
+  'common.share': 'Share',
+
+  'transpose.original': 'Original',
+  'transpose.down': 'Transpose down',
+  'transpose.up': 'Transpose up',
+
+  'player.previous': 'Previous song',
+  'player.play': 'Play',
+  'player.next': 'Next song',
+  'player.settings': 'Player settings',
 }
