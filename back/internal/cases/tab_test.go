@@ -127,7 +127,22 @@ func TestUsedChordTabs(t *testing.T) {
 				},
 				ChordTabs: nil,
 			},
-			want: map[string]string{},
+			want: map[string]string{"C": string(entity.DefaultChordTabs["C"])},
+		},
+		{
+			name: "fallback to default tabs when chord not in content.ChordTabs",
+			content: entity.TabContent{
+				Sections: []entity.Section{
+					{ChordSequence: []string{"Em", "A"}},
+				},
+				ChordTabs: map[string]string{
+					"Em": "",
+				},
+			},
+			want: map[string]string{
+				"Em": string(entity.DefaultChordTabs["Em"]),
+				"A":  string(entity.DefaultChordTabs["A"]),
+			},
 		},
 	}
 	for _, tt := range tests {

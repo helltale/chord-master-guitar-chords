@@ -43,13 +43,23 @@ func UsedChordTabs(content entity.TabContent) map[string]string {
 		used[ch] = struct{}{}
 	}
 	out := make(map[string]string)
-	if content.ChordTabs == nil {
-		return out
-	}
-	for ch, tab := range content.ChordTabs {
-		if _, ok := used[ch]; ok && tab != "" {
-			out[ch] = tab
+
+	if content.ChordTabs != nil {
+		for ch, tab := range content.ChordTabs {
+			if _, ok := used[ch]; ok && tab != "" {
+				out[ch] = tab
+			}
 		}
 	}
+
+	for ch := range used {
+		if _, ok := out[ch]; ok {
+			continue
+		}
+		if shape, ok := entity.LookupChordTab(ch); ok {
+			out[ch] = string(shape)
+		}
+	}
+
 	return out
 }
