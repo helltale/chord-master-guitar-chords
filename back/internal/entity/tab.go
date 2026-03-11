@@ -22,6 +22,11 @@ func ChordNamesFlat() []string {
 // - G#m баррэ: "466444".
 type ChordTabShape string
 
+// DefaultChordTabs содержит предопределённые аппликатуры для типичных аккордов.
+// Это по сути константная таблица, поэтому допустимо хранить её в глобальной
+// переменной для быстрого доступа и переиспользования.
+//
+//nolint:gochecknoglobals // таблица-константа с дефолтными аппликатурами
 var DefaultChordTabs = map[string]ChordTabShape{
 	// Открытые аккорды
 	"C":  "x32010",

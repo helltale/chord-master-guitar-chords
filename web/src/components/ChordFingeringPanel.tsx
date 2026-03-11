@@ -200,7 +200,7 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
                               })}
 
                             {/* баррэ (один палец на нескольких струнах) */}
-                            {barreSegments.map((b, idx) => {
+                            {barreSegments.map((b) => {
                               const rowIndex = Math.max(1, Math.min(4, b.fret - baseFret + 1))
                               const y = (yLines[rowIndex - 1] + yLines[rowIndex]) / 2
                               const xStart = xStrings[b.from]
@@ -210,8 +210,7 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
 
                               return (
                                 <rect
-                                  // eslint-disable-next-line react/no-array-index-key
-                                  key={`barre-${idx}`}
+                                  key={`barre-${b.fret}-${b.from}-${b.to}`}
                                   x={xStart - paddingX}
                                   y={y - barHeight / 2}
                                   width={xEnd - xStart + paddingX * 2}

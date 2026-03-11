@@ -42,14 +42,12 @@ func UsedChordTabs(content entity.TabContent) map[string]string {
 	for _, ch := range UsedChords(content) {
 		used[ch] = struct{}{}
 	}
-	out := make(map[string]string)
 
-	if content.ChordTabs != nil {
-		for ch, tab := range content.ChordTabs {
-			if _, ok := used[ch]; ok && tab != "" {
-				out[ch] = tab
-			}
-		}
+	out := selectExplicitChordTabs(content.ChordTabs, used)
+
+	hasMissing := hasMissingChordTabs(used, content.ChordTabs)
+	if !hasMissing {
+		return out
 	}
 
 	for ch := range used {
@@ -62,4 +60,37 @@ func UsedChordTabs(content entity.TabContent) map[string]string {
 	}
 
 	return out
+}
+
+func selectExplicitChordTabs(chordTabs map[string]string, used map[string]struct{}) map[string]string {
+	out := make(map[string]string)
+	if chordTabs == nil {
+		return out
+	}
+
+	for ch, tab := range chordTabs {
+		if _, ok := used[ch]; ok && tab != "" {
+			out[ch] = tab
+		}
+	}
+
+	return out
+}
+
+func hasMissingChordTabs(used map[string]struct{}, chordTabs map[string]string) bool {
+	if len(used) == 0 {
+		return false
+	}
+
+	if chordTabs == nil {
+		return true
+	}
+
+	for ch := range used {
+		if _, ok := chordTabs[ch]; !ok {
+			return true
+		}
+	}
+
+	return false
 }
