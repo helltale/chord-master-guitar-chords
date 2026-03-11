@@ -10,7 +10,7 @@ export const ru: LocaleDict = {
   'common.found': 'Найдено',
   'common.nothingFound': 'Ничего не найдено',
 
-  'header.appName': 'AmDm Guitar Chords',
+  'header.appName': 'ChordMaster',
   'header.lightTheme': 'Светлая тема',
   'header.darkTheme': 'Тёмная тема',
   'header.lightThemeAria': 'Включить светлую тему',

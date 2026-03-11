@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
 import type { TabContent } from '@/api/schemas'
 import { useCreateSong, useListArtists } from '@/hooks'
@@ -11,6 +11,8 @@ export function CreateSongPage() {
   const { t } = useTranslation()
   const { submit, loading, error } = useCreateSong()
   const { items: artists, loading: artistsLoading } = useListArtists({ limit: 500 })
+  const [searchParams] = useSearchParams()
+  const defaultArtistId = searchParams.get('artist_id') ?? undefined
   const [preview, setPreview] = useState<{
     title: string
     artistName: string
@@ -54,6 +56,7 @@ export function CreateSongPage() {
               onSubmit={handleSubmit}
               loading={loading}
               error={error}
+              defaultArtistId={defaultArtistId}
               onPreviewChange={setPreview}
             />
           </div>

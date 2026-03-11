@@ -15,7 +15,7 @@ export function HomePage() {
       <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-10">
         <section className="mt-4 text-center md:mt-8 md:text-left">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-400">
-            AmDm Guitar Chords
+            ChordMaster
           </p>
           <h1 className="mt-3 text-3xl font-black tracking-tight text-slate-50 sm:text-4xl md:text-5xl">
             <span className="block">

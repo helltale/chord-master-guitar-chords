@@ -36,18 +36,29 @@ export function ArtistsPage() {
     <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-950 px-4 py-8">
       <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-8">
         {/* Page header */}
-        <section className="flex flex-col gap-2">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
-            {t('header.nav.artists', 'Artists')}
-          </p>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
-            {t('header.nav.artists', 'Artists')}
-          </h1>
-          {total > 0 && (
-            <p className="text-xs text-slate-500">
-              {total} {t('search.artists', 'Artists')}
+        <section className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
+          <div>
+            <h1 className="text-3xl font-black tracking-tight text-slate-50 sm:text-4xl">
+              {t('header.nav.artists', 'Artists')}
+            </h1>
+            <p className="mt-1 text-sm text-slate-400 md:text-base">
+              Browse artists and quickly jump to their songs.
             </p>
-          )}
+            {total > 0 && (
+              <p className="mt-2 text-xs text-slate-500">
+                {total} {t('search.artists', 'Artists')}
+              </p>
+            )}
+          </div>
+          <div className="flex gap-3">
+            <Link
+              to="/artists/new"
+              className="inline-flex items-center gap-2 rounded-xl bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_0_26px_rgba(99,102,241,0.9)] transition hover:bg-indigo-400"
+            >
+              <span>＋</span>
+              <span>{t('header.createArtist')}</span>
+            </Link>
+          </div>
         </section>
 
         {/* Filters & search */}

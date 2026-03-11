@@ -33,7 +33,28 @@ export function Header() {
         <div className="flex items-center gap-6">
           <Link to="/" className="flex items-center gap-3">
             <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-500 text-white shadow-[0_0_30px_rgba(79,70,229,0.9)]">
-              <span className="text-lg font-bold">♭</span>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                aria-hidden
+              >
+                {/* eighth note: head on left, stem + flag on right */}
+                <circle cx="11" cy="15" r="2.9" fill="white" />
+                <path
+                  d="M13.5 8v7"
+                  stroke="white"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M13.5 8c1.8 0 3 0.6 3.6 1.6"
+                  stroke="white"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
             </div>
             <span className="hidden text-sm font-semibold tracking-tight text-slate-50 sm:inline">
               {t('header.appName')}
@@ -91,20 +112,7 @@ export function Header() {
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
 
-          <div className="hidden items-center gap-2 sm:flex">
-            <Link
-              to="/artists/new"
-              className="rounded-full bg-slate-900/90 px-3 py-1.5 text-xs font-semibold text-slate-100 ring-1 ring-slate-700 transition hover:bg-slate-800 hover:text-white"
-            >
-              {t('header.createArtist')}
-            </Link>
-            <Link
-              to="/songs/new"
-              className="rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white shadow-[0_0_26px_rgba(99,102,241,0.9)] transition hover:bg-indigo-400"
-            >
-              {t('header.createSong')}
-            </Link>
-          </div>
+          {/* creation buttons moved to Artists/Songs pages */}
         </div>
       </div>
     </header>

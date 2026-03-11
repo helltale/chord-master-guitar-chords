@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
 import { useArtistBySlug } from '@/hooks'
 import { SongCard } from '@/components/SongCard'
@@ -30,6 +30,19 @@ export function ArtistPage() {
   return (
     <div className="flex flex-1 flex-col px-4 py-6 md:py-8">
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8">
+        {/* Page header, aligned with other pages */}
+        <section className="flex flex-col gap-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+            {t('header.nav.artists', 'Artists')}
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+            {artist.name}
+          </h1>
+          <p className="text-xs text-slate-500">
+            slug: {artist.slug} · {songs.length} {t('artist.songs')}
+          </p>
+        </section>
+
         {/* Artist hero card */}
         <section className="flex flex-col gap-6 rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.9)] md:flex-row md:items-center md:justify-between md:p-8">
           <div className="flex items-center gap-6">
@@ -77,16 +90,27 @@ export function ArtistPage() {
             <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
               {t('artist.songs')}
             </h2>
-            {songs.length > 0 && (
+            {songs.length > 0 ? (
               <span className="text-[11px] text-slate-500">
                 {songs.length} {t('artist.songs')}
               </span>
+            ) : (
+              <Link
+                to={`/songs/new?artist_id=${encodeURIComponent(artist.artist_id)}`}
+                className="inline-flex items-center gap-1 rounded-full bg-indigo-500 px-3 py-1 text-[11px] font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,0.9)] hover:bg-indigo-400"
+              >
+                <span>＋</span>
+                <span>{t('createSong.title')}</span>
+              </Link>
             )}
           </div>
           {songs.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/70 px-4 py-6 text-sm text-slate-500">
-              {t('artist.noSongs')}
-            </p>
+            <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/70 px-4 py-6 text-sm text-slate-500">
+              <p>{t('artist.noSongs')}</p>
+              <p className="mt-2 text-xs text-slate-500">
+                {t('createSong.subtitle')}
+              </p>
+            </div>
           ) : (
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="list">
               {songs.map((item) => (

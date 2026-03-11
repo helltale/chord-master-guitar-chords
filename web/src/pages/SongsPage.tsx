@@ -1,11 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useListSongs } from '@/hooks'
+import { useListSongs, useListArtists } from '@/hooks'
 import { useTranslation } from '@/contexts/I18nContext'
 
 export function SongsPage() {
   const { t } = useTranslation()
   const { items, total, loading, error } = useListSongs({ limit: 500 })
+  const { items: artists } = useListArtists({ limit: 500 })
   const [query, setQuery] = useState('')
 
   const filtered = useMemo(() => {
@@ -81,38 +82,44 @@ export function SongsPage() {
               <thead>
                 <tr className="border-b border-slate-800 bg-slate-900/80 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
                   <th className="px-5 py-3">Title</th>
+                  <th className="px-5 py-3">Artist</th>
                   <th className="px-5 py-3">Slug</th>
                   <th className="px-5 py-3 text-right">Key</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
-                {filtered.map((song) => (
-                  <tr
-                    key={song.song_id}
-                    className="cursor-pointer bg-slate-950/40 transition hover:bg-slate-900/80"
-                    onClick={() => {}}
-                  >
-                    <td className="px-5 py-3">
-                      <Link
-                        to={`/song/${song.song_id}`}
-                        className="flex items-center gap-3 text-slate-100 hover:text-indigo-200"
-                      >
-                        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20 text-xs font-bold text-indigo-300">
-                          ♪
-                        </div>
-                        <span className="truncate text-sm font-semibold">{song.title}</span>
-                      </Link>
-                    </td>
-                    <td className="px-5 py-3 text-xs text-slate-400">{song.slug}</td>
-                    <td className="px-5 py-3 text-right text-xs">
-                      {song.tonality != null && (
-                        <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-2 py-0.5 font-mono text-[11px] text-indigo-300">
-                          {song.tonality}
-                        </span>
-                      )}
-                    </td>
-                  </tr>
-                ))}
+                {filtered.map((song) => {
+                  const artistName =
+                    artists.find((a) => a.artist_id === song.artist_id)?.name ?? '—'
+
+                  return (
+                    <tr
+                      key={song.song_id}
+                      className="cursor-pointer bg-slate-950/40 transition hover:bg-slate-900/80"
+                    >
+                      <td className="px-5 py-3">
+                        <Link
+                          to={`/song/${song.song_id}`}
+                          className="flex items-center gap-3 text-slate-100 hover:text-indigo-200"
+                        >
+                          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-500/20 text-xs font-bold text-indigo-300">
+                            ♪
+                          </div>
+                          <span className="truncate text-sm font-semibold">{song.title}</span>
+                        </Link>
+                      </td>
+                      <td className="px-5 py-3 text-xs text-slate-300">{artistName}</td>
+                      <td className="px-5 py-3 text-xs text-slate-400">{song.slug}</td>
+                      <td className="px-5 py-3 text-right text-xs">
+                        {song.tonality != null && (
+                          <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-2 py-0.5 font-mono text-[11px] text-indigo-300">
+                            {song.tonality}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
               </tbody>
             </table>
           </div>

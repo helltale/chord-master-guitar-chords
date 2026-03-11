@@ -11,6 +11,7 @@ interface CreateSongFormProps {
   onSubmit: (body: CreateSongRequest) => void
   loading: boolean
   error: Error | null
+  defaultArtistId?: string
   onPreviewChange?: (preview: {
     title: string
     artistName: string
@@ -27,6 +28,7 @@ export function CreateSongForm({
   onSubmit,
   loading,
   error,
+  defaultArtistId,
   onPreviewChange,
 }: CreateSongFormProps) {
   const { t } = useTranslation()
@@ -65,6 +67,14 @@ export function CreateSongForm({
     a.name.toLowerCase().includes(artistSearch.toLowerCase())
   )
   const visibleArtists = filteredArtists.slice(0, 8)
+
+  useEffect(() => {
+    if (!defaultArtistId || selectedArtistId) return
+    const a = artists.find((artist) => artist.artist_id === defaultArtistId)
+    if (!a) return
+    setSelectedArtistId(defaultArtistId)
+    setArtistSearch(a.name)
+  }, [defaultArtistId, artists, selectedArtistId])
 
   useEffect(() => {
     if (!onPreviewChange) return
