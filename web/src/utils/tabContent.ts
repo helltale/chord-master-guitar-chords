@@ -14,3 +14,7 @@ export function isContentEmpty(content: TabContent): boolean {
   const seg = segs[0]
   return !seg.chord && !(seg.text ?? '').trim()
 }
+
+export function buildChordTabsFromContent(content: TabContent): Record<string, string> {
+  return content.chord_tabs ?? {}
+}

@@ -10,13 +10,16 @@ export const en: LocaleDict = {
   'common.found': 'Found',
   'common.nothingFound': 'Nothing found',
 
-  'header.appName': 'AmDm Guitar Chords',
+  'header.appName': 'ChordMaster',
   'header.lightTheme': 'Light theme',
   'header.darkTheme': 'Dark theme',
   'header.lightThemeAria': 'Switch to light theme',
   'header.darkThemeAria': 'Switch to dark theme',
   'header.createArtist': 'Create artist',
   'header.createSong': 'Create song',
+  'header.nav.artists': 'Artists',
+  'header.nav.songs': 'Songs',
+  'header.nav.favorites': 'Favorites',
 
   'search.label': 'Search artists and songs',
   'search.placeholder': 'Search...',
@@ -28,6 +31,8 @@ export const en: LocaleDict = {
 
   'artist.songs': 'Songs',
   'artist.noSongs': 'No songs',
+  'artist.follow': 'Follow',
+  'artist.share': 'Share',
 
   'createSong.title': 'Create song',
   'createSong.artist': 'Artist',
@@ -38,12 +43,29 @@ export const en: LocaleDict = {
   'createSong.lyricsOptional': 'Lyrics with chords (optional)',
   'createSong.submit': 'Create song',
   'createSong.submitting': 'Creating...',
+  'createSong.subtitle':
+    'Set artist, title and numeric key (semitones). Optional lyrics editor helps you structure chords above text.',
+  'createSong.previewTitle': 'How it will look',
+  'createSong.previewText':
+    'After saving, the song uses the main song layout with chords above lyrics and chord fingerings on the side.',
+  'createSong.statusConnected': 'Connected',
+  'createSong.statusDraft': 'Draft song',
+  'createSong.tipSyntax':
+    'Use [Am] inside plain text when importing lyrics to automatically place chords above the right words.',
 
   'createArtist.title': 'Create artist',
   'createArtist.name': 'Name',
   'createArtist.slug': 'Slug',
   'createArtist.submit': 'Create artist',
   'createArtist.submitting': 'Creating...',
+  'createArtist.subtitle':
+    'Add a new artist profile to your chord library. Name and slug define how the artist is displayed and linked.',
+  'createArtist.tipSyncTitle': 'Automatic sync',
+  'createArtist.tipSyncText':
+    'Artist data automatically links to its songs so you can update the name or slug in one place.',
+  'createArtist.tipSlugTitle': 'Clean URLs',
+  'createArtist.tipSlugText':
+    'Slugs are used in URLs like /artist/my-artist. Use lowercase letters, numbers and dashes only.',
 
   'section.sectionLabel': 'Section name',
   'section.placeholder': 'Verse 1, Chorus...',
@@ -77,4 +99,34 @@ export const en: LocaleDict = {
   'transpose.label': 'Transpose:',
 
   'chordPanel.title': 'Chord fingerings',
+
+  'home.heroTitleLine1': 'Every chord, every note.',
+  'home.heroTitleLine2': 'Master your favorite songs.',
+  'home.heroSubtitle':
+    'Search artists, songs and tabs. Save time parsing chords – focus on playing.',
+  'home.trendingTitle': 'Trending songs',
+  'home.trendingSubtitle':
+    'Start typing in the search above – we will surface the most relevant artists and songs for you.',
+  'home.recentlyAddedTitle': 'Recently added',
+  'home.recentlyAddedSubtitle':
+    'New songs you add will appear here. Use “Create artist” and “Create song” in the header to grow your library.',
+  'home.topResultsTitle': 'Top match',
+
+  'search.helper': 'Type artist, song or chord name to start.',
+  'search.topMatches': 'Top matches below',
+  'search.noArtists': 'No artists for this query yet.',
+  'search.noSongs': 'No songs for this query yet.',
+
+  'common.view': 'Open',
+  'common.favorite': 'Favorite',
+  'common.share': 'Share',
+
+  'transpose.original': 'Original',
+  'transpose.down': 'Transpose down',
+  'transpose.up': 'Transpose up',
+
+  'player.previous': 'Previous song',
+  'player.play': 'Play',
+  'player.next': 'Next song',
+  'player.settings': 'Player settings',
 }

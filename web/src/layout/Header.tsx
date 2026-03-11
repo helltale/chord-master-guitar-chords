@@ -27,47 +27,93 @@ export function Header() {
   const themeAria = theme === 'dark' ? t('header.lightThemeAria') : t('header.darkThemeAria')
 
   return (
-    <header className="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 shadow-sm">
-      <div className="container mx-auto px-4 h-14 flex items-center justify-between">
-        <Link to="/" className="text-xl font-semibold text-gray-800 dark:text-gray-100 hover:text-gray-600 dark:hover:text-gray-300">
-          {t('header.appName')}
-        </Link>
-        <nav className="flex items-center gap-4">
-          <div className="flex items-center gap-1">
+    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 shadow-[0_10px_40px_rgba(15,23,42,0.8)] backdrop-blur-xl">
+      <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
+        {/* Logo + primary navigation */}
+        <div className="flex items-center gap-6">
+          <Link to="/" className="flex items-center gap-3">
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-indigo-500 text-white shadow-[0_0_30px_rgba(79,70,229,0.9)]">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                className="h-6 w-6"
+                aria-hidden
+              >
+                {/* eighth note: head on left, stem + flag on right */}
+                <circle cx="11" cy="15" r="2.9" fill="white" />
+                <path
+                  d="M13.5 8v7"
+                  stroke="white"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                />
+                <path
+                  d="M13.5 8c1.8 0 3 0.6 3.6 1.6"
+                  stroke="white"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  fill="none"
+                />
+              </svg>
+            </div>
+            <span className="hidden text-sm font-semibold tracking-tight text-slate-50 sm:inline">
+              {t('header.appName')}
+            </span>
+          </Link>
+          <nav className="hidden items-center gap-4 text-xs font-medium text-slate-400 sm:flex">
+            <Link
+              to="/artists"
+              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
+            >
+              {t('header.nav.artists')}
+            </Link>
+            <Link
+              to="/songs"
+              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
+            >
+              {t('header.nav.songs')}
+            </Link>
+            <Link
+              to="/favorites"
+              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
+            >
+              {t('header.nav.favorites')}
+            </Link>
+          </nav>
+        </div>
+
+        {/* Locale switcher + actions */}
+        <div className="flex items-center gap-3">
+          <div className="hidden items-center gap-1 rounded-full bg-slate-900/80 p-1 text-[11px] text-slate-300 sm:flex">
             {(['ru', 'en'] as Locale[]).map((lang) => (
               <button
                 key={lang}
                 type="button"
                 onClick={() => setLocale(lang)}
-                className={`rounded px-2 py-1 text-sm font-medium ${locale === lang ? 'bg-indigo-100 dark:bg-indigo-900/70 text-indigo-800 dark:text-indigo-200' : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'}`}
+                className={`min-w-[2.25rem] rounded-full px-2 py-0.5 font-semibold ${
+                  locale === lang
+                    ? 'bg-slate-100 text-slate-900'
+                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                }`}
                 aria-pressed={locale === lang}
               >
                 {lang.toUpperCase()}
               </button>
             ))}
           </div>
+
           <button
             type="button"
             onClick={toggleTheme}
-            className="rounded-lg p-2 text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/90 text-slate-300 ring-1 ring-slate-700 hover:bg-slate-800 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
             title={themeTitle}
             aria-label={themeAria}
           >
             {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
           </button>
-          <Link
-            to="/artists/new"
-            className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
-          >
-            {t('header.createArtist')}
-          </Link>
-          <Link
-            to="/songs/new"
-            className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600"
-          >
-            {t('header.createSong')}
-          </Link>
-        </nav>
+
+          {/* creation buttons moved to Artists/Songs pages */}
+        </div>
       </div>
     </header>
   )

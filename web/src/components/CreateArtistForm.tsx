@@ -37,14 +37,17 @@ export function CreateArtistForm({
   }
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <p className="text-red-600 dark:text-red-400 text-sm" role="alert">
+        <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
           {error.message}
         </p>
       )}
-      <div>
-        <label htmlFor="artist-name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="artist-name"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createArtist.name')}
         </label>
         <input
@@ -53,11 +56,14 @@ export function CreateArtistForm({
           type="text"
           required
           onChange={handleNameChange}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
-      <div>
-        <label htmlFor="artist-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="artist-slug"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createArtist.slug')}
         </label>
         <input
@@ -66,13 +72,13 @@ export function CreateArtistForm({
           type="text"
           required
           onBlur={markSlugTouched}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
       <button
         type="submit"
         disabled={loading}
-        className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(79,70,229,0.6)] transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? t('createArtist.submitting') : t('createArtist.submit')}
       </button>

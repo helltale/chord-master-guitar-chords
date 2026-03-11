@@ -6,6 +6,7 @@ import { SongContent } from '@/components/SongContent'
 import { ChordFingeringPanel } from '@/components/ChordFingeringPanel'
 import { TransposeControl } from '@/components/TransposeControl'
 import type { Song } from '@/api/schemas'
+import { buildChordTabsFromContent } from '@/utils/tabContent'
 
 export function SongPage() {
   const { songId } = useParams<{ songId: string }>()
@@ -41,33 +42,67 @@ export function SongPage() {
   }
 
   const content = song.content
-  const chordTabs = content?.chord_tabs ?? {}
+  const chordTabs = content ? buildChordTabsFromContent(content) : {}
 
   return (
-    <div className="max-w-5xl mx-auto">
-      <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{song.title}</h1>
-          {song.tonality != null && (
-            <p className="text-gray-600 dark:text-gray-400 text-sm">{t('song.tonality')}: {song.tonality}</p>
-          )}
+    <div className="flex h-full min-h-0 flex-col -mx-4 -my-6 px-4 py-4 bg-gray-50 dark:bg-gray-950">
+      {/* Sticky in-page header with song info and quick actions */}
+      <header className="z-10 mb-4 flex items-center justify-between gap-4 rounded-xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 px-4 py-3 backdrop-blur">
+        <div className="flex items-center gap-4">
+          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-600/10 text-indigo-500 dark:bg-indigo-500/15 dark:text-indigo-300">
+            <span className="text-lg font-semibold">♫</span>
+          </div>
+          <div className="flex flex-col">
+            <h1 className="text-lg font-semibold tracking-tight text-gray-900 dark:text-gray-50">
+              {song.title}
+            </h1>
+            {song.tonality != null && (
+              <p className="text-xs font-medium text-gray-500 dark:text-gray-400">
+                {t('song.tonality')}: {song.tonality}
+              </p>
+            )}
+          </div>
         </div>
-        <TransposeControl
-          onTranspose={handleTranspose}
-          loading={transposeLoading}
-        />
-      </div>
-      <div className="grid gap-8 lg:grid-cols-[1fr,280px]">
-        <div>
-          {content?.sections && content.sections.length > 0 ? (
-            <SongContent content={content} />
-          ) : (
-            <p className="text-gray-500 dark:text-gray-400">{t('common.noContent')}</p>
-          )}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            aria-label={t('common.favorite') ?? 'Favorite'}
+          >
+            <span className="text-base">★</span>
+          </button>
+          <button
+            type="button"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
+            aria-label={t('common.share') ?? 'Share'}
+          >
+            <span className="text-base">⇢</span>
+          </button>
+          <div className="hidden md:inline-flex">
+            <TransposeControl onTranspose={handleTranspose} loading={transposeLoading} />
+          </div>
         </div>
-        <div>
+      </header>
+
+      <div className="flex flex-1 gap-4 overflow-hidden">
+        {/* Left sidebar: transpose (mobile) + chord panel */}
+        <aside className="hidden w-72 flex-none flex-col gap-6 overflow-y-auto rounded-xl border border-gray-200/70 bg-white/80 p-4 shadow-sm custom-scrollbar dark:border-gray-800 dark:bg-gray-900/80 lg:flex">
+          <div className="mb-2 block md:hidden">
+            <TransposeControl onTranspose={handleTranspose} loading={transposeLoading} />
+          </div>
           <ChordFingeringPanel chordTabs={chordTabs} />
-        </div>
+        </aside>
+
+        {/* Main scrollable lyrics/chords area */}
+        <main className="custom-scrollbar flex-1 overflow-y-auto rounded-xl border border-gray-200/70 bg-white/90 p-4 shadow-sm dark:border-gray-800 dark:bg-gray-900/90 md:p-8">
+          <div className="mx-auto max-w-3xl">
+            {content?.sections && content.sections.length > 0 ? (
+              <SongContent content={content} />
+            ) : (
+              <p className="text-gray-500 dark:text-gray-400">{t('common.noContent')}</p>
+            )}
+          </div>
+        </main>
       </div>
     </div>
   )

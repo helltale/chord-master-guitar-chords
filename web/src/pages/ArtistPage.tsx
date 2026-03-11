@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
 import { useArtistBySlug } from '@/hooks'
 import { SongCard } from '@/components/SongCard'
@@ -28,23 +28,100 @@ export function ArtistPage() {
   const songs = artist.songs ?? []
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-8 rounded-lg border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 p-6 shadow-sm">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100">{artist.name}</h1>
-        <p className="mt-1 text-gray-600 dark:text-gray-400 text-sm">slug: {artist.slug}</p>
+    <div className="flex flex-1 flex-col px-4 py-6 md:py-8">
+      <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8">
+        {/* Page header, aligned with other pages */}
+        <section className="flex flex-col gap-1">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+            {t('header.nav.artists', 'Artists')}
+          </p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+            {artist.name}
+          </h1>
+          <p className="text-xs text-slate-500">
+            slug: {artist.slug} · {songs.length} {t('artist.songs')}
+          </p>
+        </section>
+
+        {/* Artist hero card */}
+        <section className="flex flex-col gap-6 rounded-3xl border border-slate-800 bg-slate-950/70 p-6 shadow-[0_24px_70px_rgba(15,23,42,0.9)] md:flex-row md:items-center md:justify-between md:p-8">
+          <div className="flex items-center gap-6">
+            <div className="relative">
+              <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-indigo-500 text-3xl font-bold text-white shadow-[0_0_40px_rgba(99,102,241,0.9)] md:h-24 md:w-24">
+                {artist.name.charAt(0).toLowerCase()}
+              </div>
+              <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-[11px] text-indigo-300 ring-2 ring-slate-950">
+                ★
+              </div>
+            </div>
+            <div>
+              <h1 className="text-2xl font-bold tracking-tight text-slate-50 md:text-3xl">
+                {artist.name}
+              </h1>
+              <p className="mt-1 text-xs font-mono uppercase tracking-[0.18em] text-slate-500">
+                slug: {artist.slug}
+              </p>
+              <div className="mt-3 flex flex-wrap gap-3 text-[11px] text-slate-400">
+                <span className="rounded-full bg-slate-900 px-3 py-1 font-semibold uppercase tracking-[0.18em]">
+                  {t('artist.songs')} · {songs.length}
+                </span>
+              </div>
+            </div>
+          </div>
+          <div className="mt-4 flex items-center gap-3 md:mt-0">
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full bg-slate-900/80 px-4 py-1.5 text-xs font-semibold text-slate-100 ring-1 ring-slate-700 hover:bg-slate-800"
+            >
+              ♡ {t('artist.follow')}
+            </button>
+            <button
+              type="button"
+              className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white shadow-[0_0_30px_rgba(99,102,241,0.9)] hover:bg-indigo-400"
+            >
+              ↗ {t('artist.share')}
+            </button>
+          </div>
+        </section>
+
+        {/* Songs list */}
+        <section className="flex flex-1 flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-400">
+              {t('artist.songs')}
+            </h2>
+            {songs.length > 0 ? (
+              <span className="text-[11px] text-slate-500">
+                {songs.length} {t('artist.songs')}
+              </span>
+            ) : (
+              <Link
+                to={`/songs/new?artist_id=${encodeURIComponent(artist.artist_id)}`}
+                className="inline-flex items-center gap-1 rounded-full bg-indigo-500 px-3 py-1 text-[11px] font-semibold text-white shadow-[0_0_24px_rgba(99,102,241,0.9)] hover:bg-indigo-400"
+              >
+                <span>＋</span>
+                <span>{t('createSong.title')}</span>
+              </Link>
+            )}
+          </div>
+          {songs.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/70 px-4 py-6 text-sm text-slate-500">
+              <p>{t('artist.noSongs')}</p>
+              <p className="mt-2 text-xs text-slate-500">
+                {t('createSong.subtitle')}
+              </p>
+            </div>
+          ) : (
+            <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="list">
+              {songs.map((item) => (
+                <li key={item.song_id}>
+                  <SongCard item={item} />
+                </li>
+              ))}
+            </ul>
+          )}
+        </section>
       </div>
-      <h2 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-4">{t('artist.songs')}</h2>
-      {songs.length === 0 ? (
-        <p className="text-gray-500 dark:text-gray-400">{t('artist.noSongs')}</p>
-      ) : (
-        <ul className="space-y-2" role="list">
-          {songs.map((item) => (
-            <li key={item.song_id}>
-              <SongCard item={item} />
-            </li>
-          ))}
-        </ul>
-      )}
     </div>
   )
 }
