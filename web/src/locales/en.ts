@@ -17,6 +17,9 @@ export const en: LocaleDict = {
   'header.darkThemeAria': 'Switch to dark theme',
   'header.createArtist': 'Create artist',
   'header.createSong': 'Create song',
+  'header.nav.artists': 'Artists',
+  'header.nav.songs': 'Songs',
+  'header.nav.favorites': 'Favorites',
 
   'search.label': 'Search artists and songs',
   'search.placeholder': 'Search...',
@@ -28,6 +31,8 @@ export const en: LocaleDict = {
 
   'artist.songs': 'Songs',
   'artist.noSongs': 'No songs',
+  'artist.follow': 'Follow',
+  'artist.share': 'Share',
 
   'createSong.title': 'Create song',
   'createSong.artist': 'Artist',
@@ -38,12 +43,29 @@ export const en: LocaleDict = {
   'createSong.lyricsOptional': 'Lyrics with chords (optional)',
   'createSong.submit': 'Create song',
   'createSong.submitting': 'Creating...',
+  'createSong.subtitle':
+    'Set artist, title and numeric key (semitones). Optional lyrics editor helps you structure chords above text.',
+  'createSong.previewTitle': 'How it will look',
+  'createSong.previewText':
+    'After saving, the song uses the main song layout with chords above lyrics and chord fingerings on the side.',
+  'createSong.statusConnected': 'Connected',
+  'createSong.statusDraft': 'Draft song',
+  'createSong.tipSyntax':
+    'Use [Am] inside plain text when importing lyrics to automatically place chords above the right words.',
 
   'createArtist.title': 'Create artist',
   'createArtist.name': 'Name',
   'createArtist.slug': 'Slug',
   'createArtist.submit': 'Create artist',
   'createArtist.submitting': 'Creating...',
+  'createArtist.subtitle':
+    'Add a new artist profile to your chord library. Name and slug define how the artist is displayed and linked.',
+  'createArtist.tipSyncTitle': 'Automatic sync',
+  'createArtist.tipSyncText':
+    'Artist data automatically links to its songs so you can update the name or slug in one place.',
+  'createArtist.tipSlugTitle': 'Clean URLs',
+  'createArtist.tipSlugText':
+    'Slugs are used in URLs like /artist/my-artist. Use lowercase letters, numbers and dashes only.',
 
   'section.sectionLabel': 'Section name',
   'section.placeholder': 'Verse 1, Chorus...',

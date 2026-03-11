@@ -1,9 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CreateSongRequest, TabContent } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
 import { useTranslation } from '@/contexts/I18nContext'
-import { LyricsWysiwygEditor } from '@/components/LyricsWysiwygEditor'
-import { isContentEmpty } from '@/utils/tabContent'
+import { parseLyricsWithChords } from '@/utils/parseLyricsWithChords'
 import { slugFromString } from '@/utils/slug'
 
 interface CreateSongFormProps {
@@ -12,11 +11,15 @@ interface CreateSongFormProps {
   onSubmit: (body: CreateSongRequest) => void
   loading: boolean
   error: Error | null
+  onPreviewChange?: (preview: {
+    title: string
+    artistName: string
+    tonality?: number
+    content: TabContent | null
+  } | null) => void
 }
 
-const emptyContent: TabContent = {
-  sections: [{ type: 'verse', label: '', blocks: [{ kind: 'lyrics', segments: [{ chord: '', text: '' }] }] }],
-}
+const CHORD_PRESETS = ['G', 'C', 'D', 'Em', 'Am', 'F', 'Bm'] as const
 
 export function CreateSongForm({
   artists,
@@ -24,24 +27,28 @@ export function CreateSongForm({
   onSubmit,
   loading,
   error,
+  onPreviewChange,
 }: CreateSongFormProps) {
   const { t } = useTranslation()
-  const [content, setContent] = useState<TabContent>(emptyContent)
+  const [artistSearch, setArtistSearch] = useState('')
+  const [selectedArtistId, setSelectedArtistId] = useState<string>('')
+  const [lyricsText, setLyricsText] = useState('')
+  const [title, setTitle] = useState('')
+  const [tonalityRaw, setTonalityRaw] = useState('')
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget
-    const artist_id = (form.elements.namedItem('artist_id') as HTMLSelectElement).value
-    const title = (form.elements.namedItem('title') as HTMLInputElement).value.trim()
     const slug = (form.elements.namedItem('slug') as HTMLInputElement).value.trim()
-    const tonalityRaw = (form.elements.namedItem('tonality') as HTMLInputElement).value
-    if (!artist_id || !title || !slug) return
+    const trimmedTitle = title.trim()
+    if (!selectedArtistId || !trimmedTitle || !slug) return
     const tonality = tonalityRaw ? parseInt(tonalityRaw, 10) : undefined
-    const contentToSend = isContentEmpty(content) ? undefined : content
-    onSubmit({ artist_id, title, slug, tonality, content: contentToSend })
+    const contentToSend = lyricsText.trim() ? parseLyricsWithChords(lyricsText) : undefined
+    onSubmit({ artist_id: selectedArtistId, title: trimmedTitle, slug, tonality, content: contentToSend })
   }
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setTitle(e.target.value)
     const form = e.target.form
     if (!form) return
     const slugField = form.elements.namedItem('slug') as HTMLInputElement
@@ -54,34 +61,85 @@ export function CreateSongForm({
     e.target.dataset.touched = '1'
   }
 
+  const filteredArtists = artists.filter((a) =>
+    a.name.toLowerCase().includes(artistSearch.toLowerCase())
+  )
+  const visibleArtists = filteredArtists.slice(0, 8)
+
+  useEffect(() => {
+    if (!onPreviewChange) return
+    const artist = artists.find((a) => a.artist_id === selectedArtistId)
+    const trimmedTitle = title.trim()
+    const hasContent = lyricsText.trim().length > 0
+    if (!artist && !trimmedTitle && !hasContent && !tonalityRaw) {
+      onPreviewChange(null)
+      return
+    }
+    const content: TabContent | null = hasContent ? parseLyricsWithChords(lyricsText) : null
+    const tonality = tonalityRaw ? parseInt(tonalityRaw, 10) : undefined
+    onPreviewChange({
+      title: trimmedTitle || 'Untitled song',
+      artistName: artist?.name ?? '',
+      tonality,
+      content,
+    })
+  }, [artists, selectedArtistId, title, lyricsText, tonalityRaw, onPreviewChange])
+
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <p className="text-red-600 dark:text-red-400 text-sm" role="alert">
+        <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
           {error.message}
         </p>
       )}
-      <div>
-        <label htmlFor="song-artist" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="flex flex-col gap-2">
+        <label
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createSong.artist')}
         </label>
-        <select
-          id="song-artist"
-          name="artist_id"
-          required
+        <input
+          type="search"
+          value={artistSearch}
+          onChange={(e) => setArtistSearch(e.target.value)}
           disabled={artistsLoading}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-        >
-          <option value="">{t('createSong.selectArtist')}</option>
-          {artists.map((a) => (
-            <option key={a.artist_id} value={a.artist_id}>
-              {a.name}
-            </option>
-          ))}
-        </select>
+          placeholder={t('search.placeholder')}
+          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+        />
+        <div className="mt-2 max-h-36 space-y-1 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950/70 p-1">
+          {visibleArtists.length === 0 ? (
+            <p className="px-2 py-1 text-xs text-slate-500">
+              {t('search.noArtists')}
+            </p>
+          ) : (
+            visibleArtists.map((a) => (
+              <button
+                key={a.artist_id}
+                type="button"
+                onClick={() => setSelectedArtistId(a.artist_id)}
+                className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs ${
+                  selectedArtistId === a.artist_id
+                    ? 'bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-400'
+                    : 'bg-transparent text-slate-200 hover:bg-slate-900'
+                }`}
+                aria-pressed={selectedArtistId === a.artist_id}
+              >
+                <span className="font-medium">{a.name}</span>
+                {selectedArtistId === a.artist_id && (
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-indigo-300">
+                    selected
+                  </span>
+                )}
+              </button>
+            ))
+          )}
+        </div>
       </div>
-      <div>
-        <label htmlFor="song-title" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="song-title"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createSong.songTitle')}
         </label>
         <input
@@ -90,11 +148,15 @@ export function CreateSongForm({
           type="text"
           required
           onChange={handleTitleChange}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          value={title}
+          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
-      <div>
-        <label htmlFor="song-slug" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="song-slug"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createSong.slug')}
         </label>
         <input
@@ -103,11 +165,14 @@ export function CreateSongForm({
           type="text"
           required
           onBlur={markSlugTouched}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
-      <div>
-        <label htmlFor="song-tonality" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+      <div className="flex flex-col gap-2">
+        <label
+          htmlFor="song-tonality"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createSong.tonalityOptional')}
         </label>
         <input
@@ -115,22 +180,53 @@ export function CreateSongForm({
           name="tonality"
           type="number"
           step={1}
-          className="w-full rounded-lg border border-gray-300 dark:border-gray-600 px-3 py-2 text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-800 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          value={tonalityRaw}
+          onChange={(e) => setTonalityRaw(e.target.value)}
+          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
       <div>
-        <label id="song-content-label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        <label
+          id="song-content-label"
+          className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+        >
           {t('createSong.lyricsOptional')}
         </label>
-        <LyricsWysiwygEditor
-          value={content}
-          onChange={setContent}
+        <textarea
+          aria-labelledby="song-content-label"
+          value={lyricsText}
+          onChange={(e) => setLyricsText(e.target.value)}
+          rows={8}
+          className="w-full rounded-2xl border border-slate-800 bg-slate-950/80 p-4 text-sm text-slate-100 shadow-inner shadow-black/40 outline-none ring-1 ring-slate-900/80 focus:border-indigo-400 focus:ring-indigo-500"
+          placeholder="[Am] Thoughts fly away, [Dm] stretch [F] beyond the horizon..."
         />
+        <div className="mt-3 space-y-2">
+          <div className="flex items-center justify-between text-[11px] text-slate-500">
+            <span>
+              {t(
+                'createSong.tipSyntax',
+                'Use [Am] inside plain text to place chords above words when parsed.'
+              )}
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {CHORD_PRESETS.map((chord) => (
+              <button
+                key={chord}
+                type="button"
+                onClick={() => setLyricsText((prev) => `${prev}${prev ? ' ' : ''}[${chord}] `)}
+                className="flex h-8 min-w-[2.5rem] items-center justify-center rounded-full border border-indigo-500/40 bg-indigo-500/10 px-2 text-xs font-semibold text-indigo-200 hover:bg-indigo-500 hover:text-white"
+              >
+                {chord}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
       <button
         type="submit"
         disabled={loading || artistsLoading}
-        className="rounded-lg bg-indigo-600 dark:bg-indigo-500 px-4 py-2 text-sm font-medium text-white hover:bg-indigo-700 dark:hover:bg-indigo-600 disabled:opacity-50"
+        className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-indigo-500 px-4 py-2 text-sm font-semibold text-white shadow-[0_12px_40px_rgba(79,70,229,0.6)] transition hover:bg-indigo-400 disabled:cursor-not-allowed disabled:opacity-60"
       >
         {loading ? t('createSong.submitting') : t('createSong.submit')}
       </button>

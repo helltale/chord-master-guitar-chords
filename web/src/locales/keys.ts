@@ -19,6 +19,9 @@ export type LocaleKey =
   | 'header.darkThemeAria'
   | 'header.createArtist'
   | 'header.createSong'
+  | 'header.nav.artists'
+  | 'header.nav.songs'
+  | 'header.nav.favorites'
   // Search
   | 'search.label'
   | 'search.placeholder'
@@ -30,6 +33,8 @@ export type LocaleKey =
   // Artist page
   | 'artist.songs'
   | 'artist.noSongs'
+  | 'artist.follow'
+  | 'artist.share'
   // Create song form
   | 'createSong.title'
   | 'createSong.artist'
@@ -40,12 +45,23 @@ export type LocaleKey =
   | 'createSong.lyricsOptional'
   | 'createSong.submit'
   | 'createSong.submitting'
+  | 'createSong.subtitle'
+  | 'createSong.previewTitle'
+  | 'createSong.previewText'
+  | 'createSong.statusConnected'
+  | 'createSong.statusDraft'
+  | 'createSong.tipSyntax'
   // Create artist form
   | 'createArtist.title'
   | 'createArtist.name'
   | 'createArtist.slug'
   | 'createArtist.submit'
   | 'createArtist.submitting'
+  | 'createArtist.subtitle'
+  | 'createArtist.tipSyncTitle'
+  | 'createArtist.tipSyncText'
+  | 'createArtist.tipSlugTitle'
+  | 'createArtist.tipSlugText'
   // Section editor
   | 'section.sectionLabel'
   | 'section.placeholder'

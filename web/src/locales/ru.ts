@@ -17,6 +17,9 @@ export const ru: LocaleDict = {
   'header.darkThemeAria': 'Включить тёмную тему',
   'header.createArtist': 'Создать артиста',
   'header.createSong': 'Создать песню',
+  'header.nav.artists': 'Артисты',
+  'header.nav.songs': 'Песни',
+  'header.nav.favorites': 'Избранное',
 
   'search.label': 'Поиск исполнителей и произведений',
   'search.placeholder': 'Поиск...',
@@ -28,6 +31,8 @@ export const ru: LocaleDict = {
 
   'artist.songs': 'Песни',
   'artist.noSongs': 'Нет песен',
+  'artist.follow': 'Подписаться',
+  'artist.share': 'Поделиться',
 
   'createSong.title': 'Создать песню',
   'createSong.artist': 'Артист',
@@ -38,12 +43,29 @@ export const ru: LocaleDict = {
   'createSong.lyricsOptional': 'Текст с аккордами (опционально)',
   'createSong.submit': 'Создать песню',
   'createSong.submitting': 'Создание...',
+  'createSong.subtitle':
+    'Выберите артиста, задайте название и числовую тональность (в полутонах). Редактор текста помогает расположить аккорды над словами.',
+  'createSong.previewTitle': 'Как это будет выглядеть',
+  'createSong.previewText':
+    'После сохранения песня откроется в основном просмотрщике: аккорды над строками текста и панель аппликатур сбоку.',
+  'createSong.statusConnected': 'Подключено',
+  'createSong.statusDraft': 'Черновик песни',
+  'createSong.tipSyntax':
+    'Вставляйте аккорды в квадратных скобках внутри текста, например [Am], чтобы при импорте они автоматически встали над нужными словами.',
 
   'createArtist.title': 'Создать артиста',
   'createArtist.name': 'Имя',
   'createArtist.slug': 'Адрес страницы',
   'createArtist.submit': 'Создать артиста',
   'createArtist.submitting': 'Создание...',
+  'createArtist.subtitle':
+    'Добавьте нового артиста в библиотеку аккордов. Имя и slug определяют, как он будет отображаться и по какому адресу открываться.',
+  'createArtist.tipSyncTitle': 'Автоматическая связка',
+  'createArtist.tipSyncText':
+    'Данные артиста автоматически связываются со всеми его песнями, поэтому имя и slug можно менять в одном месте.',
+  'createArtist.tipSlugTitle': 'Аккуратные ссылки',
+  'createArtist.tipSlugText':
+    'Slug попадает в адрес вида /artist/my-artist. Используйте только латиницу, цифры и дефисы в нижнем регистре.',
 
   'section.sectionLabel': 'Название секции',
   'section.placeholder': 'Куплет 1, Припев...',

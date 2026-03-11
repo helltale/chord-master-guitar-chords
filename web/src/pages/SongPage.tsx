@@ -6,6 +6,7 @@ import { SongContent } from '@/components/SongContent'
 import { ChordFingeringPanel } from '@/components/ChordFingeringPanel'
 import { TransposeControl } from '@/components/TransposeControl'
 import type { Song } from '@/api/schemas'
+import { buildChordTabsFromContent } from '@/utils/tabContent'
 
 export function SongPage() {
   const { songId } = useParams<{ songId: string }>()
@@ -41,7 +42,7 @@ export function SongPage() {
   }
 
   const content = song.content
-  const chordTabs = content?.chord_tabs ?? {}
+  const chordTabs = content ? buildChordTabsFromContent(content) : {}
 
   return (
     <div className="flex h-full min-h-0 flex-col -mx-4 -my-6 px-4 py-4 bg-gray-50 dark:bg-gray-950">
