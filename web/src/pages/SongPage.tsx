@@ -104,55 +104,6 @@ export function SongPage() {
           </div>
         </main>
       </div>
-
-      {/* Bottom mini-player (visual only for now) */}
-      <footer className="mt-4 flex h-14 items-center justify-between rounded-xl border border-gray-200/70 bg-white/90 px-4 text-xs text-gray-600 shadow-sm dark:border-gray-800 dark:bg-gray-900/90 dark:text-gray-300">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label={t('player.previous') ?? 'Previous song'}
-          >
-            ‹‹
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-indigo-600 text-white shadow hover:bg-indigo-500"
-            aria-label={t('player.play') ?? 'Play'}
-          >
-            ▶
-          </button>
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label={t('player.next') ?? 'Next song'}
-          >
-            ››
-          </button>
-        </div>
-        <div className="hidden flex-1 items-center gap-2 px-6 md:flex">
-          <span className="font-mono text-[10px] text-gray-500 dark:text-gray-400">1:24</span>
-          <div className="h-1.5 flex-1 rounded-full bg-gray-800/60 dark:bg-gray-700">
-            <div className="h-full w-1/4 rounded-full bg-indigo-500" />
-          </div>
-          <span className="font-mono text-[10px] text-gray-500 dark:text-gray-400">5:40</span>
-        </div>
-        <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-2 sm:flex">
-            <span className="text-base">🔊</span>
-            <div className="h-1 w-20 rounded-full bg-gray-800/60 dark:bg-gray-700">
-              <div className="h-full w-2/3 rounded-full bg-gray-400 dark:bg-gray-300" />
-            </div>
-          </div>
-          <button
-            type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label={t('player.settings') ?? 'Player settings'}
-          >
-            ⚙
-          </button>
-        </div>
-      </footer>
     </div>
   )
 }

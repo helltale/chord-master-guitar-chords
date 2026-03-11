@@ -41,23 +41,23 @@ export function Header() {
           </Link>
           <nav className="hidden items-center gap-4 text-xs font-medium text-slate-400 sm:flex">
             <Link
-              to="/"
+              to="/artists"
               className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
             >
               {t('header.nav.artists')}
             </Link>
             <Link
-              to="/"
+              to="/songs"
               className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
             >
               {t('header.nav.songs')}
             </Link>
-            <button
-              type="button"
-              className="rounded-full px-3 py-1.5 text-left transition hover:bg-slate-900 hover:text-slate-50"
+            <Link
+              to="/favorites"
+              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
             >
               {t('header.nav.favorites')}
-            </button>
+            </Link>
           </nav>
         </div>
 
