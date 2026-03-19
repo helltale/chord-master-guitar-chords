@@ -28,3 +28,8 @@ restart:
 
 restart-srv:
 	docker compose down && docker compose build && docker compose up -d
+
+deploy-pull:
+	docker compose -f docker-compose.prod.yml pull
+	docker compose -f docker-compose.prod.yml up -d --remove-orphans
+
