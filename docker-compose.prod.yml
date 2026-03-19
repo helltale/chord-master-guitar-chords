@@ -17,7 +17,7 @@ services:
       retries: 5
 
   back:
-    image: ghcr.io/${GHCR_OWNER:-andreev}/chord-master-back:latest
+    image: ghcr.io/${GHCR_OWNER:-helltale}/chord-master-back:latest
     pull_policy: always
     container_name: amdm-back
     ports:
@@ -34,7 +34,7 @@ services:
         condition: service_healthy
 
   web:
-    image: ghcr.io/${GHCR_OWNER:-andreev}/chord-master-web:latest
+    image: ghcr.io/${GHCR_OWNER:-helltale}/chord-master-web:latest
     pull_policy: always
     container_name: amdm-web
     ports:
