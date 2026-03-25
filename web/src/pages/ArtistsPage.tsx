@@ -98,7 +98,9 @@ export function ArtistsPage() {
         <section className="flex flex-1 flex-col gap-4 pb-6">
           {filtered.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/70 px-4 py-6 text-sm text-slate-500">
-              {t('search.noArtists')}
+              {items.length === 0
+                ? t('artists.emptyLibrary')
+                : t('search.noArtists')}
             </p>
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list">

@@ -42,6 +42,8 @@ export const ru: LocaleDict = {
   'artists.countRuOne': 'исполнитель',
   'artists.countRuFew': 'исполнителя',
   'artists.countRuMany': 'исполнителей',
+  'artists.emptyLibrary':
+    'В библиотеке пока нет исполнителей. Создайте первого кнопкой выше.',
 
   'songsPage.title': 'Библиотека песен',
   'songsPage.subtitle':
@@ -80,6 +82,8 @@ export const ru: LocaleDict = {
     'После сохранения песня откроется в основном просмотрщике: аккорды над строками текста и панель аппликатур сбоку.',
   'createSong.statusConnected': 'Подключено',
   'createSong.statusDraft': 'Черновик песни',
+  'createSong.noArtistsYet':
+    'Сначала создайте исполнителя: раздел «Артисты» → «Создать артиста».',
   'createSong.tipSyntax':
     'Вставляйте аккорды в квадратных скобках внутри текста, например [Am], чтобы при импорте они автоматически встали над нужными словами.',
 
