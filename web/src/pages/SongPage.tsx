@@ -16,14 +16,24 @@ export function SongPage() {
   const { transpose, loading: transposeLoading } = useTransposeSong(songId)
   const { isSongFollowed, toggleSongFollow } = useFollows()
   const [song, setSong] = useState<Song | null>(null)
+  /** Накопленный сдвиг от контента в БД; сервер каждый раз транспонирует исходный JSON заново. */
+  const [transposeOffset, setTransposeOffset] = useState(0)
 
   useEffect(() => {
     setSong(fetchedSong)
   }, [fetchedSong])
 
-  const handleTranspose = async (semitones: number) => {
-    const updated = await transpose(semitones)
-    if (updated) setSong(updated)
+  useEffect(() => {
+    setTransposeOffset(0)
+  }, [songId])
+
+  const handleTranspose = async (delta: number) => {
+    const next = transposeOffset + delta
+    const updated = await transpose(next)
+    if (updated) {
+      setTransposeOffset(next)
+      setSong(updated)
+    }
   }
 
   if (loading && !song) {
@@ -90,7 +100,11 @@ export function SongPage() {
             ★
           </button>
           <div className="hidden md:inline-flex">
-            <TransposeControl onTranspose={handleTranspose} loading={transposeLoading} />
+            <TransposeControl
+              semitonesFromOriginal={transposeOffset}
+              onTranspose={handleTranspose}
+              loading={transposeLoading}
+            />
           </div>
         </div>
       </header>
@@ -99,7 +113,11 @@ export function SongPage() {
         {/* Left sidebar: transpose (mobile) + chord panel */}
         <aside className="hidden w-72 flex-none flex-col gap-6 overflow-y-auto rounded-xl border border-gray-200/70 bg-white/80 p-4 shadow-sm custom-scrollbar dark:border-gray-800 dark:bg-gray-900/80 lg:flex">
           <div className="mb-2 block md:hidden">
-            <TransposeControl onTranspose={handleTranspose} loading={transposeLoading} />
+            <TransposeControl
+              semitonesFromOriginal={transposeOffset}
+              onTranspose={handleTranspose}
+              loading={transposeLoading}
+            />
           </div>
           <ChordFingeringPanel chordTabs={chordTabs} />
         </aside>
