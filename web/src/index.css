@@ -2,14 +2,44 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+/* One shared timing curve for theme switches (see .theme-transition-active). */
+:root {
+  --theme-crossfade-duration: 380ms;
+  --theme-crossfade-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 html {
   @apply bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-50;
-  transition: background-color 0.35s ease, color 0.35s ease;
+  transition: background-color var(--theme-crossfade-duration) var(--theme-crossfade-easing),
+    color var(--theme-crossfade-duration) var(--theme-crossfade-easing);
 }
 
 body {
   @apply m-0 min-h-screen antialiased bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-50;
-  transition: background-color 0.35s ease, color 0.35s ease;
+  transition: background-color var(--theme-crossfade-duration) var(--theme-crossfade-easing),
+    color var(--theme-crossfade-duration) var(--theme-crossfade-easing);
+}
+
+/*
+ * During an explicit theme toggle, force the same paint-affecting transitions on the whole
+ * UI tree so mixed per-component Tailwind durations do not look staggered.
+ */
+html.theme-transition-active,
+html.theme-transition-active body,
+html.theme-transition-active #root,
+html.theme-transition-active #root *,
+html.theme-transition-active #root *::before,
+html.theme-transition-active #root *::after {
+  transition-property: background-color, color, border-color, box-shadow, fill, stroke,
+    text-decoration-color, outline-color, column-rule-color, backdrop-filter;
+  transition-duration: var(--theme-crossfade-duration);
+  transition-timing-function: var(--theme-crossfade-easing);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --theme-crossfade-duration: 1ms;
+  }
 }
 
 .custom-scrollbar::-webkit-scrollbar {
