@@ -22,7 +22,10 @@ import (
 	"gorm.io/gorm"
 )
 
-const shutdownTimeout = 10 * time.Second
+const (
+	shutdownTimeout    = 10 * time.Second
+	healthzPingTimeout = 2 * time.Second
+)
 
 func main() {
 	cfg, err := config.Load()
@@ -50,7 +53,7 @@ func main() {
 
 	rounter := chi.NewRouter()
 	rounter.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
-		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		ctx, cancel := context.WithTimeout(r.Context(), healthzPingTimeout)
 		defer cancel()
 
 		if pingErr := sqlDB.PingContext(ctx); pingErr != nil {
