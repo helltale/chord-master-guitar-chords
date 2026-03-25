@@ -1,17 +1,21 @@
 import { useTranslation } from '@/contexts/I18nContext'
 
 interface TransposeControlProps {
-  onTranspose: (semitones: number) => void
+  /** Сдвиг в полутонах от исходного варианта песни в базе (накапливается при +/-). */
+  semitonesFromOriginal: number
+  onTranspose: (deltaSemitones: number) => void
   loading: boolean
   disabled?: boolean
 }
 
 export function TransposeControl({
+  semitonesFromOriginal,
   onTranspose,
   loading,
   disabled,
 }: TransposeControlProps) {
   const { t } = useTranslation()
+  const atOriginal = semitonesFromOriginal === 0
   return (
     <div className="inline-flex items-center gap-3 rounded-2xl border border-slate-200 bg-white/95 px-3 py-2 text-xs text-slate-800 shadow-sm shadow-slate-900/5 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-100 dark:shadow-black/40">
       <div className="flex flex-col gap-1">
@@ -19,9 +23,19 @@ export function TransposeControl({
           {t('transpose.label')}
         </span>
         <span className="inline-flex items-center gap-1 rounded-full bg-slate-200/90 px-2 py-0.5 font-mono text-[10px] text-slate-700 dark:bg-slate-800 dark:text-slate-300">
-          <span className="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400" />
-          <span>0</span>
-          <span className="text-slate-500">({t('transpose.original') ?? 'Original'})</span>
+          <span
+            className={`inline-block h-1.5 w-1.5 rounded-full ${
+              atOriginal
+                ? 'bg-emerald-500 dark:bg-emerald-400'
+                : 'bg-amber-500 dark:bg-amber-400'
+            }`}
+          />
+          <span>
+            {semitonesFromOriginal > 0 ? `+${semitonesFromOriginal}` : semitonesFromOriginal}
+          </span>
+          {atOriginal && (
+            <span className="text-slate-500">({t('transpose.original') ?? 'Original'})</span>
+          )}
         </span>
       </div>
       <div className="flex items-center gap-2">

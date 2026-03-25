@@ -1,5 +1,10 @@
 package entity
 
+import (
+	"sort"
+	"strings"
+)
+
 const semitonesPerOct = 12
 
 func ChordNamesSharp() []string {
@@ -65,25 +70,30 @@ func TransposeChord(chord string, semitones int) string {
 }
 
 func findRoot(chord string) (string, int) {
-	sharp := ChordNamesSharp()
-	flat := ChordNamesFlat()
-	for i, name := range sharp {
-		if len(chord) < len(name) {
-			continue
+	if chord == "" {
+		return "", -1
+	}
+	type namedIndex struct {
+		name string
+		idx  int
+	}
+	var cand []namedIndex
+	for i, name := range ChordNamesSharp() {
+		cand = append(cand, namedIndex{name, i})
+	}
+	for i, name := range ChordNamesFlat() {
+		cand = append(cand, namedIndex{name, i})
+	}
+	sort.Slice(cand, func(i, j int) bool {
+		if len(cand[i].name) != len(cand[j].name) {
+			return len(cand[i].name) > len(cand[j].name)
 		}
-		root := chord[:len(name)]
-		matches := root == name || (len(chord) > len(name) && chord[0] == name[0])
-		if !matches {
-			continue
+		return cand[i].name < cand[j].name
+	})
+	for _, c := range cand {
+		if strings.HasPrefix(chord, c.name) {
+			return c.name, c.idx
 		}
-		if root != name {
-			for k, n := range flat {
-				if len(chord) >= len(n) && chord[:len(n)] == n {
-					return n, k
-				}
-			}
-		}
-		return root, i
 	}
 	return "", -1
 }
