@@ -75,12 +75,6 @@ export function ArtistPage() {
             >
               ♡ {t('artist.follow')}
             </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-2 rounded-full bg-indigo-500 px-4 py-1.5 text-xs font-semibold text-white shadow-[0_0_30px_rgba(99,102,241,0.9)] hover:bg-indigo-400"
-            >
-              ↗ {t('artist.share')}
-            </button>
           </div>
         </section>
 

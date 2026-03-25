@@ -34,7 +34,6 @@ export type LocaleKey =
   | 'artist.songs'
   | 'artist.noSongs'
   | 'artist.follow'
-  | 'artist.share'
   // Create song form
   | 'createSong.title'
   | 'createSong.artist'

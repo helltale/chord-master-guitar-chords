@@ -32,7 +32,6 @@ export const en: LocaleDict = {
   'artist.songs': 'Songs',
   'artist.noSongs': 'No songs',
   'artist.follow': 'Follow',
-  'artist.share': 'Share',
 
   'createSong.title': 'Create song',
   'createSong.artist': 'Artist',
