@@ -117,6 +117,22 @@ func (mr *MockSongRepositoryMockRecorder) ListByArtistID(ctx, artistID any) *gom
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListByArtistID", reflect.TypeOf((*MockSongRepository)(nil).ListByArtistID), ctx, artistID)
 }
 
+// ListTrendingByOpens30d mocks base method.
+func (m *MockSongRepository) ListTrendingByOpens30d(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "ListTrendingByOpens30d", ctx, artistID, limit, offset)
+	ret0, _ := ret[0].([]*entity.Song)
+	ret1, _ := ret[1].(int64)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
+}
+
+// ListTrendingByOpens30d indicates an expected call of ListTrendingByOpens30d.
+func (mr *MockSongRepositoryMockRecorder) ListTrendingByOpens30d(ctx, artistID, limit, offset any) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "ListTrendingByOpens30d", reflect.TypeOf((*MockSongRepository)(nil).ListTrendingByOpens30d), ctx, artistID, limit, offset)
+}
+
 // Search mocks base method.
 func (m *MockSongRepository) Search(ctx context.Context, query string, limit, offset int) ([]*entity.Song, int64, error) {
 	m.ctrl.T.Helper()

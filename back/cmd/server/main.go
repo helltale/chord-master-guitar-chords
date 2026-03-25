@@ -47,8 +47,9 @@ func main() {
 
 	artistRepo := repository.NewArtistRepository(gormDB)
 	songRepo := repository.NewSongRepository(gormDB)
+	songOpenRepo := repository.NewSongOpenRepository(gormDB)
 	artistCases := cases.NewArtistCases(artistRepo)
-	songCases := cases.NewSongCases(artistRepo, songRepo)
+	songCases := cases.NewSongCases(artistRepo, songRepo, songOpenRepo)
 	server := handler.NewServer(artistCases, songCases)
 
 	rounter := chi.NewRouter()

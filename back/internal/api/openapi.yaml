@@ -81,10 +81,10 @@ paths:
             format: uuid
         - name: sort
           in: query
-          description: Sort order for results (default title A–Z; created_at_desc = newest first)
+          description: Sort order for results (default title A–Z; created_at_desc = newest first; opens_30d_desc = most opened in the last 30 days)
           schema:
             type: string
-            enum: [title, created_at_desc]
+            enum: [title, created_at_desc, opens_30d_desc]
             default: title
         - name: limit
           in: query
@@ -293,6 +293,9 @@ components:
           type: string
         tonality:
           type: integer
+        opens_30d:
+          type: integer
+          description: Number of song page opens in the last 30 days (set when listing by opens_30d_desc)
       required:
         - song_id
         - title

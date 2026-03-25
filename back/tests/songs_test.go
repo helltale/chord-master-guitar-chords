@@ -152,6 +152,68 @@ func TestSongs_Get_NotFound_Returns404(t *testing.T) {
 	}
 }
 
+func TestSongs_ListTrending_Opens30d(t *testing.T) {
+	server := NewTestServer(t)
+	defer server.Close()
+	base := server.URL + apiBase
+	client := server.Client()
+
+	artistID := createArtistAndGetID(t, base, client, "Trend Artist", "trend-artist")
+	createBody := `{"artist_id":"` + artistID + `","title":"Popular Hit","slug":"popular-hit"}`
+	cr, err := client.Post(base+"/songs", "application/json", strings.NewReader(createBody))
+	if err != nil {
+		t.Fatal(err)
+	}
+	var created struct {
+		SongId string `json:"song_id"`
+	}
+	if err := json.NewDecoder(cr.Body).Decode(&created); err != nil {
+		cr.Body.Close()
+		t.Fatal(err)
+	}
+	cr.Body.Close()
+
+	for range 4 {
+		r, errGet := client.Get(base + "/songs/" + created.SongId)
+		if errGet != nil {
+			t.Fatal(errGet)
+		}
+		r.Body.Close()
+		if r.StatusCode != http.StatusOK {
+			t.Fatalf("GET song: %d", r.StatusCode)
+		}
+	}
+
+	listResp, err := client.Get(base + "/songs?sort=opens_30d_desc&limit=10")
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer listResp.Body.Close()
+	if listResp.StatusCode != http.StatusOK {
+		t.Fatalf("list trending: %d", listResp.StatusCode)
+	}
+	var list struct {
+		Items *[]struct {
+			SongId   string `json:"song_id"`
+			Title    string `json:"title"`
+			Opens30d *int   `json:"opens_30d"`
+		} `json:"items"`
+	}
+	if err := json.NewDecoder(listResp.Body).Decode(&list); err != nil {
+		t.Fatal(err)
+	}
+	if list.Items == nil || len(*list.Items) < 1 {
+		t.Fatal("expected trending items")
+	}
+	first := (*list.Items)[0]
+	if first.SongId != created.SongId || first.Title != "Popular Hit" {
+		t.Fatalf("first item = %+v, want our song", first)
+	}
+	if first.Opens30d == nil || *first.Opens30d != 4 {
+		t.Errorf("opens_30d = %v, want 4", first.Opens30d)
+	}
+}
+
 func TestSongs_ListByArtistId(t *testing.T) {
 	server := NewTestServer(t)
 	defer server.Close()
