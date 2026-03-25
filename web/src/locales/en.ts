@@ -41,6 +41,8 @@ export const en: LocaleDict = {
   'artists.countRuOne': 'исполнитель',
   'artists.countRuFew': 'исполнителя',
   'artists.countRuMany': 'исполнителей',
+  'artists.emptyLibrary':
+    'No artists in your library yet. Create one with the button above.',
 
   'songsPage.title': 'Song Library',
   'songsPage.subtitle': 'Browse songs and open full chords and tabs.',
@@ -78,6 +80,8 @@ export const en: LocaleDict = {
     'After saving, the song uses the main song layout with chords above lyrics and chord fingerings on the side.',
   'createSong.statusConnected': 'Connected',
   'createSong.statusDraft': 'Draft song',
+  'createSong.noArtistsYet':
+    'Add an artist first — open Artists and tap “Create artist”.',
   'createSong.tipSyntax':
     'Use [Am] inside plain text when importing lyrics to automatically place chords above the right words.',
 

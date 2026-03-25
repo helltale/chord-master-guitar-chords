@@ -43,6 +43,7 @@ export type LocaleKey =
   | 'artists.countRuOne'
   | 'artists.countRuFew'
   | 'artists.countRuMany'
+  | 'artists.emptyLibrary'
   // Songs list page
   | 'songsPage.title'
   | 'songsPage.subtitle'
@@ -74,6 +75,7 @@ export type LocaleKey =
   | 'createSong.statusConnected'
   | 'createSong.statusDraft'
   | 'createSong.tipSyntax'
+  | 'createSong.noArtistsYet'
   // Create artist form
   | 'createArtist.title'
   | 'createArtist.name'

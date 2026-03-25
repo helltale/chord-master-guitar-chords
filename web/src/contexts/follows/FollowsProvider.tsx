@@ -11,38 +11,31 @@ import type {
   FollowedSongSnapshot,
   FollowsContextValue,
 } from './followsTypes'
-
-const STORAGE_KEY = 'amdm-guitar-chords:follows:v1'
-
-type FollowsState = {
-  artists: Record<string, FollowedArtistSnapshot>
-  songs: Record<string, FollowedSongSnapshot>
-}
-
-function loadState(): FollowsState {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY)
-    if (!raw) return { artists: {}, songs: {} }
-    const parsed = JSON.parse(raw) as Partial<FollowsState>
-    return {
-      artists:
-        parsed.artists && typeof parsed.artists === 'object'
-          ? parsed.artists
-          : {},
-      songs:
-        parsed.songs && typeof parsed.songs === 'object' ? parsed.songs : {},
-    }
-  } catch {
-    return { artists: {}, songs: {} }
-  }
-}
+import { FOLLOWS_STORAGE_KEY, loadFollowsState } from './followsStorage'
+import { fetchExistingFollowIds, pruneFollowsState } from './reconcileFollows'
 
 export function FollowsProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<FollowsState>(loadState)
+  const [state, setState] = useState(loadFollowsState)
+
+  useEffect(() => {
+    let cancelled = false
+    ;(async () => {
+      try {
+        const { artistIds, songIds } = await fetchExistingFollowIds()
+        if (cancelled) return
+        setState((prev) => pruneFollowsState(prev, artistIds, songIds))
+      } catch {
+        /* offline / server error — keep cached follows */
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [])
 
   useEffect(() => {
     try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(state))
+      localStorage.setItem(FOLLOWS_STORAGE_KEY, JSON.stringify(state))
     } catch {
       /* ignore quota / private mode */
     }
