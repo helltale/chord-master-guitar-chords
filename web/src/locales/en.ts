@@ -38,7 +38,6 @@ export const en: LocaleDict = {
   'createSong.artist': 'Artist',
   'createSong.selectArtist': 'Select artist',
   'createSong.songTitle': 'Title',
-  'createSong.slug': 'Slug',
   'createSong.tonalityOptional': 'Key (number, optional)',
   'createSong.lyricsOptional': 'Lyrics with chords (optional)',
   'createSong.submit': 'Create song',
@@ -55,17 +54,13 @@ export const en: LocaleDict = {
 
   'createArtist.title': 'Create artist',
   'createArtist.name': 'Name',
-  'createArtist.slug': 'Slug',
   'createArtist.submit': 'Create artist',
   'createArtist.submitting': 'Creating...',
   'createArtist.subtitle':
-    'Add a new artist profile to your chord library. Name and slug define how the artist is displayed and linked.',
+    'Add a new artist profile to your chord library. The name defines how the artist appears in your collection.',
   'createArtist.tipSyncTitle': 'Automatic sync',
   'createArtist.tipSyncText':
-    'Artist data automatically links to its songs so you can update the name or slug in one place.',
-  'createArtist.tipSlugTitle': 'Clean URLs',
-  'createArtist.tipSlugText':
-    'Slugs are used in URLs like /artist/my-artist. Use lowercase letters, numbers and dashes only.',
+    'Artist data automatically links to its songs so you can update the name in one place.',
 
   'section.sectionLabel': 'Section name',
   'section.placeholder': 'Verse 1, Chorus...',

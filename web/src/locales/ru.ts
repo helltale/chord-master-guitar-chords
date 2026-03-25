@@ -38,7 +38,6 @@ export const ru: LocaleDict = {
   'createSong.artist': 'Артист',
   'createSong.selectArtist': 'Выберите артиста',
   'createSong.songTitle': 'Название',
-  'createSong.slug': 'Адрес страницы',
   'createSong.tonalityOptional': 'Тональность (число, опционально)',
   'createSong.lyricsOptional': 'Текст с аккордами (опционально)',
   'createSong.submit': 'Создать песню',
@@ -55,17 +54,13 @@ export const ru: LocaleDict = {
 
   'createArtist.title': 'Создать артиста',
   'createArtist.name': 'Имя',
-  'createArtist.slug': 'Адрес страницы',
   'createArtist.submit': 'Создать артиста',
   'createArtist.submitting': 'Создание...',
   'createArtist.subtitle':
-    'Добавьте нового артиста в библиотеку аккордов. Имя и slug определяют, как он будет отображаться и по какому адресу открываться.',
+    'Добавьте нового артиста в библиотеку аккордов. Имя определяет, как он будет отображаться в коллекции.',
   'createArtist.tipSyncTitle': 'Автоматическая связка',
   'createArtist.tipSyncText':
-    'Данные артиста автоматически связываются со всеми его песнями, поэтому имя и slug можно менять в одном месте.',
-  'createArtist.tipSlugTitle': 'Аккуратные ссылки',
-  'createArtist.tipSlugText':
-    'Slug попадает в адрес вида /artist/my-artist. Используйте только латиницу, цифры и дефисы в нижнем регистре.',
+    'Данные артиста автоматически связываются со всеми его песнями, поэтому имя можно менять в одном месте.',
 
   'section.sectionLabel': 'Название секции',
   'section.placeholder': 'Куплет 1, Припев...',

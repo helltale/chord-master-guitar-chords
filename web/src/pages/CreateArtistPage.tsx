@@ -2,13 +2,14 @@ import { useNavigate } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
 import { useCreateArtist } from '@/hooks'
 import { CreateArtistForm } from '@/components/CreateArtistForm'
+import type { CreateArtistRequest } from '@/api/schemas'
 
 export function CreateArtistPage() {
   const navigate = useNavigate()
   const { t } = useTranslation()
   const { submit, loading, error } = useCreateArtist()
 
-  const handleSubmit = async (body: { name: string; slug: string }) => {
+  const handleSubmit = async (body: CreateArtistRequest) => {
     const artist = await submit(body)
     if (artist) {
       navigate(`/artist/${artist.slug}`)
@@ -39,7 +40,7 @@ export function CreateArtistPage() {
             <p className="mt-2 max-w-xl text-sm text-slate-400">
               {t(
                 'createArtist.subtitle',
-                'Add a new artist profile to your chord library. Name and slug will define how the artist appears and is linked.'
+                'Add a new artist profile to your chord library. The display name defines how the artist appears in your collection.'
               )}
             </p>
           </div>
@@ -51,9 +52,9 @@ export function CreateArtistPage() {
         </div>
 
         {/* Helper section */}
-        <div className="mt-8 grid gap-4 md:grid-cols-2">
-          <div className="flex gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4">
-            <div className="mt-1 h-8 w-8 rounded-full bg-indigo-500/20 text-center text-indigo-300">
+        <div className="mt-8">
+          <div className="flex gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4 md:max-w-2xl">
+            <div className="mt-1 h-8 w-8 shrink-0 rounded-full bg-indigo-500/20 text-center text-indigo-300">
               <span className="text-sm leading-8">ⓘ</span>
             </div>
             <div>
@@ -64,22 +65,6 @@ export function CreateArtistPage() {
                 {t(
                   'createArtist.tipSyncText',
                   'Artist data automatically links to all its songs so updates in one place stay consistent.'
-                )}
-              </p>
-            </div>
-          </div>
-          <div className="flex gap-3 rounded-xl border border-slate-700 bg-slate-900/80 p-4">
-            <div className="mt-1 h-8 w-8 rounded-full bg-slate-800 text-center text-slate-300">
-              <span className="text-sm leading-8">★</span>
-            </div>
-            <div>
-              <h2 className="text-sm font-semibold text-slate-50">
-                {t('createArtist.tipSlugTitle', 'Clean URLs')}
-              </h2>
-              <p className="mt-1 text-xs text-slate-400">
-                {t(
-                  'createArtist.tipSlugText',
-                  'Slug is used in links like /artist/my-artist. Keep it short, lowercase and without spaces.'
                 )}
               </p>
             </div>

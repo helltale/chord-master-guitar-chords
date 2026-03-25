@@ -13,7 +13,8 @@ import (
 
 //go:generate go run go.uber.org/mock/mockgen@latest -package=testdata -destination=./testdata/artist_repo_mock.go github.com/Helltale/amdm-guitar-chords/back/internal/repository ArtistRepository
 
-var slugRegex = regexp.MustCompile(`^[a-z0-9]+(?:[-_][a-z0-9]+)*$`)
+// Letters and numbers in any script (aligned with web slugFromString); hyphen/underscore between segments.
+var slugRegex = regexp.MustCompile(`^[\p{L}\p{N}]+(?:[-_][\p{L}\p{N}]+)*$`)
 
 var ErrDuplicateArtist = errors.New("artist with this slug already exists")
 

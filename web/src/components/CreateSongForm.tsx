@@ -40,9 +40,8 @@ export function CreateSongForm({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const form = e.currentTarget
-    const slug = (form.elements.namedItem('slug') as HTMLInputElement).value.trim()
     const trimmedTitle = title.trim()
+    const slug = slugFromString(trimmedTitle)
     if (!selectedArtistId || !trimmedTitle || !slug) return
     const tonality = tonalityRaw ? parseInt(tonalityRaw, 10) : undefined
     const contentToSend = lyricsText.trim() ? parseLyricsWithChords(lyricsText) : undefined
@@ -51,16 +50,6 @@ export function CreateSongForm({
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value)
-    const form = e.target.form
-    if (!form) return
-    const slugField = form.elements.namedItem('slug') as HTMLInputElement
-    if (slugField && !slugField.dataset.touched) return
-    const slug = slugFromString(e.target.value)
-    if (slug) slugField.value = slug
-  }
-
-  const markSlugTouched = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.dataset.touched = '1'
   }
 
   const filteredArtists = artists.filter((a) =>
@@ -159,22 +148,6 @@ export function CreateSongForm({
           required
           onChange={handleTitleChange}
           value={title}
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="song-slug"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
-        >
-          {t('createSong.slug')}
-        </label>
-        <input
-          id="song-slug"
-          name="slug"
-          type="text"
-          required
-          onBlur={markSlugTouched}
           className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
