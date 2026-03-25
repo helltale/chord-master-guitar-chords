@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import type { CreateSongRequest, TabContent } from '@/api/schemas'
 import type { Artist } from '@/api/schemas'
 import { useTranslation } from '@/contexts/I18nContext'
@@ -32,7 +32,6 @@ export function CreateSongForm({
   onPreviewChange,
 }: CreateSongFormProps) {
   const { t } = useTranslation()
-  const formRef = useRef<HTMLFormElement>(null)
   const [artistSearch, setArtistSearch] = useState('')
   const [selectedArtistId, setSelectedArtistId] = useState<string>('')
   const [lyricsText, setLyricsText] = useState('')
@@ -41,9 +40,8 @@ export function CreateSongForm({
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const form = e.currentTarget
-    const slug = (form.elements.namedItem('slug') as HTMLInputElement).value.trim()
     const trimmedTitle = title.trim()
+    const slug = slugFromString(trimmedTitle)
     if (!selectedArtistId || !trimmedTitle || !slug) return
     const tonality = tonalityRaw ? parseInt(tonalityRaw, 10) : undefined
     const contentToSend = lyricsText.trim() ? parseLyricsWithChords(lyricsText) : undefined
@@ -52,10 +50,6 @@ export function CreateSongForm({
 
   const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setTitle(e.target.value)
-  }
-
-  const handleSlugManualEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.currentTarget.dataset.touched = '1'
   }
 
   const filteredArtists = artists.filter((a) =>
@@ -70,15 +64,6 @@ export function CreateSongForm({
     setSelectedArtistId(defaultArtistId)
     setArtistSearch(a.name)
   }, [defaultArtistId, artists, selectedArtistId])
-
-  useEffect(() => {
-    const slugField = formRef.current?.elements.namedItem('slug') as HTMLInputElement | undefined
-    if (!slugField || slugField.dataset.touched) return
-    const artist = artists.find((a) => a.artist_id === selectedArtistId)
-    const parts = [artist?.name?.trim() ?? '', title.trim()].filter(Boolean)
-    const slug = slugFromString(parts.join(' '))
-    slugField.value = slug
-  }, [artists, selectedArtistId, title])
 
   useEffect(() => {
     if (!onPreviewChange) return
@@ -100,7 +85,7 @@ export function CreateSongForm({
   }, [artists, selectedArtistId, title, lyricsText, tonalityRaw, onPreviewChange])
 
   return (
-    <form ref={formRef} onSubmit={handleSubmit} className="space-y-6">
+    <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
         <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
           {error.message}
@@ -163,22 +148,6 @@ export function CreateSongForm({
           required
           onChange={handleTitleChange}
           value={title}
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="song-slug"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
-        >
-          {t('createSong.slug')}
-        </label>
-        <input
-          id="song-slug"
-          name="slug"
-          type="text"
-          required
-          onChange={handleSlugManualEdit}
           className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>

@@ -38,7 +38,6 @@ export const en: LocaleDict = {
   'createSong.artist': 'Artist',
   'createSong.selectArtist': 'Select artist',
   'createSong.songTitle': 'Title',
-  'createSong.slug': 'Slug',
   'createSong.tonalityOptional': 'Key (number, optional)',
   'createSong.lyricsOptional': 'Lyrics with chords (optional)',
   'createSong.submit': 'Create song',

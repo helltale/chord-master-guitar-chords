@@ -40,7 +40,6 @@ export type LocaleKey =
   | 'createSong.artist'
   | 'createSong.selectArtist'
   | 'createSong.songTitle'
-  | 'createSong.slug'
   | 'createSong.tonalityOptional'
   | 'createSong.lyricsOptional'
   | 'createSong.submit'

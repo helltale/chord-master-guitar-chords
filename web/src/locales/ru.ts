@@ -38,7 +38,6 @@ export const ru: LocaleDict = {
   'createSong.artist': 'Артист',
   'createSong.selectArtist': 'Выберите артиста',
   'createSong.songTitle': 'Название',
-  'createSong.slug': 'Адрес страницы',
   'createSong.tonalityOptional': 'Тональность (число, опционально)',
   'createSong.lyricsOptional': 'Текст с аккордами (опционально)',
   'createSong.submit': 'Создать песню',
