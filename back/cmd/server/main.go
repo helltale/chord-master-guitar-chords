@@ -22,7 +22,10 @@ import (
 	"gorm.io/gorm"
 )
 
-const shutdownTimeout = 10 * time.Second
+const (
+	shutdownTimeout    = 10 * time.Second
+	healthzPingTimeout = 2 * time.Second
+)
 
 func main() {
 	cfg, err := config.Load()
@@ -49,6 +52,18 @@ func main() {
 	server := handler.NewServer(artistCases, songCases)
 
 	rounter := chi.NewRouter()
+	rounter.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), healthzPingTimeout)
+		defer cancel()
+
+		if pingErr := sqlDB.PingContext(ctx); pingErr != nil {
+			http.Error(w, "db unavailable", http.StatusServiceUnavailable)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
 	apiRouter := chi.NewRouter()
 	gen.HandlerFromMux(gen.NewStrictHandler(server, nil), apiRouter)
 	rounter.Mount("/api/amdm/v1", apiRouter)

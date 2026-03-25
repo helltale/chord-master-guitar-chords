@@ -44,5 +44,30 @@ services:
     depends_on:
       - back
 
+  db-backup:
+    image: postgres:16-alpine
+    container_name: amdm-db-backup
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      BACKUP_DIR: /backups
+      BACKUP_INTERVAL_SEC: ${BACKUP_INTERVAL_SEC:-21600}
+      BACKUP_KEEP: ${BACKUP_KEEP:-10}
+      BACKUP_WAIT_TIMEOUT_SEC: ${BACKUP_WAIT_TIMEOUT_SEC:-60}
+      BACKUP_CHECK_BACKEND_HEALTH: ${BACKUP_CHECK_BACKEND_HEALTH:-false}
+      BACKEND_HEALTH_URL: ${BACKEND_HEALTH_URL:-http://back:8081/healthz}
+    volumes:
+      - ./backups:/backups
+      - ./ops/db-backup.sh:/usr/local/bin/db-backup.sh:ro
+    command: ["/bin/sh", "/usr/local/bin/db-backup.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+      back:
+        condition: service_started
+
 volumes:
   postgres_data:
