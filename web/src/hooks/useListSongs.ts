@@ -6,7 +6,7 @@ export function useListSongs(params?: {
   artist_id?: string
   limit?: number
   offset?: number
-  sort?: 'title' | 'created_at_desc'
+  sort?: 'title' | 'created_at_desc' | 'opens_30d_desc'
 }) {
   const [items, setItems] = useState<SongListItem[]>([])
   const [total, setTotal] = useState<number>(0)

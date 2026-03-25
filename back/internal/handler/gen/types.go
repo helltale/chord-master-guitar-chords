@@ -116,6 +116,7 @@ func (e CommonChord) Valid() bool {
 // Defines values for ListSongsParamsSort.
 const (
 	CreatedAtDesc ListSongsParamsSort = "created_at_desc"
+	Opens30dDesc  ListSongsParamsSort = "opens_30d_desc"
 	Title         ListSongsParamsSort = "title"
 )
 
@@ -123,6 +124,8 @@ const (
 func (e ListSongsParamsSort) Valid() bool {
 	switch e {
 	case CreatedAtDesc:
+		return true
+	case Opens30dDesc:
 		return true
 	case Title:
 		return true
@@ -247,11 +250,14 @@ type SongListItem struct {
 	ArtistId *openapi_types.UUID `json:"artist_id,omitempty"`
 
 	// ArtistName Present when artist is joined (list/search)
-	ArtistName *string            `json:"artist_name,omitempty"`
-	Slug       string             `json:"slug"`
-	SongId     openapi_types.UUID `json:"song_id"`
-	Title      string             `json:"title"`
-	Tonality   *int               `json:"tonality,omitempty"`
+	ArtistName *string `json:"artist_name,omitempty"`
+
+	// Opens30d Number of song page opens in the last 30 days (set when listing by opens_30d_desc)
+	Opens30d *int               `json:"opens_30d,omitempty"`
+	Slug     string             `json:"slug"`
+	SongId   openapi_types.UUID `json:"song_id"`
+	Title    string             `json:"title"`
+	Tonality *int               `json:"tonality,omitempty"`
 }
 
 // TabContent defines model for TabContent.
@@ -286,7 +292,7 @@ type SearchParams struct {
 type ListSongsParams struct {
 	ArtistId *openapi_types.UUID `form:"artist_id,omitempty" json:"artist_id,omitempty"`
 
-	// Sort Sort order for results (default title A–Z; created_at_desc = newest first)
+	// Sort Sort order for results (default title A–Z; created_at_desc = newest first; opens_30d_desc = most opened in the last 30 days)
 	Sort   *ListSongsParamsSort `form:"sort,omitempty" json:"sort,omitempty"`
 	Limit  *int                 `form:"limit,omitempty" json:"limit,omitempty"`
 	Offset *int                 `form:"offset,omitempty" json:"offset,omitempty"`

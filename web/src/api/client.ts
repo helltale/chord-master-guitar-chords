@@ -77,7 +77,7 @@ export function listSongs(params?: {
   artist_id?: string
   limit?: number
   offset?: number
-  sort?: 'title' | 'created_at_desc'
+  sort?: 'title' | 'created_at_desc' | 'opens_30d_desc'
 }): Promise<SongList> {
   const sp = new URLSearchParams()
   if (params?.artist_id != null) sp.set('artist_id', params.artist_id)

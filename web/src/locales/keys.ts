@@ -121,6 +121,7 @@ export type LocaleKey =
   | 'home.heroSubtitle'
   | 'home.trendingTitle'
   | 'home.trendingSubtitle'
+  | 'home.trendingEmpty'
   | 'home.recentlyAddedTitle'
   | 'home.recentlyAddedEmpty'
   | 'home.topResultsTitle'

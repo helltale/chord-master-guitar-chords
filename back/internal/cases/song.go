@@ -14,13 +14,25 @@ import (
 
 var ErrDuplicateSong = errors.New("song with this slug already exists for this artist")
 
+type noopSongOpen struct{}
+
+func (noopSongOpen) Record(context.Context, uuid.UUID) error { return nil }
+
 type SongCases struct {
 	artistRepo repository.ArtistRepository
 	songRepo   repository.SongRepository
+	openRepo   repository.SongOpenRepository
 }
 
-func NewSongCases(artistRepo repository.ArtistRepository, songRepo repository.SongRepository) *SongCases {
-	return &SongCases{artistRepo: artistRepo, songRepo: songRepo}
+func NewSongCases(
+	artistRepo repository.ArtistRepository,
+	songRepo repository.SongRepository,
+	openRepo repository.SongOpenRepository,
+) *SongCases {
+	if openRepo == nil {
+		openRepo = noopSongOpen{}
+	}
+	return &SongCases{artistRepo: artistRepo, songRepo: songRepo, openRepo: openRepo}
 }
 
 func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error) {
@@ -41,7 +53,15 @@ func (c *SongCases) List(
 	limit, offset int,
 	sort string,
 ) ([]*entity.Song, int64, error) {
+	if sort == "opens_30d_desc" {
+		return c.songRepo.ListTrendingByOpens30d(ctx, artistID, limit, offset)
+	}
 	return c.songRepo.List(ctx, artistID, limit, offset, sort)
+}
+
+// RecordSongOpen records one song page view (for popularity). Safe to call from a goroutine.
+func (c *SongCases) RecordSongOpen(ctx context.Context, songID uuid.UUID) {
+	_ = c.openRepo.Record(ctx, songID)
 }
 
 func (c *SongCases) GetByID(ctx context.Context, id uuid.UUID) (*entity.Song, error) {

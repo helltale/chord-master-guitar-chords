@@ -67,5 +67,24 @@ services:
       back:
         condition: service_started
 
+  db-prune-song-opens:
+    image: postgres:16-alpine
+    container_name: amdm-db-prune-song-opens
+    environment:
+      PGHOST: postgres
+      PGPORT: 5432
+      PGUSER: ${POSTGRES_USER}
+      PGPASSWORD: ${POSTGRES_PASSWORD}
+      PGDATABASE: ${POSTGRES_DB}
+      KEEP_DAYS: ${SONG_OPENS_KEEP_DAYS:-45}
+      PRUNE_INTERVAL_SEC: ${SONG_OPENS_PRUNE_INTERVAL_SEC:-86400}
+      PRUNE_WAIT_TIMEOUT_SEC: ${SONG_OPENS_PRUNE_WAIT_TIMEOUT_SEC:-60}
+    volumes:
+      - ./ops/prune-song-opens.sh:/usr/local/bin/prune-song-opens.sh:ro
+    command: ["/bin/sh", "/usr/local/bin/prune-song-opens.sh"]
+    depends_on:
+      postgres:
+        condition: service_healthy
+
 volumes:
   postgres_data:

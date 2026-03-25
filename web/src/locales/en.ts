@@ -133,8 +133,9 @@ export const en: LocaleDict = {
   'home.heroSubtitle':
     'Search artists, songs and tabs. Save time parsing chords – focus on playing.',
   'home.trendingTitle': 'Trending songs',
-  'home.trendingSubtitle':
-    'Start typing in the search above – we will surface the most relevant artists and songs for you.',
+  'home.trendingSubtitle': 'Most opened in the last 30 days.',
+  'home.trendingEmpty':
+    'No views yet — open a few songs and the hottest ones this month will appear here.',
   'home.recentlyAddedTitle': 'Recently added',
   'home.recentlyAddedEmpty':
     'No songs yet. Use “Create artist” and “Create song” in the header to add tracks.',

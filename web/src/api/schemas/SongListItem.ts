@@ -7,4 +7,5 @@ export type SongListItem = {
   title: string;
   slug: string;
   tonality?: number;
+  opens_30d?: number;
 };

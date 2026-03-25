@@ -224,6 +224,7 @@ func (srv *server) GetSong(ctx context.Context, request gen.GetSongRequestObject
 	if s == nil {
 		return gen.GetSong404Response{}, nil
 	}
+	srv.songCases.RecordSongOpen(ctx, s.SongID)
 	return gen.GetSong200JSONResponse{
 		SongId:    s.SongID,
 		ArtistId:  ptr(s.ArtistID),
@@ -323,6 +324,9 @@ func (srv *server) songToListItem(s *entity.Song) gen.SongListItem {
 	}
 	if s.Artist != nil {
 		item.ArtistName = ptr(s.Artist.Name)
+	}
+	if s.Opens30d > 0 {
+		item.Opens30d = ptr(s.Opens30d)
 	}
 	return item
 }

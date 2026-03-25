@@ -19,6 +19,8 @@ type SongRepository interface {
 		limit, offset int,
 		sort string,
 	) ([]*entity.Song, int64, error)
+	// ListTrendingByOpens30d returns songs with at least one open in the last 30 days, by open count desc.
+	ListTrendingByOpens30d(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error)
 	ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error)
 	Search(ctx context.Context, query string, limit, offset int) ([]*entity.Song, int64, error)
 	Create(ctx context.Context, s *entity.Song) error
@@ -82,6 +84,76 @@ func (r *songRepo) List(
 	}
 	err := q.Find(&list).Error
 	return list, total, err
+}
+
+func (r *songRepo) ListTrendingByOpens30d(
+	ctx context.Context,
+	artistID *uuid.UUID,
+	limit, offset int,
+) ([]*entity.Song, int64, error) {
+	type idCount struct {
+		SongID uuid.UUID `gorm:"column:song_id"`
+		Cnt    int64     `gorm:"column:cnt"`
+	}
+	baseFrom := `
+FROM (
+  SELECT song_id, COUNT(*)::bigint AS cnt
+  FROM song_opens
+  WHERE opened_at >= NOW() - INTERVAL '30 days'
+  GROUP BY song_id
+) agg
+INNER JOIN songs ON songs.song_id = agg.song_id AND songs.deleted_at IS NULL`
+
+	countSQLPick := "SELECT COUNT(*) " + baseFrom
+	var total int64
+	var err error
+	if artistID != nil {
+		err = r.db.WithContext(ctx).Raw(countSQLPick+" WHERE songs.artist_id = ?", *artistID).Scan(&total).Error
+	} else {
+		err = r.db.WithContext(ctx).Raw(countSQLPick).Scan(&total).Error
+	}
+	if err != nil {
+		return nil, 0, err
+	}
+
+	listSQL := "SELECT agg.song_id, agg.cnt AS cnt " + baseFrom
+	var idCounts []idCount
+	if artistID != nil {
+		listSQL += " WHERE songs.artist_id = ? ORDER BY agg.cnt DESC, songs.title ASC LIMIT ? OFFSET ?"
+		err = r.db.WithContext(ctx).Raw(listSQL, *artistID, limit, offset).Scan(&idCounts).Error
+	} else {
+		listSQL += " ORDER BY agg.cnt DESC, songs.title ASC LIMIT ? OFFSET ?"
+		err = r.db.WithContext(ctx).Raw(listSQL, limit, offset).Scan(&idCounts).Error
+	}
+	if err != nil {
+		return nil, 0, err
+	}
+	if len(idCounts) == 0 {
+		return nil, total, nil
+	}
+	ids := make([]uuid.UUID, len(idCounts))
+	countByID := make(map[uuid.UUID]int64, len(idCounts))
+	for i, ic := range idCounts {
+		ids[i] = ic.SongID
+		countByID[ic.SongID] = ic.Cnt
+	}
+	var list []*entity.Song
+	err = r.db.WithContext(ctx).Preload("Artist").Where("song_id IN ?", ids).Find(&list).Error
+	if err != nil {
+		return nil, 0, err
+	}
+	byID := make(map[uuid.UUID]*entity.Song, len(list))
+	for _, s := range list {
+		byID[s.SongID] = s
+		s.Opens30d = int(countByID[s.SongID])
+	}
+	ordered := make([]*entity.Song, 0, len(ids))
+	for _, id := range ids {
+		if s, ok := byID[id]; ok {
+			ordered = append(ordered, s)
+		}
+	}
+	return ordered, total, nil
 }
 
 func (r *songRepo) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error) {
