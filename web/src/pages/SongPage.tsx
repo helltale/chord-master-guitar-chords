@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams } from 'react-router-dom'
 import { useSong, useTransposeSong } from '@/hooks'
 import { useTranslation } from '@/contexts/I18nContext'
+import { useFollows } from '@/contexts/FollowsContext'
 import { SongContent } from '@/components/SongContent'
 import { ChordFingeringPanel } from '@/components/ChordFingeringPanel'
 import { TransposeControl } from '@/components/TransposeControl'
@@ -13,6 +14,7 @@ export function SongPage() {
   const { t } = useTranslation()
   const { song: fetchedSong, loading, error } = useSong(songId)
   const { transpose, loading: transposeLoading } = useTransposeSong(songId)
+  const { isSongFollowed, toggleSongFollow } = useFollows()
   const [song, setSong] = useState<Song | null>(null)
 
   useEffect(() => {
@@ -43,6 +45,14 @@ export function SongPage() {
 
   const content = song.content
   const chordTabs = content ? buildChordTabsFromContent(content) : {}
+  const songFollowed = isSongFollowed(song.song_id)
+  const handleToggleFavorite = () =>
+    toggleSongFollow({
+      song_id: song.song_id,
+      title: song.title,
+      slug: song.slug,
+      tonality: song.tonality,
+    })
 
   return (
     <div className="flex h-full min-h-0 flex-col -mx-4 -my-6 px-4 py-4 bg-gray-50 dark:bg-gray-950">
@@ -66,10 +76,18 @@ export function SongPage() {
         <div className="flex items-center gap-2">
           <button
             type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label={t('common.favorite') ?? 'Favorite'}
+            onClick={handleToggleFavorite}
+            aria-pressed={songFollowed}
+            aria-label={
+              songFollowed ? t('common.removeFavorite') : t('common.favorite')
+            }
+            className={`inline-flex h-9 w-9 items-center justify-center rounded-lg border text-base transition ${
+              songFollowed
+                ? 'border-amber-400/60 bg-amber-500/15 text-amber-500 hover:bg-amber-500/25 dark:border-amber-400/50 dark:text-amber-400'
+                : 'border-gray-200 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700'
+            }`}
           >
-            <span className="text-base">★</span>
+            ★
           </button>
           <button
             type="button"

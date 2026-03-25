@@ -32,6 +32,21 @@ export const ru: LocaleDict = {
   'artist.songs': 'Песни',
   'artist.noSongs': 'Нет песен',
   'artist.follow': 'Подписаться',
+  'artist.unfollow': 'Отписаться',
+
+  'favorites.pageSubtitle':
+    'Здесь только те артисты и песни, на которые вы подписались или поставили звезду.',
+  'favorites.bannerTitle': 'Продолжить занятие',
+  'favorites.bannerText':
+    'Возвращайтесь к сохранённым песням. Подписка на артиста и звезда у песни — одно и то же избранное.',
+  'favorites.browseSongs': 'К списку песен',
+  'favorites.sectionArtists': 'Артисты в избранном',
+  'favorites.sectionSongs': 'Песни в избранном',
+  'favorites.emptyArtists':
+    'Пока никого нет. Откройте страницу артиста и нажмите «Подписаться» или звезду на аватаре.',
+  'favorites.emptySongs':
+    'Пока нет песен. Откройте песню и нажмите звезду в шапке.',
+
 
   'createSong.title': 'Создать песню',
   'createSong.artist': 'Артист',
@@ -113,6 +128,7 @@ export const ru: LocaleDict = {
 
   'common.view': 'Открыть',
   'common.favorite': 'В избранное',
+  'common.removeFavorite': 'Убрать из избранного',
   'common.share': 'Поделиться',
 
   'transpose.original': 'Оригинал',

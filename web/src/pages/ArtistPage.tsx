@@ -1,11 +1,13 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
+import { useFollows } from '@/contexts/FollowsContext'
 import { useArtistBySlug } from '@/hooks'
 import { SongCard } from '@/components/SongCard'
 
 export function ArtistPage() {
   const { artistSlug } = useParams<{ artistSlug: string }>()
   const { t } = useTranslation()
+  const { isArtistFollowed, toggleArtistFollow } = useFollows()
   const { artist, loading, error } = useArtistBySlug(artistSlug)
 
   if (loading && !artist) {
@@ -26,6 +28,13 @@ export function ArtistPage() {
   }
 
   const songs = artist.songs ?? []
+  const followed = isArtistFollowed(artist.artist_id)
+  const snapshot = {
+    artist_id: artist.artist_id,
+    name: artist.name,
+    slug: artist.slug,
+  }
+  const handleToggleFollow = () => toggleArtistFollow(snapshot)
 
   return (
     <div className="flex flex-1 flex-col px-4 py-6 md:py-8">
@@ -50,9 +59,21 @@ export function ArtistPage() {
               <div className="flex h-20 w-20 items-center justify-center rounded-[1.75rem] bg-indigo-500 text-3xl font-bold text-white shadow-[0_0_40px_rgba(99,102,241,0.9)] md:h-24 md:w-24">
                 {artist.name.charAt(0).toLowerCase()}
               </div>
-              <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full bg-slate-900 text-[11px] text-indigo-300 ring-2 ring-slate-950">
+              <button
+                type="button"
+                onClick={handleToggleFollow}
+                aria-pressed={followed}
+                aria-label={
+                  followed ? t('common.removeFavorite') : t('common.favorite')
+                }
+                className={`absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full text-[11px] ring-2 ring-slate-950 transition ${
+                  followed
+                    ? 'bg-amber-500/90 text-slate-950 hover:bg-amber-400'
+                    : 'bg-slate-900 text-indigo-300 hover:bg-slate-800'
+                }`}
+              >
                 ★
-              </div>
+              </button>
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight text-slate-50 md:text-3xl">
@@ -71,9 +92,16 @@ export function ArtistPage() {
           <div className="mt-4 flex items-center gap-3 md:mt-0">
             <button
               type="button"
-              className="inline-flex items-center gap-2 rounded-full bg-slate-900/80 px-4 py-1.5 text-xs font-semibold text-slate-100 ring-1 ring-slate-700 hover:bg-slate-800"
+              onClick={handleToggleFollow}
+              aria-pressed={followed}
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold ring-1 transition ${
+                followed
+                  ? 'bg-amber-500/15 text-amber-200 ring-amber-400/50 hover:bg-amber-500/25'
+                  : 'bg-slate-900/80 text-slate-100 ring-slate-700 hover:bg-slate-800'
+              }`}
             >
-              ♡ {t('artist.follow')}
+              <span aria-hidden>{followed ? '♥' : '♡'}</span>
+              {followed ? t('artist.unfollow') : t('artist.follow')}
             </button>
           </div>
         </section>
@@ -109,7 +137,7 @@ export function ArtistPage() {
             <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3" role="list">
               {songs.map((item) => (
                 <li key={item.song_id}>
-                  <SongCard item={item} />
+                  <SongCard item={item} showFavoriteToggle />
                 </li>
               ))}
             </ul>

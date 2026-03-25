@@ -34,6 +34,16 @@ export type LocaleKey =
   | 'artist.songs'
   | 'artist.noSongs'
   | 'artist.follow'
+  | 'artist.unfollow'
+  // Favorites page
+  | 'favorites.pageSubtitle'
+  | 'favorites.bannerTitle'
+  | 'favorites.bannerText'
+  | 'favorites.browseSongs'
+  | 'favorites.sectionArtists'
+  | 'favorites.sectionSongs'
+  | 'favorites.emptyArtists'
+  | 'favorites.emptySongs'
   // Create song form
   | 'createSong.title'
   | 'createSong.artist'
@@ -105,6 +115,7 @@ export type LocaleKey =
   // Common extras
   | 'common.view'
   | 'common.favorite'
+  | 'common.removeFavorite'
   | 'common.share'
   // Transpose extras
   | 'transpose.original'
