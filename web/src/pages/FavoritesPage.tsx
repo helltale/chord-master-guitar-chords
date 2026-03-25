@@ -71,7 +71,7 @@ export function FavoritesPage() {
               {artistsSorted.map((artist) => (
                 <li key={artist.artist_id}>
                   <Link
-                    to={`/artist/${artist.slug}`}
+                    to={`/artist/${encodeURIComponent(artist.slug)}`}
                     className="group flex flex-col items-center text-center"
                   >
                     <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full border-4 border-slate-200 bg-slate-100 text-2xl font-bold uppercase text-indigo-600 shadow-[0_0_24px_rgba(99,102,241,0.25)] group-hover:border-indigo-400 dark:border-slate-800 dark:bg-slate-950 dark:text-indigo-300 dark:shadow-[0_0_32px_rgba(99,102,241,0.85)]">

@@ -12,7 +12,7 @@ export function CreateArtistPage() {
   const handleSubmit = async (body: CreateArtistRequest) => {
     const artist = await submit(body)
     if (artist) {
-      navigate(`/artist/${artist.slug}`)
+      navigate(`/artist/${encodeURIComponent(artist.slug)}`)
     }
   }
 

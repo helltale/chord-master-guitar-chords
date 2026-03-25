@@ -94,7 +94,7 @@ export function SearchBar({
                     <div className="grid gap-4 md:grid-cols-2">
                       {topArtist && (
                         <Link
-                          to={`/artist/${topArtist.slug}`}
+                          to={`/artist/${encodeURIComponent(topArtist.slug)}`}
                           className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-md shadow-slate-900/5 transition-[border-color,background-color,box-shadow] duration-200 hover:border-indigo-400 hover:bg-indigo-50/50 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-100 dark:shadow-black/50 dark:hover:bg-slate-900/90"
                         >
                           <div>
@@ -130,7 +130,7 @@ export function SearchBar({
                       {artists.map((artist) => (
                         <li key={artist.artist_id}>
                           <Link
-                            to={`/artist/${artist.slug}`}
+                            to={`/artist/${encodeURIComponent(artist.slug)}`}
                             className="group flex items-center justify-between rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-800 shadow-sm shadow-slate-900/5 transition-[border-color,background-color] duration-200 hover:border-indigo-400 hover:bg-indigo-50/40 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-100 dark:shadow-black/40 dark:hover:bg-slate-900/90"
                           >
                             <span className="font-medium">{artist.name}</span>
