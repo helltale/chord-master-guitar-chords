@@ -40,10 +40,10 @@ export function SongsPage() {
         <section className="flex flex-col gap-2 md:flex-row md:items-end md:justify-between">
           <div>
             <h1 className="text-3xl font-black tracking-tight text-slate-50 sm:text-4xl">
-              Song Library
+              {t('songsPage.title')}
             </h1>
             <p className="mt-1 text-sm text-slate-400 md:text-base">
-              Browse songs and open full chords and tabs.
+              {t('songsPage.subtitle')}
             </p>
           </div>
           <div className="flex gap-3">
@@ -68,7 +68,7 @@ export function SongsPage() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder={t('search.label', 'Search artists and songs')}
+                placeholder={t('search.label')}
                 className="w-full rounded-xl border border-slate-800 bg-slate-950/80 py-2.5 pl-9 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
             </div>
@@ -81,10 +81,10 @@ export function SongsPage() {
             <table className="min-w-full border-collapse text-left text-sm text-slate-200">
               <thead>
                 <tr className="border-b border-slate-800 bg-slate-900/80 text-[11px] font-semibold uppercase tracking-[0.16em] text-slate-400">
-                  <th className="px-5 py-3">Title</th>
-                  <th className="px-5 py-3">Artist</th>
-                  <th className="px-5 py-3">Slug</th>
-                  <th className="px-5 py-3 text-right">Key</th>
+                  <th className="px-5 py-3">{t('songs.tableTitle')}</th>
+                  <th className="px-5 py-3">{t('songs.tableArtist')}</th>
+                  <th className="px-5 py-3">{t('songs.tableSlug')}</th>
+                  <th className="px-5 py-3 text-right">{t('song.tonality')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
@@ -125,7 +125,9 @@ export function SongsPage() {
           </div>
           <div className="flex items-center justify-between border-t border-slate-800/80 px-5 py-3 text-xs text-slate-500">
             <span>
-              Showing {filtered.length} of {total || filtered.length} songs
+              {t('songs.listFooter')
+                .replace('{shown}', String(filtered.length))
+                .replace('{total}', String(total || filtered.length))}
             </span>
           </div>
         </section>

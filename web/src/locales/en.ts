@@ -34,6 +34,21 @@ export const en: LocaleDict = {
   'artist.follow': 'Follow',
   'artist.unfollow': 'Unfollow',
 
+  'artists.pageSubtitle': 'Browse artists and quickly jump to their songs.',
+  'artists.viewSongs': 'View songs',
+  'artists.countEnOne': 'artist',
+  'artists.countEnOther': 'artists',
+  'artists.countRuOne': 'исполнитель',
+  'artists.countRuFew': 'исполнителя',
+  'artists.countRuMany': 'исполнителей',
+
+  'songsPage.title': 'Song Library',
+  'songsPage.subtitle': 'Browse songs and open full chords and tabs.',
+  'songs.tableTitle': 'Title',
+  'songs.tableArtist': 'Artist',
+  'songs.tableSlug': 'Slug',
+  'songs.listFooter': 'Showing {shown} of {total} songs',
+
   'favorites.pageSubtitle':
     'Only artists and songs you follow appear here. Use Follow on an artist page or the star on a song.',
   'favorites.bannerTitle': 'Practice now',

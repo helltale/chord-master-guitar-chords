@@ -3,9 +3,24 @@ import { Link } from 'react-router-dom'
 import { useListArtists } from '@/hooks'
 import { useTranslation } from '@/contexts/I18nContext'
 import { useFollows } from '@/contexts/follows'
+import type { Locale } from '@/contexts/I18nContext'
+import type { LocaleKey } from '@/locales/keys'
+
+function artistsCountLabel(n: number, locale: Locale, t: (key: LocaleKey) => string): string {
+  if (locale === 'en') {
+    return `${n} ${n === 1 ? t('artists.countEnOne') : t('artists.countEnOther')}`
+  }
+  const mod10 = n % 10
+  const mod100 = n % 100
+  if (mod10 === 1 && mod100 !== 11) return `${n} ${t('artists.countRuOne')}`
+  if (mod10 >= 2 && mod10 <= 4 && (mod100 < 10 || mod100 >= 20)) {
+    return `${n} ${t('artists.countRuFew')}`
+  }
+  return `${n} ${t('artists.countRuMany')}`
+}
 
 export function ArtistsPage() {
-  const { t } = useTranslation()
+  const { t, locale } = useTranslation()
   const { isArtistFollowed, toggleArtistFollow } = useFollows()
   const { items, total, loading, error } = useListArtists({ limit: 500 })
   const [query, setQuery] = useState('')
@@ -41,14 +56,14 @@ export function ArtistsPage() {
         <section className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
             <h1 className="text-3xl font-black tracking-tight text-slate-50 sm:text-4xl">
-              {t('header.nav.artists', 'Artists')}
+              {t('header.nav.artists')}
             </h1>
             <p className="mt-1 text-sm text-slate-400 md:text-base">
-              Browse artists and quickly jump to their songs.
+              {t('artists.pageSubtitle')}
             </p>
             {total > 0 && (
               <p className="mt-2 text-xs text-slate-500">
-                {total} {t('search.artists', 'Artists')}
+                {artistsCountLabel(total, locale, t)}
               </p>
             )}
           </div>
@@ -73,7 +88,7 @@ export function ArtistsPage() {
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder={t('search.label', 'Search artists and songs')}
+              placeholder={t('search.label')}
               className="w-full rounded-xl border border-slate-800 bg-slate-950/80 py-2 pl-8 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
             />
           </div>
@@ -83,7 +98,7 @@ export function ArtistsPage() {
         <section className="flex flex-1 flex-col gap-4 pb-6">
           {filtered.length === 0 ? (
             <p className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/70 px-4 py-6 text-sm text-slate-500">
-              {t('search.noArtists', 'No artists for this query yet.')}
+              {t('search.noArtists')}
             </p>
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list">
@@ -128,7 +143,7 @@ export function ArtistsPage() {
                         {artist.slug}
                       </p>
                       <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 group-hover:bg-indigo-500/10 group-hover:text-indigo-200">
-                        <span>View songs</span>
+                        <span>{t('artists.viewSongs')}</span>
                         <span>↗</span>
                       </span>
                     </Link>
