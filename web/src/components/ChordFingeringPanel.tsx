@@ -59,8 +59,8 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
   if (entries.length === 0) return null
 
   return (
-    <aside className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-950/60 p-4 shadow-sm shadow-black/40 dark:border-slate-800">
-      <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-400">
+    <aside className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50/95 p-4 shadow-sm shadow-slate-900/5 dark:border-slate-800 dark:bg-slate-950/60 dark:shadow-black/40">
+      <h3 className="mb-1 text-xs font-semibold uppercase tracking-[0.16em] text-slate-500 dark:text-slate-400">
         {t('chordPanel.title')}
       </h3>
       <div className="grid gap-3 sm:grid-cols-2">
@@ -85,10 +85,10 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
           return (
             <div
               key={chord}
-              className="group flex cursor-pointer flex-col rounded-xl border border-slate-700 bg-slate-900/70 p-3 shadow-sm shadow-black/40 transition-colors hover:border-indigo-400"
+              className="group flex cursor-pointer flex-col rounded-xl border border-slate-200 bg-white p-3 shadow-sm shadow-slate-900/5 transition-colors hover:border-indigo-400 dark:border-slate-700 dark:bg-slate-900/70 dark:shadow-black/40"
             >
               <div className="mb-2 flex items-center justify-between">
-                <span className="font-mono text-sm font-bold text-indigo-300">
+                <span className="font-mono text-sm font-bold text-indigo-600 dark:text-indigo-300">
                   {chord}
                 </span>
                 {!showNut && frets && (
@@ -102,7 +102,7 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
                 <div className="flex flex-1 items-center justify-center">
                   <div className="flex h-32 w-24 flex-col justify-center">
                     {/* Fretboard */}
-                    <div className="relative flex-1 rounded-md bg-slate-950/80">
+                    <div className="relative flex-1 rounded-md bg-slate-100 dark:bg-slate-950/80">
                       {(() => {
                         const { W, H, yLines, xStrings } = buildFretboardGeometry()
                         const yTop = yLines[0]
@@ -246,7 +246,7 @@ export function ChordFingeringPanel({ chordTabs }: ChordFingeringPanelProps) {
                   </div>
                 </div>
               ) : (
-                <pre className="max-h-28 overflow-y-auto whitespace-pre-wrap break-all rounded-lg bg-slate-950/70 p-2 font-mono text-[11px] text-slate-100 custom-scrollbar">
+                <pre className="max-h-28 overflow-y-auto whitespace-pre-wrap break-all rounded-lg bg-slate-100 p-2 font-mono text-[11px] text-slate-800 custom-scrollbar dark:bg-slate-950/70 dark:text-slate-100">
                   {shape}
                 </pre>
               )}

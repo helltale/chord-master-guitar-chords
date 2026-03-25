@@ -2,8 +2,14 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
+html {
+  @apply bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-50;
+  transition: background-color 0.35s ease, color 0.35s ease;
+}
+
 body {
-  @apply antialiased min-h-screen bg-gray-50 text-gray-900 dark:bg-slate-950 dark:text-slate-50;
+  @apply m-0 min-h-screen antialiased bg-slate-100 text-slate-900 dark:bg-slate-950 dark:text-slate-50;
+  transition: background-color 0.35s ease, color 0.35s ease;
 }
 
 .custom-scrollbar::-webkit-scrollbar {
@@ -15,6 +21,5 @@ body {
 }
 
 .custom-scrollbar::-webkit-scrollbar-thumb {
-  background-color: #1f2937;
-  border-radius: 9999px;
+  @apply rounded-full bg-slate-300 dark:bg-slate-700;
 }

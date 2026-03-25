@@ -26,14 +26,14 @@ export function CreateArtistForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
+        <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-800 dark:text-red-200" role="alert">
           {error.message}
         </p>
       )}
       <div className="flex flex-col gap-2">
         <label
           htmlFor="artist-name"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
         >
           {t('createArtist.name')}
         </label>
@@ -42,7 +42,7 @@ export function CreateArtistForm({
           name="name"
           type="text"
           required
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
+          className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none ring-1 ring-slate-200/80 focus:border-indigo-400 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-50 dark:shadow-black/30 dark:ring-slate-900/60"
         />
       </div>
       <button

@@ -24,9 +24,9 @@ export function CreateArtistPage() {
           <button
             type="button"
             onClick={() => navigate(-1)}
-            className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-indigo-300 hover:text-indigo-200"
+            className="inline-flex w-fit items-center gap-2 text-xs font-semibold text-indigo-600 hover:text-indigo-700 dark:text-indigo-300 dark:hover:text-indigo-200"
           >
-            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-900/80 text-sm">
+            <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-slate-200/90 text-sm dark:bg-slate-900/80">
               ←
             </span>
             <span className="uppercase tracking-[0.16em]">
@@ -34,10 +34,10 @@ export function CreateArtistPage() {
             </span>
           </button>
           <div>
-            <h1 className="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-50">
               {t('createArtist.title')}
             </h1>
-            <p className="mt-2 max-w-xl text-sm text-slate-400">
+            <p className="mt-2 max-w-xl text-sm text-slate-600 dark:text-slate-400">
               {t(
                 'createArtist.subtitle',
                 'Add a new artist profile to your chord library. The display name defines how the artist appears in your collection.'
@@ -47,21 +47,21 @@ export function CreateArtistPage() {
         </div>
 
         {/* Main card */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-950/70 p-6 shadow-[0_24px_60px_rgba(15,23,42,0.9)] md:p-10">
+        <div className="rounded-2xl border border-slate-200/90 bg-white/90 p-6 shadow-[0_16px_52px_rgba(15,23,42,0.08)] transition-[border-color,background-color,box-shadow] duration-300 md:p-10 dark:border-slate-800 dark:bg-slate-950/70 dark:shadow-[0_24px_60px_rgba(15,23,42,0.9)]">
           <CreateArtistForm onSubmit={handleSubmit} loading={loading} error={error} />
         </div>
 
         {/* Helper section */}
         <div className="mt-8">
           <div className="flex gap-3 rounded-xl border border-indigo-500/20 bg-indigo-500/5 p-4 md:max-w-2xl">
-            <div className="mt-1 h-8 w-8 shrink-0 rounded-full bg-indigo-500/20 text-center text-indigo-300">
+            <div className="mt-1 h-8 w-8 shrink-0 rounded-full bg-indigo-500/20 text-center text-indigo-600 dark:text-indigo-300">
               <span className="text-sm leading-8">ⓘ</span>
             </div>
             <div>
-              <h2 className="text-sm font-semibold text-slate-50">
+              <h2 className="text-sm font-semibold text-slate-900 dark:text-slate-50">
                 {t('createArtist.tipSyncTitle', 'Automatic sync')}
               </h2>
-              <p className="mt-1 text-xs text-slate-400">
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-400">
                 {t(
                   'createArtist.tipSyncText',
                   'Artist data automatically links to all its songs so updates in one place stay consistent.'
