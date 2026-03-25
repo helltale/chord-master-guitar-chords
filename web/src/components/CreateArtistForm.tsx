@@ -27,13 +27,13 @@ export function CreateArtistForm({
     const form = e.target.form
     if (!form) return
     const slugField = form.elements.namedItem('slug') as HTMLInputElement
-    if (slugField && !slugField.dataset.touched) return
+    if (!slugField || slugField.dataset.touched) return
     const slug = slugFromString(e.target.value)
-    if (slug) slugField.value = slug
+    slugField.value = slug
   }
 
-  const markSlugTouched = (e: React.FocusEvent<HTMLInputElement>) => {
-    e.target.dataset.touched = '1'
+  const handleSlugManualEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.currentTarget.dataset.touched = '1'
   }
 
   return (
@@ -71,7 +71,7 @@ export function CreateArtistForm({
           name="slug"
           type="text"
           required
-          onBlur={markSlugTouched}
+          onChange={handleSlugManualEdit}
           className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>
