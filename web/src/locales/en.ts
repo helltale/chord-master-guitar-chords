@@ -32,6 +32,21 @@ export const en: LocaleDict = {
   'artist.songs': 'Songs',
   'artist.noSongs': 'No songs',
   'artist.follow': 'Follow',
+  'artist.unfollow': 'Unfollow',
+
+  'favorites.pageSubtitle':
+    'Only artists and songs you follow appear here. Use Follow on an artist page or the star on a song.',
+  'favorites.bannerTitle': 'Practice now',
+  'favorites.bannerText':
+    'Resume from songs you saved. Follow artists or star songs to build this list.',
+  'favorites.browseSongs': 'Browse songs',
+  'favorites.sectionArtists': 'Artists you follow',
+  'favorites.sectionSongs': 'Songs you starred',
+  'favorites.emptyArtists':
+    'No favorite artists yet. Open an artist and tap Follow or the star on their avatar.',
+  'favorites.emptySongs':
+    'No starred songs yet. Open a song and tap the star in the header.',
+
 
   'createSong.title': 'Create song',
   'createSong.artist': 'Artist',
@@ -112,7 +127,8 @@ export const en: LocaleDict = {
   'search.noSongs': 'No songs for this query yet.',
 
   'common.view': 'Open',
-  'common.favorite': 'Favorite',
+  'common.favorite': 'Add to favorites',
+  'common.removeFavorite': 'Remove from favorites',
   'common.share': 'Share',
 
   'transpose.original': 'Original',

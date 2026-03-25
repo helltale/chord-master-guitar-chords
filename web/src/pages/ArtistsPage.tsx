@@ -2,9 +2,11 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useListArtists } from '@/hooks'
 import { useTranslation } from '@/contexts/I18nContext'
+import { useFollows } from '@/contexts/follows'
 
 export function ArtistsPage() {
   const { t } = useTranslation()
+  const { isArtistFollowed, toggleArtistFollow } = useFollows()
   const { items, total, loading, error } = useListArtists({ limit: 500 })
   const [query, setQuery] = useState('')
 
@@ -85,26 +87,54 @@ export function ArtistsPage() {
             </p>
           ) : (
             <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4" role="list">
-              {filtered.map((artist) => (
-                <li key={artist.artist_id}>
-                  <Link
-                    to={`/artist/${artist.slug}`}
-                    className="group flex h-full flex-col items-center rounded-2xl border border-slate-800 bg-slate-900/70 p-5 text-center shadow-[0_18px_50px_rgba(15,23,42,0.85)] transition hover:border-indigo-400 hover:bg-slate-900"
-                  >
-                    <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-indigo-500/80 bg-slate-950 text-2xl font-bold uppercase text-indigo-300 shadow-[0_0_32px_rgba(99,102,241,0.85)]">
-                      {artist.name.charAt(0) || '?'}
-                    </div>
-                    <h2 className="mb-1 text-sm font-semibold text-slate-50 line-clamp-1">{artist.name}</h2>
-                    <p className="mb-4 text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
-                      {artist.slug}
-                    </p>
-                    <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 group-hover:bg-indigo-500/10 group-hover:text-indigo-200">
-                      <span>View songs</span>
-                      <span>↗</span>
-                    </span>
-                  </Link>
-                </li>
-              ))}
+              {filtered.map((artist) => {
+                const followed = isArtistFollowed(artist.artist_id)
+                return (
+                  <li key={artist.artist_id} className="relative">
+                    <button
+                      type="button"
+                      onClick={() =>
+                        toggleArtistFollow({
+                          artist_id: artist.artist_id,
+                          name: artist.name,
+                          slug: artist.slug,
+                        })
+                      }
+                      aria-pressed={followed}
+                      aria-label={
+                        followed
+                          ? t('common.removeFavorite')
+                          : t('common.favorite')
+                      }
+                      className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full text-sm shadow-md ring-1 transition ${
+                        followed
+                          ? 'bg-amber-500/20 text-amber-400 ring-amber-400/40 hover:bg-amber-500/30'
+                          : 'bg-slate-950/90 text-slate-500 ring-slate-700 hover:bg-slate-900 hover:text-indigo-300 hover:ring-indigo-500/50'
+                      }`}
+                    >
+                      ★
+                    </button>
+                    <Link
+                      to={`/artist/${artist.slug}`}
+                      className="group flex h-full flex-col items-center rounded-2xl border border-slate-800 bg-slate-900/70 p-5 pt-6 text-center shadow-[0_18px_50px_rgba(15,23,42,0.85)] transition hover:border-indigo-400 hover:bg-slate-900"
+                    >
+                      <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-indigo-500/80 bg-slate-950 text-2xl font-bold uppercase text-indigo-300 shadow-[0_0_32px_rgba(99,102,241,0.85)]">
+                        {artist.name.charAt(0) || '?'}
+                      </div>
+                      <h2 className="mb-1 text-sm font-semibold text-slate-50 line-clamp-1">
+                        {artist.name}
+                      </h2>
+                      <p className="mb-4 text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
+                        {artist.slug}
+                      </p>
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 group-hover:bg-indigo-500/10 group-hover:text-indigo-200">
+                        <span>View songs</span>
+                        <span>↗</span>
+                      </span>
+                    </Link>
+                  </li>
+                )
+              })}
             </ul>
           )}
         </section>
