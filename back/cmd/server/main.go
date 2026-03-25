@@ -49,6 +49,18 @@ func main() {
 	server := handler.NewServer(artistCases, songCases)
 
 	rounter := chi.NewRouter()
+	rounter.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
+		ctx, cancel := context.WithTimeout(r.Context(), 2*time.Second)
+		defer cancel()
+
+		if pingErr := sqlDB.PingContext(ctx); pingErr != nil {
+			http.Error(w, "db unavailable", http.StatusServiceUnavailable)
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		_, _ = w.Write([]byte("ok"))
+	})
 	apiRouter := chi.NewRouter()
 	gen.HandlerFromMux(gen.NewStrictHandler(server, nil), apiRouter)
 	rounter.Mount("/api/amdm/v1", apiRouter)
