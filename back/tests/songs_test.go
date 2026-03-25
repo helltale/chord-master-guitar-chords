@@ -193,7 +193,8 @@ func TestSongs_ListTrending_Opens30d(t *testing.T) {
 	base := server.URL + apiBase
 	client := server.Client()
 
-	artistID := createArtistAndGetID(t, base, client, "Trend Artist", "trend-artist")
+  artistName := "Trend Artist"
+  artistID := createArtistAndGetID(t, base, client, artistName, "trend-artist")
 	createBody := `{"artist_id":"` + artistID + `","title":"Popular Hit","slug":"popular-hit"}`
 	cr, err := client.Post(base+"/songs", "application/json", strings.NewReader(createBody))
 	if err != nil {
@@ -231,6 +232,7 @@ func TestSongs_ListTrending_Opens30d(t *testing.T) {
 		Items *[]struct {
 			SongId   string `json:"song_id"`
 			Title    string `json:"title"`
+			ArtistName *string `json:"artist_name"`
 			Opens30d *int   `json:"opens_30d"`
 		} `json:"items"`
 	}
@@ -244,6 +246,9 @@ func TestSongs_ListTrending_Opens30d(t *testing.T) {
 	if first.SongId != created.SongId || first.Title != "Popular Hit" {
 		t.Fatalf("first item = %+v, want our song", first)
 	}
+	if first.ArtistName == nil || *first.ArtistName != artistName {
+		t.Errorf("artist_name = %v, want %q", first.ArtistName, artistName)
+	}
 	if first.Opens30d == nil || *first.Opens30d != 4 {
 		t.Errorf("opens_30d = %v, want 4", first.Opens30d)
 	}
@@ -255,7 +260,8 @@ func TestSongs_ListByArtistId(t *testing.T) {
 	base := server.URL + apiBase
 	client := server.Client()
 
-	artistID := createArtistAndGetID(t, base, client, "List Artist", "list-artist")
+	artistName := "List Artist"
+	artistID := createArtistAndGetID(t, base, client, artistName, "list-artist")
 	// одна песня
 	createBody := `{"artist_id":"` + artistID + `","title":"Only Song","slug":"only-song"}`
 	resp, _ := client.Post(base+"/songs", "application/json", strings.NewReader(createBody))
@@ -272,6 +278,7 @@ func TestSongs_ListByArtistId(t *testing.T) {
 	var list struct {
 		Items *[]struct {
 			Title string `json:"title"`
+			ArtistName *string `json:"artist_name"`
 		} `json:"items"`
 		Total *int `json:"total"`
 	}
@@ -283,6 +290,9 @@ func TestSongs_ListByArtistId(t *testing.T) {
 	}
 	if list.Items == nil || len(*list.Items) != 1 || (*list.Items)[0].Title != "Only Song" {
 		t.Errorf("items = %+v", list.Items)
+	}
+	if (*list.Items)[0].ArtistName == nil || *(*list.Items)[0].ArtistName != artistName {
+		t.Errorf("artist_name = %v, want %q", (*list.Items)[0].ArtistName, artistName)
 	}
 }
 

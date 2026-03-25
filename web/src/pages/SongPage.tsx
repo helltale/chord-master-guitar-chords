@@ -89,13 +89,6 @@ export function SongPage() {
           >
             ★
           </button>
-          <button
-            type="button"
-            className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-gray-200 dark:border-gray-700 bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:hover:bg-gray-700"
-            aria-label={t('common.share') ?? 'Share'}
-          >
-            <span className="text-base">⇢</span>
-          </button>
           <div className="hidden md:inline-flex">
             <TransposeControl onTranspose={handleTranspose} loading={transposeLoading} />
           </div>
