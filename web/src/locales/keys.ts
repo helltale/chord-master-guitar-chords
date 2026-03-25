@@ -122,7 +122,7 @@ export type LocaleKey =
   | 'home.trendingTitle'
   | 'home.trendingSubtitle'
   | 'home.recentlyAddedTitle'
-  | 'home.recentlyAddedSubtitle'
+  | 'home.recentlyAddedEmpty'
   | 'home.topResultsTitle'
   // Extended search helpers
   | 'search.helper'

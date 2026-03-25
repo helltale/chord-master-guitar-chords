@@ -13,7 +13,12 @@ import (
 type SongRepository interface {
 	GetByID(ctx context.Context, id uuid.UUID) (*entity.Song, error)
 	GetByArtistIDAndSlug(ctx context.Context, artistID uuid.UUID, slug string) (*entity.Song, error)
-	List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error)
+	List(
+		ctx context.Context,
+		artistID *uuid.UUID,
+		limit, offset int,
+		sort string,
+	) ([]*entity.Song, int64, error)
 	ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error)
 	Search(ctx context.Context, query string, limit, offset int) ([]*entity.Song, int64, error)
 	Create(ctx context.Context, s *entity.Song) error
@@ -52,7 +57,12 @@ func (r *songRepo) GetByArtistIDAndSlug(ctx context.Context, artistID uuid.UUID,
 	return &s, nil
 }
 
-func (r *songRepo) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
+func (r *songRepo) List(
+	ctx context.Context,
+	artistID *uuid.UUID,
+	limit, offset int,
+	sort string,
+) ([]*entity.Song, int64, error) {
 	q := r.db.WithContext(ctx).Model(&entity.Song{})
 	if artistID != nil {
 		q = q.Where("artist_id = ?", *artistID)
@@ -61,8 +71,12 @@ func (r *songRepo) List(ctx context.Context, artistID *uuid.UUID, limit, offset 
 	if err := q.Count(&total).Error; err != nil {
 		return nil, 0, err
 	}
+	order := "title"
+	if sort == "created_at_desc" {
+		order = "created_at DESC"
+	}
 	var list []*entity.Song
-	q = r.db.WithContext(ctx).Preload("Artist").Limit(limit).Offset(offset).Order("title")
+	q = r.db.WithContext(ctx).Preload("Artist").Limit(limit).Offset(offset).Order(order)
 	if artistID != nil {
 		q = q.Where("artist_id = ?", *artistID)
 	}

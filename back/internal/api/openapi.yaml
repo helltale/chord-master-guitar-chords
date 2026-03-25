@@ -79,6 +79,13 @@ paths:
           schema:
             type: string
             format: uuid
+        - name: sort
+          in: query
+          description: Sort order for results (default title A–Z; created_at_desc = newest first)
+          schema:
+            type: string
+            enum: [title, created_at_desc]
+            default: title
         - name: limit
           in: query
           schema:
@@ -277,6 +284,9 @@ components:
         artist_id:
           type: string
           format: uuid
+        artist_name:
+          type: string
+          description: Present when artist is joined (list/search)
         title:
           type: string
         slug:

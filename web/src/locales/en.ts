@@ -136,8 +136,8 @@ export const en: LocaleDict = {
   'home.trendingSubtitle':
     'Start typing in the search above – we will surface the most relevant artists and songs for you.',
   'home.recentlyAddedTitle': 'Recently added',
-  'home.recentlyAddedSubtitle':
-    'New songs you add will appear here. Use “Create artist” and “Create song” in the header to grow your library.',
+  'home.recentlyAddedEmpty':
+    'No songs yet. Use “Create artist” and “Create song” in the header to add tracks.',
   'home.topResultsTitle': 'Top match',
 
   'search.helper': 'Type artist, song or chord name to start.',

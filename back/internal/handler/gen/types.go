@@ -113,6 +113,24 @@ func (e CommonChord) Valid() bool {
 	}
 }
 
+// Defines values for ListSongsParamsSort.
+const (
+	CreatedAtDesc ListSongsParamsSort = "created_at_desc"
+	Title         ListSongsParamsSort = "title"
+)
+
+// Valid indicates whether the value is a known member of the ListSongsParamsSort enum.
+func (e ListSongsParamsSort) Valid() bool {
+	switch e {
+	case CreatedAtDesc:
+		return true
+	case Title:
+		return true
+	default:
+		return false
+	}
+}
+
 // Artist defines model for Artist.
 type Artist struct {
 	ArtistId  openapi_types.UUID `json:"artist_id"`
@@ -227,10 +245,13 @@ type SongList struct {
 // SongListItem defines model for SongListItem.
 type SongListItem struct {
 	ArtistId *openapi_types.UUID `json:"artist_id,omitempty"`
-	Slug     string              `json:"slug"`
-	SongId   openapi_types.UUID  `json:"song_id"`
-	Title    string              `json:"title"`
-	Tonality *int                `json:"tonality,omitempty"`
+
+	// ArtistName Present when artist is joined (list/search)
+	ArtistName *string            `json:"artist_name,omitempty"`
+	Slug       string             `json:"slug"`
+	SongId     openapi_types.UUID `json:"song_id"`
+	Title      string             `json:"title"`
+	Tonality   *int               `json:"tonality,omitempty"`
 }
 
 // TabContent defines model for TabContent.
@@ -264,9 +285,15 @@ type SearchParams struct {
 // ListSongsParams defines parameters for ListSongs.
 type ListSongsParams struct {
 	ArtistId *openapi_types.UUID `form:"artist_id,omitempty" json:"artist_id,omitempty"`
-	Limit    *int                `form:"limit,omitempty" json:"limit,omitempty"`
-	Offset   *int                `form:"offset,omitempty" json:"offset,omitempty"`
+
+	// Sort Sort order for results (default title A–Z; created_at_desc = newest first)
+	Sort   *ListSongsParamsSort `form:"sort,omitempty" json:"sort,omitempty"`
+	Limit  *int                 `form:"limit,omitempty" json:"limit,omitempty"`
+	Offset *int                 `form:"offset,omitempty" json:"offset,omitempty"`
 }
+
+// ListSongsParamsSort defines parameters for ListSongs.
+type ListSongsParamsSort string
 
 // TransposeSongParams defines parameters for TransposeSong.
 type TransposeSongParams struct {

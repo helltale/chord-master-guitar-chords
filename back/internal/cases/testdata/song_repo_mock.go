@@ -87,9 +87,9 @@ func (mr *MockSongRepositoryMockRecorder) GetByID(ctx, id any) *gomock.Call {
 }
 
 // List mocks base method.
-func (m *MockSongRepository) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
+func (m *MockSongRepository) List(ctx context.Context, artistID *uuid.UUID, limit, offset int, sort string) ([]*entity.Song, int64, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "List", ctx, artistID, limit, offset)
+	ret := m.ctrl.Call(m, "List", ctx, artistID, limit, offset, sort)
 	ret0, _ := ret[0].([]*entity.Song)
 	ret1, _ := ret[1].(int64)
 	ret2, _ := ret[2].(error)
@@ -97,9 +97,9 @@ func (m *MockSongRepository) List(ctx context.Context, artistID *uuid.UUID, limi
 }
 
 // List indicates an expected call of List.
-func (mr *MockSongRepositoryMockRecorder) List(ctx, artistID, limit, offset any) *gomock.Call {
+func (mr *MockSongRepositoryMockRecorder) List(ctx, artistID, limit, offset, sort any) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockSongRepository)(nil).List), ctx, artistID, limit, offset)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "List", reflect.TypeOf((*MockSongRepository)(nil).List), ctx, artistID, limit, offset, sort)
 }
 
 // ListByArtistID mocks base method.
