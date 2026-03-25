@@ -32,7 +32,6 @@ export const ru: LocaleDict = {
   'artist.songs': 'Песни',
   'artist.noSongs': 'Нет песен',
   'artist.follow': 'Подписаться',
-  'artist.share': 'Поделиться',
 
   'createSong.title': 'Создать песню',
   'createSong.artist': 'Артист',
