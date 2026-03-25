@@ -5,6 +5,7 @@ package tests
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 )
@@ -94,6 +95,65 @@ func TestArtists_CreateSuccess(t *testing.T) {
 		t.Fatal("decode get:", err)
 	}
 	if withSongs.Slug != "test-artist" || withSongs.Name != "Test Artist" {
+		t.Errorf("get by slug = %+v", withSongs)
+	}
+	if withSongs.Songs == nil {
+		t.Error("songs field should be present (may be empty)")
+	}
+}
+
+func TestArtists_CreateSuccess_WithCyrillicSlug(t *testing.T) {
+	server := NewTestServer(t)
+	defer server.Close()
+	base := server.URL + apiBase
+	client := server.Client()
+
+	name := "Русский Артист"
+	slug := "русский-артист"
+	body := `{"name":"` + name + `","slug":"` + slug + `"}`
+
+	resp, err := client.Post(base+"/artists", "application/json", strings.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		t.Errorf("POST /artists: status = %d, want 201", resp.StatusCode)
+	}
+
+	var artist struct {
+		ArtistId string `json:"artist_id"`
+		Name     string `json:"name"`
+		Slug     string `json:"slug"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&artist); err != nil {
+		t.Fatal("decode:", err)
+	}
+	if artist.Name != name || artist.Slug != slug || artist.ArtistId == "" {
+		t.Errorf("artist = %+v", artist)
+	}
+
+	// Путь должен корректно декодироваться для кириллицы.
+	escapedSlug := url.PathEscape(slug)
+	getResp, err := client.Get(base + "/artists/" + escapedSlug)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer getResp.Body.Close()
+	if getResp.StatusCode != http.StatusOK {
+		t.Errorf("GET /artists/{slug}: status = %d, want 200", getResp.StatusCode)
+	}
+
+	var withSongs struct {
+		ArtistId string `json:"artist_id"`
+		Name     string `json:"name"`
+		Slug     string `json:"slug"`
+		Songs    *[]any `json:"songs"`
+	}
+	if err := json.NewDecoder(getResp.Body).Decode(&withSongs); err != nil {
+		t.Fatal("decode get:", err)
+	}
+	if withSongs.Slug != slug || withSongs.Name != name {
 		t.Errorf("get by slug = %+v", withSongs)
 	}
 	if withSongs.Songs == nil {

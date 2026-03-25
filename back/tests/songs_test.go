@@ -81,6 +81,41 @@ func TestSongs_CreateSuccess(t *testing.T) {
 	}
 }
 
+func TestSongs_CreateSuccess_WithCyrillicTitleAndSlug(t *testing.T) {
+	server := NewTestServer(t)
+	defer server.Close()
+	base := server.URL + apiBase
+	client := server.Client()
+
+	artistID := createArtistAndGetID(t, base, client, "Русский Бэнд", "русский-бэнд")
+
+	title := "Привет, песня"
+	slug := "привет-песня"
+	body := `{"artist_id":"` + artistID + `","title":"` + title + `","slug":"` + slug + `","tonality":0}`
+	resp, err := client.Post(base+"/songs", "application/json", strings.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusCreated {
+		t.Errorf("POST /songs: status = %d, want 201", resp.StatusCode)
+	}
+
+	var song struct {
+		SongId   string `json:"song_id"`
+		ArtistId string `json:"artist_id"`
+		Title    string `json:"title"`
+		Slug     string `json:"slug"`
+		Tonality *int   `json:"tonality"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&song); err != nil {
+		t.Fatal("decode:", err)
+	}
+	if song.Title != title || song.Slug != slug || song.SongId == "" || song.ArtistId != artistID {
+		t.Errorf("song = %+v", song)
+	}
+}
+
 func TestSongs_CreateDuplicateSlug_Returns400(t *testing.T) {
 	server := NewTestServer(t)
 	defer server.Close()

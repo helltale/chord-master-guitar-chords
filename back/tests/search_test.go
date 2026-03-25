@@ -5,6 +5,7 @@ package tests
 import (
 	"encoding/json"
 	"net/http"
+	"net/url"
 	"strings"
 	"testing"
 )
@@ -142,6 +143,83 @@ func TestSearch_ByArtistName(t *testing.T) {
 	}
 	if !songFound {
 		t.Errorf("search by artist name: expected 'Any Song' in songs %+v", result.Songs)
+	}
+}
+
+func TestSearch_ByCyrillicArtistAndSong(t *testing.T) {
+	server := NewTestServer(t)
+	defer server.Close()
+	base := server.URL + apiBase
+	client := server.Client()
+
+	artistName := "Русский Исполнитель"
+	artistSlug := "русский-исполнитель"
+	artistID := createArtistAndGetID(t, base, client, artistName, artistSlug)
+
+	songTitle := "Лучшая песня"
+	songSlug := "лучшая-песня"
+	body := `{"artist_id":"` + artistID + `","title":"` + songTitle + `","slug":"` + songSlug + `"}`
+	r, err := client.Post(base+"/songs", "application/json", strings.NewReader(body))
+	if err != nil {
+		t.Fatal(err)
+	}
+	r.Body.Close()
+	if r.StatusCode != http.StatusCreated {
+		t.Fatalf("create song: status = %d", r.StatusCode)
+	}
+
+	query := "русский"
+	escapedQuery := url.QueryEscape(query)
+	resp, err := client.Get(base + "/search?q=" + escapedQuery)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		t.Fatalf("search: %d", resp.StatusCode)
+	}
+
+	var result struct {
+		Artists []struct {
+			Name string `json:"name"`
+		} `json:"artists"`
+		Songs []struct {
+			Title string `json:"title"`
+		} `json:"songs"`
+		TotalArtists int `json:"total_artists"`
+		TotalSongs   int `json:"total_songs"`
+	}
+	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
+		t.Fatal(err)
+	}
+
+	if result.TotalArtists < 1 {
+		t.Errorf("total_artists = %d, want at least 1", result.TotalArtists)
+	}
+	if result.TotalSongs < 1 {
+		t.Errorf("total_songs = %d, want at least 1", result.TotalSongs)
+	}
+
+	artistFound := false
+	for _, a := range result.Artists {
+		if a.Name == artistName {
+			artistFound = true
+			break
+		}
+	}
+	if !artistFound {
+		t.Errorf("search by cyrillic artist name: expected %q in %+v", artistName, result.Artists)
+	}
+
+	songFound := false
+	for _, it := range result.Songs {
+		if it.Title == songTitle {
+			songFound = true
+			break
+		}
+	}
+	if !songFound {
+		t.Errorf("search by cyrillic song title: expected %q in %+v", songTitle, result.Songs)
 	}
 }
 
