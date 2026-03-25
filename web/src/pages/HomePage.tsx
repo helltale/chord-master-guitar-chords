@@ -21,10 +21,10 @@ export function HomePage() {
   const { t } = useTranslation()
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-100 px-4 py-8 dark:bg-slate-950">
+    <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-100 px-4 py-6 dark:bg-slate-950">
       <MouseReactiveBackground />
-      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-10">
-        <section className="mt-4 text-center md:mt-8 md:text-left">
+      <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-7">
+        <section className="mt-2 text-center md:mt-6 md:text-left">
           <p className="text-xs font-semibold uppercase tracking-[0.28em] text-slate-500 dark:text-slate-400">
             ChordMaster
           </p>
@@ -44,7 +44,7 @@ export function HomePage() {
           </p>
         </section>
 
-        <section className="flex flex-1 flex-col gap-10 pb-6">
+        <section className="flex flex-1 flex-col gap-8 pb-2">
           <SearchBar
             query={query}
             onQueryChange={setQuery}
