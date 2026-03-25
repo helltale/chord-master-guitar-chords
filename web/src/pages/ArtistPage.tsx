@@ -1,6 +1,6 @@
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from '@/contexts/I18nContext'
-import { useFollows } from '@/contexts/FollowsContext'
+import { useFollows } from '@/contexts/follows'
 import { useArtistBySlug } from '@/hooks'
 import { SongCard } from '@/components/SongCard'
 

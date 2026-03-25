@@ -1,5 +1,5 @@
 import { useTranslation } from '@/contexts/I18nContext'
-import { useFollows } from '@/contexts/FollowsContext'
+import { useFollows } from '@/contexts/follows'
 import { Link } from 'react-router-dom'
 import { useMemo } from 'react'
 

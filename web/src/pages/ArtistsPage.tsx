@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react'
 import { Link } from 'react-router-dom'
 import { useListArtists } from '@/hooks'
 import { useTranslation } from '@/contexts/I18nContext'
-import { useFollows } from '@/contexts/FollowsContext'
+import { useFollows } from '@/contexts/follows'
 
 export function ArtistsPage() {
   const { t } = useTranslation()

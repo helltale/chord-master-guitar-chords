@@ -1,40 +1,22 @@
 import {
-  createContext,
   useCallback,
-  useContext,
   useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
+import { FollowsContext } from './followsContext'
+import type {
+  FollowedArtistSnapshot,
+  FollowedSongSnapshot,
+  FollowsContextValue,
+} from './followsTypes'
 
 const STORAGE_KEY = 'amdm-guitar-chords:follows:v1'
-
-export type FollowedArtistSnapshot = {
-  artist_id: string
-  name: string
-  slug: string
-}
-
-export type FollowedSongSnapshot = {
-  song_id: string
-  title: string
-  slug: string
-  tonality?: number
-}
 
 type FollowsState = {
   artists: Record<string, FollowedArtistSnapshot>
   songs: Record<string, FollowedSongSnapshot>
-}
-
-export type FollowsContextValue = {
-  followedArtists: FollowedArtistSnapshot[]
-  followedSongs: FollowedSongSnapshot[]
-  isArtistFollowed: (artistId: string) => boolean
-  isSongFollowed: (songId: string) => boolean
-  toggleArtistFollow: (artist: FollowedArtistSnapshot) => void
-  toggleSongFollow: (song: FollowedSongSnapshot) => void
 }
 
 function loadState(): FollowsState {
@@ -54,8 +36,6 @@ function loadState(): FollowsState {
     return { artists: {}, songs: {} }
   }
 }
-
-const FollowsContext = createContext<FollowsContextValue | null>(null)
 
 export function FollowsProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<FollowsState>(loadState)
@@ -101,12 +81,4 @@ export function FollowsProvider({ children }: { children: ReactNode }) {
   return (
     <FollowsContext.Provider value={value}>{children}</FollowsContext.Provider>
   )
-}
-
-export function useFollows(): FollowsContextValue {
-  const ctx = useContext(FollowsContext)
-  if (!ctx) {
-    throw new Error('useFollows must be used within FollowsProvider')
-  }
-  return ctx
 }

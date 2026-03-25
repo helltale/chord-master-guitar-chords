@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom'
 import type { SongListItem } from '@/api/schemas'
-import { useFollows } from '@/contexts/FollowsContext'
+import { useFollows } from '@/contexts/follows'
 import { useTranslation } from '@/contexts/I18nContext'
 
 interface SongCardProps {
