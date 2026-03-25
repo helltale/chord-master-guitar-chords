@@ -35,6 +35,21 @@ export type LocaleKey =
   | 'artist.noSongs'
   | 'artist.follow'
   | 'artist.unfollow'
+  // Artists list page
+  | 'artists.pageSubtitle'
+  | 'artists.viewSongs'
+  | 'artists.countEnOne'
+  | 'artists.countEnOther'
+  | 'artists.countRuOne'
+  | 'artists.countRuFew'
+  | 'artists.countRuMany'
+  // Songs list page
+  | 'songsPage.title'
+  | 'songsPage.subtitle'
+  | 'songs.tableTitle'
+  | 'songs.tableArtist'
+  | 'songs.tableSlug'
+  | 'songs.listFooter'
   // Favorites page
   | 'favorites.pageSubtitle'
   | 'favorites.bannerTitle'

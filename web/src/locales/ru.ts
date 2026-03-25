@@ -34,6 +34,23 @@ export const ru: LocaleDict = {
   'artist.follow': 'Подписаться',
   'artist.unfollow': 'Отписаться',
 
+  'artists.pageSubtitle':
+    'Просматривайте исполнителей и переходите к их песням.',
+  'artists.viewSongs': 'К песням',
+  'artists.countEnOne': 'artist',
+  'artists.countEnOther': 'artists',
+  'artists.countRuOne': 'исполнитель',
+  'artists.countRuFew': 'исполнителя',
+  'artists.countRuMany': 'исполнителей',
+
+  'songsPage.title': 'Библиотека песен',
+  'songsPage.subtitle':
+    'Просматривайте песни и открывайте аккорды с полными аппликатурами.',
+  'songs.tableTitle': 'Название',
+  'songs.tableArtist': 'Исполнитель',
+  'songs.tableSlug': 'Слаг',
+  'songs.listFooter': 'Показано {shown} из {total} песен',
+
   'favorites.pageSubtitle':
     'Здесь только те артисты и песни, на которые вы подписались или поставили звезду.',
   'favorites.bannerTitle': 'Продолжить занятие',
