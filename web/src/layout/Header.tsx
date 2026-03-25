@@ -27,7 +27,7 @@ export function Header() {
   const themeAria = theme === 'dark' ? t('header.lightThemeAria') : t('header.darkThemeAria')
 
   return (
-    <header className="sticky top-0 z-40 border-b border-slate-800/80 bg-slate-950/80 shadow-[0_10px_40px_rgba(15,23,42,0.8)] backdrop-blur-xl">
+    <header className="sticky top-0 z-40 border-b border-slate-200/90 bg-white/85 shadow-[0_8px_30px_rgba(15,23,42,0.06)] backdrop-blur-xl transition-[background-color,box-shadow,border-color] duration-300 ease-out dark:border-slate-800/80 dark:bg-slate-950/80 dark:shadow-[0_10px_40px_rgba(15,23,42,0.8)]">
       <div className="mx-auto flex h-16 max-w-6xl items-center justify-between gap-4 px-4">
         {/* Logo + primary navigation */}
         <div className="flex items-center gap-6">
@@ -56,26 +56,26 @@ export function Header() {
                 />
               </svg>
             </div>
-            <span className="hidden text-sm font-semibold tracking-tight text-slate-50 sm:inline">
+            <span className="hidden text-sm font-semibold tracking-tight text-slate-800 transition-colors duration-300 dark:text-slate-50 sm:inline">
               {t('header.appName')}
             </span>
           </Link>
-          <nav className="hidden items-center gap-4 text-xs font-medium text-slate-400 sm:flex">
+          <nav className="hidden items-center gap-4 text-xs font-medium text-slate-600 transition-colors duration-300 dark:text-slate-400 sm:flex">
             <Link
               to="/artists"
-              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
+              className="rounded-full px-3 py-1.5 transition-colors duration-200 hover:bg-slate-200/90 hover:text-slate-900 dark:hover:bg-slate-900 dark:hover:text-slate-50"
             >
               {t('header.nav.artists')}
             </Link>
             <Link
               to="/songs"
-              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
+              className="rounded-full px-3 py-1.5 transition-colors duration-200 hover:bg-slate-200/90 hover:text-slate-900 dark:hover:bg-slate-900 dark:hover:text-slate-50"
             >
               {t('header.nav.songs')}
             </Link>
             <Link
               to="/favorites"
-              className="rounded-full px-3 py-1.5 transition hover:bg-slate-900 hover:text-slate-50"
+              className="rounded-full px-3 py-1.5 transition-colors duration-200 hover:bg-slate-200/90 hover:text-slate-900 dark:hover:bg-slate-900 dark:hover:text-slate-50"
             >
               {t('header.nav.favorites')}
             </Link>
@@ -84,16 +84,16 @@ export function Header() {
 
         {/* Locale switcher + actions */}
         <div className="flex items-center gap-3">
-          <div className="hidden items-center gap-1 rounded-full bg-slate-900/80 p-1 text-[11px] text-slate-300 sm:flex">
+          <div className="hidden items-center gap-1 rounded-full bg-slate-200/80 p-1 text-[11px] text-slate-600 transition-colors duration-300 dark:bg-slate-900/80 dark:text-slate-300 sm:flex">
             {(['ru', 'en'] as Locale[]).map((lang) => (
               <button
                 key={lang}
                 type="button"
                 onClick={() => setLocale(lang)}
-                className={`min-w-[2.25rem] rounded-full px-2 py-0.5 font-semibold ${
+                className={`min-w-[2.25rem] rounded-full px-2 py-0.5 font-semibold transition-colors ${
                   locale === lang
-                    ? 'bg-slate-100 text-slate-900'
-                    : 'text-slate-400 hover:bg-slate-800 hover:text-slate-100'
+                    ? 'bg-white text-slate-900 shadow-sm dark:bg-slate-100 dark:text-slate-900'
+                    : 'text-slate-500 hover:bg-slate-300/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
                 }`}
                 aria-pressed={locale === lang}
               >
@@ -105,7 +105,7 @@ export function Header() {
           <button
             type="button"
             onClick={toggleTheme}
-            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-slate-900/90 text-slate-300 ring-1 ring-slate-700 hover:bg-slate-800 hover:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="inline-flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-slate-600 ring-1 ring-slate-300/90 transition-colors duration-200 hover:bg-slate-100 hover:text-slate-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 dark:bg-slate-900/90 dark:text-slate-300 dark:ring-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-100"
             title={themeTitle}
             aria-label={themeAria}
           >

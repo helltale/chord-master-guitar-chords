@@ -32,13 +32,13 @@ export function CreateSongPage() {
       <div className="mx-auto flex w-full max-w-6xl flex-1 flex-col gap-8">
         {/* Header / description */}
         <div className="flex flex-col gap-3">
-          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500">
+          <p className="text-xs font-semibold uppercase tracking-[0.24em] text-slate-500 dark:text-slate-500">
             SongCraft Editor
           </p>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-50 sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl dark:text-slate-50">
             {t('createSong.title')}
           </h1>
-          <p className="max-w-2xl text-sm text-slate-400">
+          <p className="max-w-2xl text-sm text-slate-600 dark:text-slate-400">
             {t(
               'createSong.subtitle',
               'Set artist, title and key, then craft lyrics with chords in the editor below.'
@@ -47,9 +47,9 @@ export function CreateSongPage() {
         </div>
 
         {/* Two-column workspace */}
-        <div className="flex flex-1 flex-col gap-6 rounded-2xl border border-slate-800 bg-slate-950/70 p-4 shadow-[0_26px_70px_rgba(15,23,42,0.9)] md:flex-row md:p-6 lg:gap-8">
+        <div className="flex flex-1 flex-col gap-6 rounded-2xl border border-slate-200/90 bg-white/90 p-4 shadow-[0_16px_52px_rgba(15,23,42,0.08)] transition-[border-color,background-color,box-shadow] duration-300 md:flex-row md:p-6 lg:gap-8 dark:border-slate-800 dark:bg-slate-950/70 dark:shadow-[0_26px_70px_rgba(15,23,42,0.9)]">
           {/* Left: form + editor */}
-          <div className="flex-1 border-b border-slate-800 pb-6 md:border-b-0 md:border-r md:pb-0 md:pr-6">
+          <div className="flex-1 border-b border-slate-200 pb-6 md:border-b-0 md:border-r md:pb-0 md:pr-6 dark:border-slate-800">
             <CreateSongForm
               artists={artists}
               artistsLoading={artistsLoading}
@@ -63,28 +63,28 @@ export function CreateSongPage() {
 
           {/* Right: live preview */}
           <aside className="mt-4 flex flex-1 flex-col gap-4 md:mt-0 md:pl-2">
-            <div className="rounded-xl border border-slate-700 bg-slate-900/70 p-4">
-              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-400">
+            <div className="rounded-xl border border-slate-200 bg-slate-50/90 p-4 dark:border-slate-700 dark:bg-slate-900/70">
+              <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
                 {t('createSong.previewTitle')}
               </h2>
-              <p className="mt-2 text-xs text-slate-400">
+              <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
                 {t('createSong.previewText')}
               </p>
             </div>
-            <div className="flex-1 overflow-hidden rounded-2xl border border-slate-800 bg-slate-950/80 p-4">
+            <div className="flex-1 overflow-hidden rounded-2xl border border-slate-200 bg-slate-50/95 p-4 dark:border-slate-800 dark:bg-slate-950/80">
               {preview && preview.content ? (
                 <div className="flex h-full flex-col gap-4">
-                  <div className="border-b border-slate-800 pb-3">
-                    <h3 className="text-base font-semibold text-slate-50">
+                  <div className="border-b border-slate-200 pb-3 dark:border-slate-800">
+                    <h3 className="text-base font-semibold text-slate-900 dark:text-slate-50">
                       {preview.title}
                     </h3>
                     {preview.artistName && (
-                      <p className="text-xs text-slate-400">
+                      <p className="text-xs text-slate-600 dark:text-slate-400">
                         {preview.artistName}
                       </p>
                     )}
                     {typeof preview.tonality === 'number' && (
-                      <p className="mt-1 inline-flex rounded-full bg-slate-900 px-2 py-0.5 text-[11px] text-slate-400">
+                      <p className="mt-1 inline-flex rounded-full bg-slate-200/90 px-2 py-0.5 text-[11px] text-slate-600 dark:bg-slate-900 dark:text-slate-400">
                         {t('song.tonality')}: {preview.tonality}
                       </p>
                     )}
@@ -94,7 +94,7 @@ export function CreateSongPage() {
                   </div>
                 </div>
               ) : (
-                <div className="flex h-full flex-col items-center justify-center text-xs text-slate-500">
+                <div className="flex h-full flex-col items-center justify-center text-xs text-slate-600 dark:text-slate-500">
                   <p>{t('createSong.statusDraft')}</p>
                   <p className="mt-1 text-[11px]">
                     {t('createSong.tipSyntax')}

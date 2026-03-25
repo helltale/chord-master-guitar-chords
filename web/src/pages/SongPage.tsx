@@ -55,7 +55,7 @@ export function SongPage() {
     })
 
   return (
-    <div className="flex h-full min-h-0 flex-col -mx-4 -my-6 px-4 py-4 bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-full min-h-0 flex-col -mx-4 -my-6 px-4 py-4 bg-slate-100 transition-colors duration-300 dark:bg-gray-950">
       {/* Sticky in-page header with song info and quick actions */}
       <header className="z-10 mb-4 flex items-center justify-between gap-4 rounded-xl border border-gray-200/70 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 px-4 py-3 backdrop-blur">
         <div className="flex items-center gap-4">

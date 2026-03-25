@@ -18,22 +18,22 @@ export function SongContent({ content }: SongContentProps) {
           {(section.blocks ?? []).map((block, bidx) => (
             <div key={bidx} className="mb-6">
               {block.kind === 'lyrics' && (
-                <div className="space-y-4 font-sans leading-relaxed text-gray-100">
+                <div className="space-y-4 font-sans leading-relaxed text-slate-800 dark:text-gray-100">
                   {(block.segments ?? []).map((seg, sidx) => (
                     <span
                       key={sidx}
                       className="inline-block min-w-[0.25rem] align-top"
                     >
-                      <span className="mb-1 block whitespace-nowrap text-xs font-mono font-semibold text-emerald-300">
+                      <span className="mb-1 block whitespace-nowrap text-xs font-mono font-semibold text-emerald-700 dark:text-emerald-300">
                         {seg.chord ? (
-                          <span className="rounded-md bg-indigo-500/20 px-1.5 py-0.5 text-[0.65rem] text-emerald-300 shadow-sm shadow-indigo-900/30">
+                          <span className="rounded-md bg-indigo-500/15 px-1.5 py-0.5 text-[0.65rem] text-emerald-700 shadow-sm shadow-indigo-900/10 dark:bg-indigo-500/20 dark:text-emerald-300 dark:shadow-indigo-900/30">
                             {seg.chord}
                           </span>
                         ) : (
                           '\u00A0'
                         )}
                       </span>
-                      <span className="whitespace-pre-wrap break-words text-base text-slate-100">
+                      <span className="whitespace-pre-wrap break-words text-base text-slate-800 dark:text-slate-100">
                         {seg.text ?? ''}
                       </span>
                     </span>
@@ -41,19 +41,19 @@ export function SongContent({ content }: SongContentProps) {
                 </div>
               )}
               {block.kind === 'instrumental' && (
-                <div className="rounded-xl border border-indigo-500/30 bg-indigo-500/5 p-4 text-sm text-gray-200 dark:border-indigo-400/40 dark:bg-indigo-900/20">
+                <div className="rounded-xl border border-indigo-200/80 bg-indigo-50/50 p-4 text-sm text-slate-700 dark:border-indigo-400/40 dark:bg-indigo-900/20 dark:text-gray-200">
                   {block.label && (
-                    <span className="mb-1 block font-semibold uppercase tracking-wide text-indigo-300">
+                    <span className="mb-1 block font-semibold uppercase tracking-wide text-indigo-700 dark:text-indigo-300">
                       {block.label}
                     </span>
                   )}
                   {block.chords && block.chords.length > 0 && (
-                    <p className="font-mono text-sm text-emerald-200">
+                    <p className="font-mono text-sm text-emerald-800 dark:text-emerald-200">
                       {(block.chords ?? []).join(' ')}
                     </p>
                   )}
                   {block.tab && (
-                    <pre className="mt-2 overflow-x-auto rounded-lg bg-gray-950/60 p-3 text-xs text-gray-100">
+                    <pre className="mt-2 overflow-x-auto rounded-lg bg-slate-100 p-3 text-xs text-slate-800 dark:bg-gray-950/60 dark:text-gray-100">
                       {block.tab}
                     </pre>
                   )}

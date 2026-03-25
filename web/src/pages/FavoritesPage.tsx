@@ -24,14 +24,14 @@ export function FavoritesPage() {
   )
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-950 px-4 py-8">
+    <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-100 px-4 py-8 transition-colors duration-300 dark:bg-slate-950">
       <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-8">
         <section className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-50 sm:text-4xl">
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50">
               {t('header.nav.favorites', 'Favorites')}
             </h1>
-            <p className="mt-2 max-w-xl text-sm text-slate-400 md:text-base">
+            <p className="mt-2 max-w-xl text-sm text-slate-600 md:text-base dark:text-slate-400">
               {t('favorites.pageSubtitle')}
             </p>
           </div>
@@ -48,7 +48,7 @@ export function FavoritesPage() {
           </div>
           <Link
             to="/songs"
-            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-slate-950/95 px-6 py-2.5 text-sm font-semibold text-slate-50 shadow-[0_0_30px_rgba(15,23,42,0.9)] transition hover:bg-slate-900"
+            className="inline-flex items-center justify-center gap-2 rounded-2xl bg-white/95 px-6 py-2.5 text-sm font-semibold text-slate-900 shadow-[0_8px_28px_rgba(15,23,42,0.12)] transition hover:bg-slate-50 dark:bg-slate-950/95 dark:text-slate-50 dark:shadow-[0_0_30px_rgba(15,23,42,0.9)] dark:hover:bg-slate-900"
           >
             <span>▶</span>
             <span>{t('favorites.browseSongs')}</span>
@@ -57,13 +57,13 @@ export function FavoritesPage() {
 
         <section className="flex flex-col gap-4">
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
               <span>★</span>
               <span>{t('favorites.sectionArtists')}</span>
             </h2>
           </div>
           {artistsSorted.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/80 px-4 py-5 text-sm text-slate-500">
+            <p className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-500">
               {t('favorites.emptyArtists')}
             </p>
           ) : (
@@ -74,10 +74,10 @@ export function FavoritesPage() {
                     to={`/artist/${artist.slug}`}
                     className="group flex flex-col items-center text-center"
                   >
-                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full border-4 border-slate-800 bg-slate-950 text-2xl font-bold uppercase text-indigo-300 shadow-[0_0_32px_rgba(99,102,241,0.85)] group-hover:border-indigo-400">
+                    <div className="mb-3 flex h-20 w-20 items-center justify-center rounded-full border-4 border-slate-200 bg-slate-100 text-2xl font-bold uppercase text-indigo-600 shadow-[0_0_24px_rgba(99,102,241,0.25)] group-hover:border-indigo-400 dark:border-slate-800 dark:bg-slate-950 dark:text-indigo-300 dark:shadow-[0_0_32px_rgba(99,102,241,0.85)]">
                       {artist.name.charAt(0) || '?'}
                     </div>
-                    <p className="line-clamp-1 text-xs font-semibold text-slate-100">
+                    <p className="line-clamp-1 text-xs font-semibold text-slate-800 dark:text-slate-100">
                       {artist.name}
                     </p>
                   </Link>
@@ -89,13 +89,13 @@ export function FavoritesPage() {
 
         <section className="flex flex-1 flex-col gap-3 pb-4">
           <div className="flex items-center justify-between">
-            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-400">
+            <h2 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
               <span>★</span>
               <span>{t('favorites.sectionSongs')}</span>
             </h2>
           </div>
           {songsSorted.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/80 px-4 py-5 text-sm text-slate-500">
+            <p className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-5 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-500">
               {t('favorites.emptySongs')}
             </p>
           ) : (
@@ -104,10 +104,10 @@ export function FavoritesPage() {
                 <li key={song.song_id}>
                   <Link
                     to={`/song/${song.song_id}`}
-                    className="group flex items-center justify-between rounded-2xl border border-slate-900 bg-slate-950/80 px-4 py-3 text-sm text-slate-100 transition hover:border-indigo-400 hover:bg-slate-900"
+                    className="group flex items-center justify-between rounded-2xl border border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-800 shadow-sm shadow-slate-900/5 transition-[border-color,background-color] duration-200 hover:border-indigo-400 hover:bg-indigo-50/40 dark:border-slate-900 dark:bg-slate-950/80 dark:text-slate-100 dark:shadow-none dark:hover:bg-slate-900"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/20 text-sm font-bold text-indigo-300">
+                      <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-indigo-500/15 text-sm font-bold text-indigo-600 dark:bg-indigo-500/20 dark:text-indigo-300">
                         ♪
                       </div>
                       <div className="flex flex-col">
@@ -121,7 +121,7 @@ export function FavoritesPage() {
                     </div>
                     <div className="flex items-center gap-3 text-xs text-slate-500">
                       {song.tonality != null && (
-                        <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-2 py-0.5 font-mono text-[11px] text-indigo-300">
+                        <span className="inline-flex items-center rounded-full bg-indigo-500/10 px-2 py-0.5 font-mono text-[11px] text-indigo-600 dark:text-indigo-300">
                           {song.tonality}
                         </span>
                       )}

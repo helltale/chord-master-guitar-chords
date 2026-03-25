@@ -87,13 +87,13 @@ export function CreateSongForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {error && (
-        <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-200" role="alert">
+        <p className="rounded-lg border border-red-500/40 bg-red-500/10 px-3 py-2 text-sm text-red-800 dark:text-red-200" role="alert">
           {error.message}
         </p>
       )}
       <div className="flex flex-col gap-2">
         <label
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
         >
           {t('createSong.artist')}
         </label>
@@ -103,9 +103,9 @@ export function CreateSongForm({
           onChange={(e) => setArtistSearch(e.target.value)}
           disabled={artistsLoading}
           placeholder={t('search.placeholder')}
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-60"
+          className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none ring-1 ring-slate-200/80 focus:border-indigo-400 focus:ring-indigo-500 disabled:cursor-not-allowed disabled:opacity-60 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-50 dark:shadow-black/30 dark:ring-slate-900/60"
         />
-        <div className="mt-2 max-h-36 space-y-1 overflow-y-auto rounded-2xl border border-slate-800 bg-slate-950/70 p-1">
+        <div className="mt-2 max-h-36 space-y-1 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50/95 p-1 dark:border-slate-800 dark:bg-slate-950/70">
           {visibleArtists.length === 0 ? (
             <p className="px-2 py-1 text-xs text-slate-500">
               {artists.length === 0
@@ -120,14 +120,14 @@ export function CreateSongForm({
                 onClick={() => setSelectedArtistId(a.artist_id)}
                 className={`flex w-full items-center justify-between rounded-xl px-3 py-2 text-xs ${
                   selectedArtistId === a.artist_id
-                    ? 'bg-indigo-500/20 text-indigo-100 ring-1 ring-indigo-400'
-                    : 'bg-transparent text-slate-200 hover:bg-slate-900'
+                    ? 'bg-indigo-500/20 text-indigo-800 ring-1 ring-indigo-400 dark:text-indigo-100'
+                    : 'bg-transparent text-slate-700 hover:bg-slate-200/80 dark:text-slate-200 dark:hover:bg-slate-900'
                 }`}
                 aria-pressed={selectedArtistId === a.artist_id}
               >
                 <span className="font-medium">{a.name}</span>
                 {selectedArtistId === a.artist_id && (
-                  <span className="text-[10px] uppercase tracking-[0.18em] text-indigo-300">
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-indigo-600 dark:text-indigo-300">
                     selected
                   </span>
                 )}
@@ -139,7 +139,7 @@ export function CreateSongForm({
       <div className="flex flex-col gap-2">
         <label
           htmlFor="song-title"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
         >
           {t('createSong.songTitle')}
         </label>
@@ -150,13 +150,13 @@ export function CreateSongForm({
           required
           onChange={handleTitleChange}
           value={title}
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
+          className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none ring-1 ring-slate-200/80 focus:border-indigo-400 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-50 dark:shadow-black/30 dark:ring-slate-900/60"
         />
       </div>
       <div className="flex flex-col gap-2">
         <label
           htmlFor="song-tonality"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
         >
           {t('createSong.tonalityOptional')}
         </label>
@@ -167,13 +167,13 @@ export function CreateSongForm({
           step={1}
           value={tonalityRaw}
           onChange={(e) => setTonalityRaw(e.target.value)}
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
+          className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-900 shadow-sm outline-none ring-1 ring-slate-200/80 focus:border-indigo-400 focus:ring-indigo-500 dark:border-slate-700 dark:bg-slate-950/60 dark:text-slate-50 dark:shadow-black/30 dark:ring-slate-900/60"
         />
       </div>
       <div>
         <label
           id="song-content-label"
-          className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
+          className="mb-2 block text-xs font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400"
         >
           {t('createSong.lyricsOptional')}
         </label>
@@ -182,7 +182,7 @@ export function CreateSongForm({
           value={lyricsText}
           onChange={(e) => setLyricsText(e.target.value)}
           rows={8}
-          className="w-full rounded-2xl border border-slate-800 bg-slate-950/80 p-4 text-sm text-slate-100 shadow-inner shadow-black/40 outline-none ring-1 ring-slate-900/80 focus:border-indigo-400 focus:ring-indigo-500"
+          className="w-full rounded-2xl border border-slate-200 bg-white p-4 text-sm text-slate-900 shadow-inner shadow-slate-900/5 outline-none ring-1 ring-slate-200 focus:border-indigo-400 focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-100 dark:shadow-black/40 dark:ring-slate-900/80"
           placeholder="[Am] Thoughts fly away, [Dm] stretch [F] beyond the horizon..."
         />
         <div className="mt-3 space-y-2">
@@ -200,7 +200,7 @@ export function CreateSongForm({
                 key={chord}
                 type="button"
                 onClick={() => setLyricsText((prev) => `${prev}${prev ? ' ' : ''}[${chord}] `)}
-                className="flex h-8 min-w-[2.5rem] items-center justify-center rounded-full border border-indigo-500/40 bg-indigo-500/10 px-2 text-xs font-semibold text-indigo-200 hover:bg-indigo-500 hover:text-white"
+                className="flex h-8 min-w-[2.5rem] items-center justify-center rounded-full border border-indigo-500/40 bg-indigo-500/10 px-2 text-xs font-semibold text-indigo-700 hover:bg-indigo-500 hover:text-white dark:text-indigo-200"
               >
                 {chord}
               </button>

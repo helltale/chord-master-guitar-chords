@@ -33,7 +33,7 @@ export function ArtistsPage() {
 
   if (loading && items.length === 0) {
     return (
-      <div className="py-8 text-slate-400">
+      <div className="py-8 text-slate-600 dark:text-slate-400">
         {t('common.loading')}
       </div>
     )
@@ -50,19 +50,19 @@ export function ArtistsPage() {
   }
 
   return (
-    <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-950 px-4 py-8">
+    <div className="relative flex min-h-0 flex-1 flex-col -mx-4 -my-6 overflow-hidden bg-slate-100 px-4 py-8 transition-colors duration-300 dark:bg-slate-950">
       <div className="relative z-10 mx-auto flex h-full w-full max-w-6xl flex-col gap-8">
         {/* Page header */}
         <section className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-end">
           <div>
-            <h1 className="text-3xl font-black tracking-tight text-slate-50 sm:text-4xl">
+            <h1 className="text-3xl font-black tracking-tight text-slate-900 sm:text-4xl dark:text-slate-50">
               {t('header.nav.artists')}
             </h1>
-            <p className="mt-1 text-sm text-slate-400 md:text-base">
+            <p className="mt-1 text-sm text-slate-600 md:text-base dark:text-slate-400">
               {t('artists.pageSubtitle')}
             </p>
             {total > 0 && (
-              <p className="mt-2 text-xs text-slate-500">
+              <p className="mt-2 text-xs text-slate-500 dark:text-slate-500">
                 {artistsCountLabel(total, locale, t)}
               </p>
             )}
@@ -79,9 +79,9 @@ export function ArtistsPage() {
         </section>
 
         {/* Filters & search */}
-        <section className="flex flex-col gap-4 rounded-3xl border border-slate-800/80 bg-slate-900/70 p-4 shadow-[0_18px_60px_rgba(15,23,42,0.85)] sm:flex-row sm:items-center sm:justify-between sm:p-5">
+        <section className="flex flex-col gap-4 rounded-3xl border border-slate-200/90 bg-white/90 p-4 shadow-[0_14px_44px_rgba(15,23,42,0.07)] transition-[border-color,background-color,box-shadow] duration-300 sm:flex-row sm:items-center sm:justify-between sm:p-5 dark:border-slate-800/80 dark:bg-slate-900/70 dark:shadow-[0_18px_60px_rgba(15,23,42,0.85)]">
           <div className="relative w-full sm:max-w-sm">
-            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">
+            <span className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 dark:text-slate-500">
               🔍
             </span>
             <input
@@ -89,7 +89,7 @@ export function ArtistsPage() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder={t('search.label')}
-              className="w-full rounded-xl border border-slate-800 bg-slate-950/80 py-2 pl-8 pr-3 text-sm text-slate-100 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-8 pr-3 text-sm text-slate-900 placeholder:text-slate-500 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 dark:border-slate-800 dark:bg-slate-950/80 dark:text-slate-100"
             />
           </div>
         </section>
@@ -97,7 +97,7 @@ export function ArtistsPage() {
         {/* Artists grid */}
         <section className="flex flex-1 flex-col gap-4 pb-6">
           {filtered.length === 0 ? (
-            <p className="rounded-2xl border border-dashed border-slate-800 bg-slate-950/70 px-4 py-6 text-sm text-slate-500">
+            <p className="rounded-2xl border border-dashed border-slate-300 bg-slate-50/80 px-4 py-6 text-sm text-slate-600 dark:border-slate-800 dark:bg-slate-950/70 dark:text-slate-500">
               {items.length === 0
                 ? t('artists.emptyLibrary')
                 : t('search.noArtists')}
@@ -126,25 +126,25 @@ export function ArtistsPage() {
                       className={`absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full text-sm shadow-md ring-1 transition ${
                         followed
                           ? 'bg-amber-500/20 text-amber-400 ring-amber-400/40 hover:bg-amber-500/30'
-                          : 'bg-slate-950/90 text-slate-500 ring-slate-700 hover:bg-slate-900 hover:text-indigo-300 hover:ring-indigo-500/50'
+                          : 'bg-white/95 text-slate-500 ring-slate-300 hover:bg-slate-100 hover:text-indigo-600 hover:ring-indigo-400/50 dark:bg-slate-950/90 dark:ring-slate-700 dark:hover:bg-slate-900 dark:hover:text-indigo-300 dark:hover:ring-indigo-500/50'
                       }`}
                     >
                       ★
                     </button>
                     <Link
                       to={`/artist/${artist.slug}`}
-                      className="group flex h-full flex-col items-center rounded-2xl border border-slate-800 bg-slate-900/70 p-5 pt-6 text-center shadow-[0_18px_50px_rgba(15,23,42,0.85)] transition hover:border-indigo-400 hover:bg-slate-900"
+                      className="group flex h-full flex-col items-center rounded-2xl border border-slate-200 bg-white/90 p-5 pt-6 text-center shadow-[0_12px_40px_rgba(15,23,42,0.06)] transition-[border-color,background-color,box-shadow] duration-200 hover:border-indigo-400 hover:bg-indigo-50/40 dark:border-slate-800 dark:bg-slate-900/70 dark:shadow-[0_18px_50px_rgba(15,23,42,0.85)] dark:hover:bg-slate-900"
                     >
-                      <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-indigo-500/80 bg-slate-950 text-2xl font-bold uppercase text-indigo-300 shadow-[0_0_32px_rgba(99,102,241,0.85)]">
+                      <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-full border-2 border-indigo-500/80 bg-slate-100 text-2xl font-bold uppercase text-indigo-600 shadow-[0_0_28px_rgba(99,102,241,0.35)] dark:bg-slate-950 dark:text-indigo-300 dark:shadow-[0_0_32px_rgba(99,102,241,0.85)]">
                         {artist.name.charAt(0) || '?'}
                       </div>
-                      <h2 className="mb-1 text-sm font-semibold text-slate-50 line-clamp-1">
+                      <h2 className="mb-1 text-sm font-semibold text-slate-900 line-clamp-1 dark:text-slate-50">
                         {artist.name}
                       </h2>
                       <p className="mb-4 text-[11px] font-mono uppercase tracking-[0.18em] text-slate-500">
                         {artist.slug}
                       </p>
-                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-950/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-400 group-hover:bg-indigo-500/10 group-hover:text-indigo-200">
+                      <span className="inline-flex items-center gap-1 rounded-full bg-slate-100/90 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-600 group-hover:bg-indigo-500/10 group-hover:text-indigo-700 dark:bg-slate-950/80 dark:text-slate-400 dark:group-hover:text-indigo-200">
                         <span>{t('artists.viewSongs')}</span>
                         <span>↗</span>
                       </span>
