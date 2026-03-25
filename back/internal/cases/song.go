@@ -35,8 +35,8 @@ func (c *SongCases) Search(ctx context.Context, query string, limit, offset int)
 	return c.songRepo.Search(ctx, query, limit, offset)
 }
 
-func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int) ([]*entity.Song, int64, error) {
-	return c.songRepo.List(ctx, artistID, limit, offset)
+func (c *SongCases) List(ctx context.Context, artistID *uuid.UUID, limit, offset int, sort string) ([]*entity.Song, int64, error) {
+	return c.songRepo.List(ctx, artistID, limit, offset, sort)
 }
 
 func (c *SongCases) GetByID(ctx context.Context, id uuid.UUID) (*entity.Song, error) {

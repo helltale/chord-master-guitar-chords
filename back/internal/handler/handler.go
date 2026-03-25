@@ -114,7 +114,11 @@ func (srv *server) ListSongs(
 	if request.Params.Offset != nil {
 		offset = *request.Params.Offset
 	}
-	list, total, err := srv.songCases.List(ctx, request.Params.ArtistId, limit, offset)
+	sort := "title"
+	if request.Params.Sort != nil && request.Params.Sort.Valid() {
+		sort = string(*request.Params.Sort)
+	}
+	list, total, err := srv.songCases.List(ctx, request.Params.ArtistId, limit, offset, sort)
 	if err != nil {
 		return nil, err
 	}
@@ -310,13 +314,17 @@ func (srv *server) artistToAPI(a *entity.Artist) gen.Artist {
 }
 
 func (srv *server) songToListItem(s *entity.Song) gen.SongListItem {
-	return gen.SongListItem{
+	item := gen.SongListItem{
 		SongId:   s.SongID,
 		Title:    s.Title,
 		Slug:     s.Slug,
 		ArtistId: ptr(s.ArtistID),
 		Tonality: ptr(s.Tonality),
 	}
+	if s.Artist != nil {
+		item.ArtistName = ptr(s.Artist.Name)
+	}
+	return item
 }
 
 func tabContentToGen(c *entity.TabContent) *gen.TabContent {
