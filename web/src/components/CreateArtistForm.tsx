@@ -18,22 +18,9 @@ export function CreateArtistForm({
     e.preventDefault()
     const form = e.currentTarget
     const name = (form.elements.namedItem('name') as HTMLInputElement).value.trim()
-    const slug = (form.elements.namedItem('slug') as HTMLInputElement).value.trim()
+    const slug = slugFromString(name)
     if (!name || !slug) return
     onSubmit({ name, slug })
-  }
-
-  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const form = e.target.form
-    if (!form) return
-    const slugField = form.elements.namedItem('slug') as HTMLInputElement
-    if (!slugField || slugField.dataset.touched) return
-    const slug = slugFromString(e.target.value)
-    slugField.value = slug
-  }
-
-  const handleSlugManualEdit = (e: React.ChangeEvent<HTMLInputElement>) => {
-    e.currentTarget.dataset.touched = '1'
   }
 
   return (
@@ -55,23 +42,6 @@ export function CreateArtistForm({
           name="name"
           type="text"
           required
-          onChange={handleNameChange}
-          className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
-        />
-      </div>
-      <div className="flex flex-col gap-2">
-        <label
-          htmlFor="artist-slug"
-          className="text-xs font-semibold uppercase tracking-[0.18em] text-slate-400"
-        >
-          {t('createArtist.slug')}
-        </label>
-        <input
-          id="artist-slug"
-          name="slug"
-          type="text"
-          required
-          onChange={handleSlugManualEdit}
           className="h-11 w-full rounded-lg border border-slate-700 bg-slate-950/60 px-3 text-sm text-slate-50 shadow-sm shadow-black/30 outline-none ring-1 ring-slate-900/60 focus:border-indigo-400 focus:ring-indigo-500"
         />
       </div>

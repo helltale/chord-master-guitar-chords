@@ -53,14 +53,11 @@ export type LocaleKey =
   // Create artist form
   | 'createArtist.title'
   | 'createArtist.name'
-  | 'createArtist.slug'
   | 'createArtist.submit'
   | 'createArtist.submitting'
   | 'createArtist.subtitle'
   | 'createArtist.tipSyncTitle'
   | 'createArtist.tipSyncText'
-  | 'createArtist.tipSlugTitle'
-  | 'createArtist.tipSlugText'
   // Section editor
   | 'section.sectionLabel'
   | 'section.placeholder'
