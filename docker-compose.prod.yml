@@ -68,6 +68,68 @@ services:
       - grafana_data:/var/lib/grafana
       - ./ops/monitoring/grafana/provisioning:/etc/grafana/provisioning:ro
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.15.3
+    container_name: amdm-elasticsearch
+    ports:
+      - "9200:9200"
+    environment:
+      discovery.type: single-node
+      xpack.security.enabled: "false"
+      ES_JAVA_OPTS: "-Xms512m -Xmx512m"
+    volumes:
+      - elasticsearch_data:/usr/share/elasticsearch/data
+
+  logstash:
+    image: docker.elastic.co/logstash/logstash:8.15.3
+    container_name: amdm-logstash
+    ports:
+      - "5044:5044"
+      - "5000:5000"
+      - "9600:9600"
+    volumes:
+      - ./ops/monitoring/logstash/pipeline/logstash.conf:/usr/share/logstash/pipeline/logstash.conf:ro
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:8.15.3
+    container_name: amdm-kibana
+    ports:
+      - "5601:5601"
+    environment:
+      ELASTICSEARCH_HOSTS: '["http://elasticsearch:9200"]'
+      XPACK_SECURITY_ENABLED: "false"
+      INTERACTIVESETUP_ENABLED: "false"
+    depends_on:
+      - elasticsearch
+
+  logspout:
+    image: gliderlabs/logspout:v3.2.14
+    container_name: amdm-logspout
+    environment:
+      ROUTE_URIS: syslog+tcp://logstash:5000
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    depends_on:
+      - logstash
+    restart: unless-stopped
+
+  kibana-setup:
+    image: curlimages/curl:8.10.1
+    container_name: amdm-kibana-setup
+    command: ["/bin/sh", "/opt/kibana/bootstrap-data-view.sh"]
+    environment:
+      KIBANA_URL: http://kibana:5601
+      KIBANA_DATA_VIEW_TITLE: logs-amdm-*
+      KIBANA_DATA_VIEW_NAME: AMDM Logs
+      KIBANA_TIME_FIELD: "@timestamp"
+    volumes:
+      - ./ops/monitoring/kibana/bootstrap-data-view.sh:/opt/kibana/bootstrap-data-view.sh:ro
+    depends_on:
+      - kibana
+    restart: "no"
+
   db-backup:
     image: postgres:16-alpine
     container_name: amdm-db-backup
@@ -116,3 +178,4 @@ volumes:
   postgres_data:
   prometheus_data:
   grafana_data:
+  elasticsearch_data:

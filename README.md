@@ -63,6 +63,7 @@
    - **API напрямую**: [http://localhost:8081](http://localhost:8081) (префикс маршрутов API: `/api/amdm/v1`).
    - **Prometheus**: [http://localhost:9090](http://localhost:9090) (скрейпит бэкенд по `GET /metrics`).
    - **Grafana**: [http://localhost:3000](http://localhost:3000) (логин/пароль по умолчанию `admin` / `admin`).
+   - **Kibana**: [http://localhost:5601](http://localhost:5601) (просмотр логов из Elasticsearch, индекс `amdm-logs-*`).
    - **Проверка метрик**: откройте [http://localhost:8081/metrics](http://localhost:8081/metrics) и убедитесь, что там есть `http_requests_total` и `song_opens_total`.
 
 Сервисы Compose:
@@ -72,6 +73,11 @@
 - `web` — Nginx + статика из `web/dist`.
 - `prometheus` — метрики бэкенда (скрейпит `GET /metrics`).
 - `grafana` — дашборды/аналитика поверх Prometheus.
+- `elasticsearch` — хранилище логов.
+- `logstash` — pipeline для приёма и обработки логов.
+- `kibana` — визуализация и поиск по логам.
+- `logspout` — сбор docker-логов через Docker socket и отправка в Logstash (syslog).
+- `kibana-setup` — одноразовая автонастройка Kibana (создаёт Data View `amdm-logs-*` и делает его дефолтным).
 - `db-backup` — периодические дампы в `./backups` (см. ниже).
 - `db-prune-song-opens` — периодическая очистка старых записей об «открытиях» песен (настраивается `SONG_OPENS_*`).
 
@@ -96,6 +102,17 @@ make deploy-pull
 ```bash
 docker compose -f docker-compose.prod.yml pull
 docker compose -f docker-compose.prod.yml up -d --remove-orphans
+```
+
+> Для ELK в compose включён режим single-node без security (`xpack.security.enabled=false`) для простого локального/стендового запуска.
+> В Kibana также отключён interactive setup (`INTERACTIVESETUP_ENABLED=false`), поэтому экран с Enrollment token не должен появляться.
+
+После старта compose сервис `kibana-setup` автоматически выполняет bootstrap Kibana через API, поэтому вручную создавать Data View не нужно.
+
+Проверка автонастройки:
+
+```bash
+docker compose logs kibana-setup
 ```
 
 ---
