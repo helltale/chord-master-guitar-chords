@@ -95,6 +95,7 @@ func (m *Metrics) Handler(reg *prometheus.Registry) http.Handler {
 
 type statusRecorder struct {
 	http.ResponseWriter
+
 	status int
 }
 
