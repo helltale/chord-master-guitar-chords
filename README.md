@@ -61,12 +61,17 @@
 
    - **UI**: [http://localhost:8080](http://localhost:8080) (Nginx отдаёт SPA и проксирует API на бэкенд).
    - **API напрямую**: [http://localhost:8081](http://localhost:8081) (префикс маршрутов API: `/api/amdm/v1`).
+   - **Prometheus**: [http://localhost:9090](http://localhost:9090) (скрейпит бэкенд по `GET /metrics`).
+   - **Grafana**: [http://localhost:3000](http://localhost:3000) (логин/пароль по умолчанию `admin` / `admin`).
+   - **Проверка метрик**: откройте [http://localhost:8081/metrics](http://localhost:8081/metrics) и убедитесь, что там есть `http_requests_total` и `song_opens_total`.
 
 Сервисы Compose:
 
 - `postgres` — PostgreSQL 16.
 - `back` — Go-сервер.
 - `web` — Nginx + статика из `web/dist`.
+- `prometheus` — метрики бэкенда (скрейпит `GET /metrics`).
+- `grafana` — дашборды/аналитика поверх Prometheus.
 - `db-backup` — периодические дампы в `./backups` (см. ниже).
 - `db-prune-song-opens` — периодическая очистка старых записей об «открытиях» песен (настраивается `SONG_OPENS_*`).
 

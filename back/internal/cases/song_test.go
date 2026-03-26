@@ -109,7 +109,7 @@ func TestSongCases_Create(t *testing.T) {
 			ar := testdata.NewMockArtistRepository(ctrl)
 			sr := testdata.NewMockSongRepository(ctrl)
 			tt.setupMocks(ar, sr)
-			c := NewSongCases(ar, sr, nil)
+			c := NewSongCases(ar, sr, nil, nil)
 			got, err := c.Create(ctx, tt.artistID, tt.title, tt.slug, tt.tonality, tt.content)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Create() error = %v, wantErr %v", err, tt.wantErr)
@@ -203,7 +203,7 @@ func TestSongCases_Update(t *testing.T) {
 			defer ctrl.Finish()
 			sr := testdata.NewMockSongRepository(ctrl)
 			tt.setupMocks(sr)
-			c := NewSongCases(nil, sr, nil)
+			c := NewSongCases(nil, sr, nil, nil)
 			if c.artistRepo != nil {
 				t.Skip("NewSongCases requires artistRepo; use interface cast for Update-only tests")
 			}
