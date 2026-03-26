@@ -15,9 +15,11 @@ import (
 	"github.com/Helltale/amdm-guitar-chords/back/internal/config"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/handler"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/handler/gen"
+	"github.com/Helltale/amdm-guitar-chords/back/internal/metrics"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/migration"
 	"github.com/Helltale/amdm-guitar-chords/back/internal/repository"
 	"github.com/go-chi/chi/v5"
+	"github.com/prometheus/client_golang/prometheus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -45,14 +47,21 @@ func main() {
 		log.Fatalf("db: %v", err)
 	}
 
+	metricsRegistry := prometheus.NewRegistry()
+	apiMetrics := metrics.New(metricsRegistry, sqlDB)
+
 	artistRepo := repository.NewArtistRepository(gormDB)
 	songRepo := repository.NewSongRepository(gormDB)
 	songOpenRepo := repository.NewSongOpenRepository(gormDB)
 	artistCases := cases.NewArtistCases(artistRepo)
-	songCases := cases.NewSongCases(artistRepo, songRepo, songOpenRepo)
+	songCases := cases.NewSongCases(artistRepo, songRepo, songOpenRepo, apiMetrics.IncSongOpens)
 	server := handler.NewServer(artistCases, songCases)
 
 	rounter := chi.NewRouter()
+	rounter.Use(apiMetrics.Middleware)
+	rounter.Get("/metrics", func(w http.ResponseWriter, r *http.Request) {
+		apiMetrics.Handler(metricsRegistry).ServeHTTP(w, r)
+	})
 	rounter.Get("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		ctx, cancel := context.WithTimeout(r.Context(), healthzPingTimeout)
 		defer cancel()

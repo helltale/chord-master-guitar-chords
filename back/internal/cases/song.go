@@ -19,20 +19,27 @@ type noopSongOpen struct{}
 func (noopSongOpen) Record(context.Context, uuid.UUID) error { return nil }
 
 type SongCases struct {
-	artistRepo repository.ArtistRepository
-	songRepo   repository.SongRepository
-	openRepo   repository.SongOpenRepository
+	artistRepo   repository.ArtistRepository
+	songRepo     repository.SongRepository
+	openRepo     repository.SongOpenRepository
+	incSongOpens func()
 }
 
 func NewSongCases(
 	artistRepo repository.ArtistRepository,
 	songRepo repository.SongRepository,
 	openRepo repository.SongOpenRepository,
+	incSongOpens func(),
 ) *SongCases {
 	if openRepo == nil {
 		openRepo = noopSongOpen{}
 	}
-	return &SongCases{artistRepo: artistRepo, songRepo: songRepo, openRepo: openRepo}
+	return &SongCases{
+		artistRepo:   artistRepo,
+		songRepo:     songRepo,
+		openRepo:     openRepo,
+		incSongOpens: incSongOpens,
+	}
 }
 
 func (c *SongCases) ListByArtistID(ctx context.Context, artistID uuid.UUID) ([]*entity.Song, error) {
@@ -61,6 +68,9 @@ func (c *SongCases) List(
 
 // RecordSongOpen records one song page view (for popularity). Safe to call from a goroutine.
 func (c *SongCases) RecordSongOpen(ctx context.Context, songID uuid.UUID) {
+	if c.incSongOpens != nil {
+		c.incSongOpens()
+	}
 	_ = c.openRepo.Record(ctx, songID)
 }
 
